@@ -8,6 +8,6 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'future-farm.herokuapp.com',
+    'future-farm-project.herokuapp.com',
     ]
 
