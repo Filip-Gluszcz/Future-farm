@@ -1,0 +1,48 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0"
+        crossorigin="anonymous"
+        />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="{% static '/css/main2.css'%}"
+        />
+    </head>
+    <body>
+       <div class="login-container" >
+            <h2>Logowanie</h2>
+            {% if form.errors %}
+                <p>Nazwa użytkownika lub hasło są nieprawidłowe, spróbuj ponownie</p>
+            {% endif %}
+            <div class="login-box table-container" >
+                <form method='POST' action=''>
+                    {% csrf_token %}
+                    <p>
+                        <label for="id_username" style="padding-top:10px">Login:</label> 
+                        <input id="username-input" type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" style="float:right; margin-right:0px">
+                    </p>
+                    <p style="margin-top:30px; margin-bottom:30px;">
+                        <label for="id_password" style="padding-top:10px">Hasło:</label> 
+                        <input id="password-input" type="password" name="password" autocomplete="current-password" required id="id_password" style="float:right; margin-right:0px">
+                    </p>
+                    <input type="hidden" name="next" value="">
+                    <input class="orange-button float-right-button" type="submit" value="Zaloguj" style="margin-right:0px">
+                </form>
+                <a href="{% url 'register' %}">
+                    <button class="orange-button float-right-button" style="margin-left:0px;margin-right:20px">Zarejestruj</button>
+                </a>
+                <a href="{% url 'reset_password' %}" style="float:right; margin-top:10px">Zapomniałeś/aś hasła?</a>
+            </div>
+       </div>
+    </body>
+</html>

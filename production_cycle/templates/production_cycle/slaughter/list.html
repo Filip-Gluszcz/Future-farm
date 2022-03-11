@@ -1,0 +1,32 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% block content %}
+
+
+<div class="grid-item">
+  <table class="table table-borderless">
+    <thead>
+      <th>Data</th>
+      <th>Dzień cyklu</th>
+      <th>Upadki</th>
+      <th>Cykl</th>
+    </thead>
+    <tbody>
+      {% for slaughter in slaughters reversed %}
+      <tr>
+        <td>{{slaughter.date}}</td>
+        <td>{{slaughter.cycle}}</td>
+        <td>{{slaughter.quantity}}</td>
+        <td>
+          <a class="btn btn-sm btn-info" href="{% url 'day' day.id%}">Info</a>
+          <a class="btn btn-sm btn-warning" href="{% url 'updateSlaughter' slaughter.id%}">Edytuj</a>
+          <a class="btn btn-sm btn-info" href="{% url 'createDay' %}">Dodaj</a>
+          <a class="btn btn-sm btn-danger" href="{% url 'deleteDay' day.id%}">Usuń</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

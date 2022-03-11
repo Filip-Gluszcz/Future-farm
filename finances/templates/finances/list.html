@@ -1,0 +1,670 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% load custom_tags %}
+
+{% block main %}
+<div class="finances-grid">
+    <div id="total-balance" class="background-color">
+    {% if companyFinance.total_balance > 1000000 %}
+    {% divide companyFinance.total_balance 1000000 as totalBalance %}
+    {% specyficRounded totalBalance 3 as totalBalanceRounded %}
+        <h2 style="color:rgb(43, 107, 100)">{{totalBalanceRounded}}mln zł</h2>
+    {% else %}
+    {% if companyFinance.total_balance > 100000 %}
+    {% divide companyFinance.total_balance 1000 as totalBalance %}
+    {% specyficRounded totalBalance 3 as totalBalanceRounded %}
+        <h2 style="color:rgb(43, 107, 100)">{{totalBalanceRounded}}tys zł</h2>
+    {% else %}
+        <h2 style="color:rgb(43, 107, 100)">{{companyFinance.total_balance}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Saldo</h4>
+    </div>
+
+    <div id="total-revenue" class="background-color">
+    {% if companyFinance.total_revenues > 1000000 %}
+    {% divide companyFinance.total_revenues 1000000 as totalRevenues %}
+    {% specyficRounded totalRevenues 3 as totalRevenuesRounded %}
+        <h2 style="color:rgb(81, 154, 186)">{{totalRevenuesRounded}}mln zł</h2>
+    {% else %}
+    {% if companyFinance.total_revenues > 100000 %}
+    {% divide companyFinance.total_revenues 1000 as totalRevenues %}
+    {% specyficRounded totalRevenues 3 as totalRevenuesRounded %}
+        <h2 style="color:rgb(81, 154, 186)">{{totalRevenuesRounded}}tys zł</h2>
+    {% else %}
+        <h2 style="color:rgb(81, 154, 186)">{{companyFinance.total_revenues}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Przychody</h4>
+    </div>
+
+    <div id="total-expense" class="background-color">
+    {% if companyFinance.total_expenses > 1000000 %}
+    {% divide companyFinance.total_expenses 1000000 as totalExpenses %}
+    {% specyficRounded totalExpenses 3 as totalExpensesRounded %}
+        <h2 style="color:rgb(255, 99, 132)">{{totalExpensesRounded}}mln zł</h2>
+    {% else %}
+    {% if companyFinance.total_expenses > 100000 %}
+    {% divide companyFinance.total_expenses 1000 as totalExpenses %}
+    {% specyficRounded totalExpenses 3 as totalExpensesRounded %}
+        <h2 style="color:rgb(255, 99, 132)">{{totalExpensesRounded}}tys zł</h2>
+    {% else %}
+        <h2 style="color:rgb(255, 99, 132)">{{companyFinance.total_expenses}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Wydatki</h4>
+    </div>
+
+    <div id="total-contribution" class="background-color">
+    {% if companyFinance.total_contributions > 1000000 %}
+    {% divide companyFinance.total_contributions 1000000 as totalContributions %}
+    {% specyficRounded totalContributions 3 as totalContributionsRounded %}
+        <h2>{{totalContributionsRounded}}mln zł</h2>
+    {% else %}
+    {% if companyFinance.total_contributions > 100000 %}
+    {% divide companyFinance.total_contributions 1000 as totalContributions %}
+    {% specyficRounded totalContributions 3 as totalContributionsRounded %}
+        <h2>{{totalContributionsRounded}}tys zł</h2>
+    {% else %}
+        <h2>{{companyFinance.total_contributions}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Wpłaty</h4>
+    </div>
+    <div id="total-withdrawal" class="background-color">
+    {% if companyFinance.total_withdrawal > 1000000 %}
+    {% divide companyFinance.total_withdrawal 1000000 as totalContributions %}
+    {% specyficRounded totalContributions 3 as totalContributionsRounded %}
+        <h2>{{totalContributionsRounded}}mln zł</h2>
+    {% else %}
+    {% if companyFinance.total_withdrawal > 100000 %}
+    {% divide companyFinance.total_withdrawal 1000 as totalWithdrawal %}
+    {% specyficRounded totalWithdrawal 3 as totalWithdrawalRounded %}
+        <h2>{{totalWithdrawalRounded}}tys zł</h2>
+    {% else %}
+        <h2>{{companyFinance.total_withdrawal}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Wypłaty</h4>
+    </div>
+    <div id="total-to-account-count" class="background-color">
+        <h2>{{toAccountList.count}}</h2>
+        <h4>Nierozliczone</h4>
+    </div>
+    <div id="closed-cycles-chart" style="padding-top:0px">
+        <canvas id="closed-cycles-chart-canvas" style="height:100%; width:100%;"></canvas>
+    </div>
+    <div id="to-account-list">
+    <h2 style="margin-bottom:20px; margin-left:20px; text-align: left">Lista operacji do rozliczenia</h2>
+    {% for toAccount in toAccountList %}
+        <div class="to-account-li">
+            <div id="to-account-li-farm">
+                {{toAccount.farm.name}}
+            </div>
+            <div id="to-account-li-title">
+                {{toAccount.title}}
+            </div>
+            <div id="to-account-li-buttons">
+                <button id="settle-to-account-{{toAccount.id}}" class="orange-button">Rozlicz</button>
+            </div>
+        </div>
+        <div id="settle-to-account-{{toAccount.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:10px; text-align:left">
+            <form method='post' action="{% url 'createTransaction' toAccount.id %}" style="margin-top:20px;">
+                {% csrf_token %}
+                <p>
+                    <label id="create-cycle-label" for="id_title">Tytuł:</label> 
+                    <input id="create-cycle-input" type="text" name="title" required value="{{toAccount.title}}" id="id_title" style="width:300px;">
+                </p>
+                <p>
+                    <label id="create-cycle-label" for="id_recipient_sender">Kontrahent:</label> 
+                    <input id="create-cycle-input" type="text" name="recipient_sender" required id="id_recipient_sender" style="width:300px;">
+                </p>
+                <p>
+                    <label id="create-cycle-label" for="id_worth">Wartość:</label> 
+                    <input id="create-cycle-input" type="number" name="worth" required value="{{toAccount.worth}}" id="id_worth">
+                </p>
+                <p>
+                <p>
+                    <label id="create-cycle-label" for="id_category">Kategoria:</label>
+                    <select id="create-cycle-input" name="category" required id="id_category" style="width:150px;">
+                        <option value=""></option>
+                        <option value="Pasza">Pasza</option>
+                        <option value="Farmaceutyk">Farmaceutyk</option>
+                        <option value="Stado">Stado</option>
+                        <option value="Ubój">Ubój</option>
+                        <option value="Inne">Inne</option>
+                    </select>
+                </p>
+                <p>
+                    <label id="create-cycle-label" for="id_type">Typ:</label>
+                    <select id="create-cycle-input" name="type" required id="id_type" style="width:150px;">
+                        <option value=""></option>
+                        <option value="Przychód">Przychód</option>
+                        <option value="Wydatek">Wydatek</option>
+                    </select>
+                </p>
+                <p>
+                    <input id="checkbox" type="checkbox" name="internal" id="id_internal" style="display:none;">
+                </p>
+                </p>
+                <p>
+                    <input type="number" name="farm" required value="{{toAccount.farm.id}}" id="id_farm" style="display:none;">
+                </p>
+                <p>
+                    <input type="number" name="cycle" required value="{{toAccount.cycle.id}}" id="id_cycle" style="display:none;">
+                </p>
+                <p>
+                    <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                </p>
+            </form>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="farms-container">
+{% for farm in farmFinances %}
+<h1 style="margin-left:20px">Finanse {{farm.farm.name}}</h1>
+<div class="farm-finance-grid">
+    <div id="total-balance" class="background-color">
+    {% if farm.total_balance > 1000000 %}
+    {% divide farm.total_balance 1000000 as totalBalance %}
+    {% specyficRounded totalBalance 3 as totalBalanceRounded %}
+        <h2 style="color:rgb(43, 107, 100)">{{totalBalanceRounded}}mln zł</h2>
+    {% else %}
+    {% if farm.total_balance > 100000 %}
+    {% divide farm.total_balance 1000 as totalBalance %}
+    {% specyficRounded totalBalance 3 as totalBalanceRounded %}
+        <h2 style="color:rgb(43, 107, 100)">{{totalBalanceRounded}}tys zł</h2>
+    {% else %}
+        <h2 style="color:rgb(43, 107, 100)">{{farm.total_balance}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Saldo</h4>
+    </div>
+
+    <div id="total-revenue" class="background-color">
+    {% if farm.total_revenues > 1000000 %}
+    {% divide farm.total_revenues 1000000 as totalRevenues %}
+    {% specyficRounded totalRevenues 3 as totalRevenuesRounded %}
+        <h2 style="color:rgb(81, 154, 186)">{{totalRevenuesRounded}}mln zł</h2>
+    {% else %}
+    {% if farm.total_revenues > 100000 %}
+    {% divide farm.total_revenues 1000 as totalRevenues %}
+    {% specyficRounded totalRevenues 3 as totalRevenuesRounded %}
+        <h2 style="color:rgb(81, 154, 186)">{{totalRevenuesRounded}}tys zł</h2>
+    {% else %}
+        <h2 style="color:rgb(81, 154, 186)">{{farm.total_revenues}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Przychody</h4>
+    </div>
+
+    <div id="total-expense" class="background-color">
+    {% if farm.total_expenses > 1000000 %}
+    {% divide farm.total_expenses 1000000 as totalExpenses %}
+    {% specyficRounded totalExpenses 3 as totalExpensesRounded %}
+        <h2 style="color:rgb(255, 99, 132)">{{totalExpensesRounded}}mln zł</h2>
+    {% else %}
+    {% if farm.total_expenses > 100000 %}
+    {% divide farm.total_expenses 1000 as totalExpenses %}
+    {% specyficRounded totalExpenses 3 as totalExpensesRounded %}
+        <h2 style="color:rgb(255, 99, 132)">{{totalExpensesRounded}}tys zł</h2>
+    {% else %}
+        <h2 style="color:rgb(255, 99, 132)">{{farm.total_expenses}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Wydatki</h4>
+    </div>
+
+    <div id="total-contribution" class="background-color">
+    {% if farm.total_contributions > 1000000 %}
+    {% divide farm.total_contributions 1000000 as totalContributions %}
+    {% specyficRounded totalContributions 3 as totalContributionsRounded %}
+        <h2>{{totalContributionsRounded}}mln zł</h2>
+    {% else %}
+    {% if farm.total_contributions > 100000 %}
+    {% divide farm.total_contributions 1000 as totalContributions %}
+    {% specyficRounded totalContributions 3 as totalContributionsRounded %}
+        <h2>{{totalContributionsRounded}}tys zł</h2>
+    {% else %}
+        <h2>{{farm.total_contributions}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Wpłaty</h4>
+    </div>
+    <div id="total-withdrawal" class="background-color">
+    {% if farm.total_withdrawal > 1000000 %}
+    {% divide farm.total_withdrawal 1000000 as totalContributions %}
+    {% specyficRounded totalContributions 3 as totalContributionsRounded %}
+        <h2>{{totalContributionsRounded}}mln zł</h2>
+    {% else %}
+    {% if farm.total_withdrawal > 100000 %}
+    {% divide farm.total_withdrawal 1000 as totalWithdrawal %}
+    {% specyficRounded totalWithdrawal 3 as totalWithdrawalRounded %}
+        <h2>{{totalWithdrawalRounded}}tys zł</h2>
+    {% else %}
+        <h2>{{farm.total_withdrawal}}zł</h2>
+    {% endif %}
+    {% endif %}
+        <h4>Wypłaty</h4>
+    </div>
+    <div class="farm-finance-chart" style="padding-top:0px">
+        <canvas id="farm-finance-{{ farm.id }}-chart-canvas" style="height:100%; width:100%;"></canvas>
+        <script>
+            new Chart($('#farm-finance-{{ farm.id }}-chart-canvas'),
+            {
+                type: 'bar',
+                data: 
+                {
+                    labels: 
+                    [
+                            ''
+                    ],
+                    datasets: 
+                    [
+                        {
+                            label: 'Przychody cykl id:{{farm.farm.cycle_set.last.id}}',
+                            data: 
+                            [
+                                {% if farm.farm.cycle_set.last.status == 'ACTIVE' %}
+                                    {% last_cycle_total_revenues farm.farm.cycle_set.last %}
+                                {% else %}
+                                    {{farm.farm.cycle_set.last.cyclecompleted.total_revenues}}
+                                {% endif %}
+                            ],
+                            backgroundColor: 'rgba(81, 154, 186, 0.2)',
+                            borderColor: 'rgb(81, 154, 186)',
+                            borderWidth: 3,
+                        },
+                        {
+                            label: 'Wydatki cykl id:{{farm.farm.cycle_set.last.id}}',
+                            data: 
+                            [
+                                {% if farm.farm.cycle_set.last.status == 'ACTIVE' %}
+                                    {% last_cycle_total_expenses farm.farm.cycle_set.last %}
+                                {% else %}
+                                    {{farm.farm.cycle_set.last.cyclecompleted.total_expenses}}
+                                {% endif %}
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            borderWidth: 3,
+                        },
+                    ]
+                },
+                options:
+                {
+                    indexAxis: 'y',
+                    plugins:
+                    {
+                        title:
+                        {
+                            display: true,
+                            text: 'Stan finansowy aktualnego cyklu',  
+                            font:
+                            {
+                                size: 20
+                            },
+                            color: '#999999',
+                        },
+                        subtitle: 
+                        {
+                            display: true,
+                            text: 'Kliknięcie na wykres przekieruję Cię do cyklu',                                        
+                        }
+                    },
+                    onClick: () => {
+                            id={{farm.farm.cycle_set.last.id}}
+                            location.href=`/cycle-detail/${id}`
+                        }
+                    
+                },
+            })
+        </script>
+    </div>
+    <div class="transactions">
+        <div id="transactions-buttons">
+            <h2 style="float:left; margin-right:40px; margin-left:20px">Rozliczenia</h2>
+            {% if farm.farm.cycle_set.all.count > 0 %}
+            <button id="create-transaction-{{farm.id}}" class="orange-button" style="width:160px">Dodaj rozliczenie</button>
+            <button id="create-contribution-{{farm.id}}" class="orange-button" style="width:160px">Dodaj wpłate</button>
+            <button id="create-withdrawal-{{farm.id}}" class="orange-button" style="width:160px">Dodaj wypłatę</button>
+            {% else %}
+            <button id="disabled" class="orange-button" style="width:160px; background:#666666">Dodaj rozliczenie</button>
+            <button id="disabled" class="orange-button" style="width:160px; background:#666666">Dodaj wpłate</button>
+            <button id="disabled" class="orange-button" style="width:160px; background:#666666">Dodaj wypłatę</button>
+            {% endif %}
+        </div>
+        <div id="transactions-list">
+            <div id="create-transaction-{{farm.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:10px; text-align:left">
+                <form method='post' action="{% url 'createTransaction' %}" style="margin-top:20px;">
+                    {% csrf_token %}
+                    <p>
+                        <label id="create-cycle-label" for="id_title">Tytuł:</label> 
+                        <input id="create-cycle-input" type="text" name="title" required id="id_title" style="width:300px;">
+                    </p>
+                    <p>
+                        <label id="create-cycle-label" for="id_recipient_sender">Kontrahent:</label> 
+                        <input id="create-cycle-input" type="text" name="recipient_sender" required id="id_recipient_sender" style="width:300px;">
+                    </p>
+                    <p>
+                        <label id="create-cycle-label" for="id_worth">Wartość:</label> 
+                        <input id="create-cycle-input" type="number" name="worth" required id="id_worth">
+                    </p>
+                    <p>
+                    <p>
+                        <label id="create-cycle-label" for="id_category">Kategoria:</label>
+                        <select id="create-cycle-input" name="category" required id="id_category" style="width:150px;">
+                            <option selected value=""></option>
+                            <option value="Pasza">Pasza</option>
+                            <option value="Farmaceutyk">Farmaceutyk</option>
+                            <option value="Stado">Stado</option>
+                            <option value="Ubój">Ubój</option>
+                            <option value="Inne">Inne</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label id="create-cycle-label" for="id_type">Typ:</label>
+                        <select id="create-cycle-input" name="type" required id="id_type" style="width:150px;">
+                            <option selected value=""></option>
+                            <option value="Przychód">Przychód</option>
+                            <option value="Wydatek">Wydatek</option>
+                        </select>
+                    </p>
+                    <p>
+                        <input id="checkbox" type="checkbox" name="internal" id="id_internal" style="display:none;">
+                    </p>
+                    </p>
+                    <p>
+                        <input type="number" name="farm" required value="{{farm.farm.id}}" id="id_farm" style="display:none;">
+                    </p>
+                    <p>
+                        <input type="number" name="cycle" required value="{{farm.farm.cycle_set.last.id}}" id="id_cycle" style="display:none;">
+                    </p>
+                    <p>
+                        <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                    </p>
+                </form>
+            </div>
+            <div id="create-withdrawal-{{farm.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:40px; text-align:left">
+                <form method='post' action="{% url 'createTransaction' %}" style="margin-top:20px;">
+                    {% csrf_token %}
+                    <p>
+                        <label for="id_title">Tytuł:</label> 
+                        <input type="text" name="title" required id="id_title" style="width:300px;">
+
+                        <label for="id_worth">Wartość:</label> 
+                        <input type="number" name="worth" required id="id_worth">
+
+                        <input type="text" name="recipient_sender" required value="Wewnętrzne" id="id_recipient_sender" style="display:none;">
+                        <input type="text" name="category" required value="Inne" id="create-cycle-input" style="display:none;">
+                        <input type="text" name="type" required value="Wydatek" id="id_type" style="display:none;">
+                        <input checked id="checkbox" type="checkbox" name="internal" id="id_internal" style="display:none;">
+                        <input type="number" name="farm" required value="{{farm.farm.id}}" id="id_farm" style="display:none;">
+                        <input type="number" name="cycle" required value="{{farm.farm.cycle_set.last.id}}" id="id_cycle" style="display:none;">
+
+                        <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                    </p>
+                </form>
+            </div>
+            <div id="create-contribution-{{farm.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:40px; text-align:left">
+                <form method='post' action="{% url 'createTransaction' %}" style="margin-top:20px;">
+                    {% csrf_token %}
+                    <p>
+                        <label for="id_title">Tytuł:</label> 
+                        <input type="text" name="title" required id="id_title" style="width:300px;">
+
+                        <label for="id_worth">Wartość:</label> 
+                        <input type="number" name="worth" required id="id_worth">
+
+                        <input type="text" name="recipient_sender" required value="Wewnętrzne" id="id_recipient_sender" style="display:none;">
+                        <input type="text" name="category" required value="Inne" id="create-cycle-input" style="display:none;">
+                        <input type="text" name="type" required value="Przychód" id="id_type" style="display:none;">
+                        <input checked id="checkbox" type="checkbox" name="internal" id="id_internal" style="display:none;">
+                        <input type="number" name="farm" required value="{{farm.farm.id}}" id="id_farm" style="display:none;">
+                        <input type="number" name="cycle" required value="{{farm.farm.cycle_set.last.id}}" id="id_cycle" style="display:none;">
+
+                        <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                    </p>
+                </form>
+            </div>
+            {% for cycle in farm.farm.cycle_set.all reversed %}
+                {% for transaction in cycle.transaction_set.all reversed %}
+                    <div class="transaction-li">
+                    {% if transaction.internal %}
+                        {% if transaction.type == 'Przychód' %}
+                            <div id="transaction-li-type" style="color:rgb(43, 107, 100)">
+                                Wpłata
+                            </div>
+                        {% else %}
+                            <div id="transaction-li-type" style="color:rgb(253, 113, 87)">
+                                Wypłata
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        {% if transaction.type == 'Przychód' %}
+                            <div id="transaction-li-type" style="color:rgb(81, 154, 186)">
+                                Przychód
+                            </div>
+                        {% else %}
+                            <div id="transaction-li-type" style="color:rgb(255, 99, 132)">
+                                Wydatek
+                            </div>
+                        {% endif %} 
+                    {% endif %}
+                        <div id="transaction-li-title">
+                            {{transaction.title}}
+                        </div>
+                        <div id="transaction-li-worth">
+                            {{transaction.worth}}zł
+                        </div>
+                        <div id="transaction-li-category">
+                            {{transaction.category}}
+                        </div>
+                        <div id="transaction-li-recipient-sender">
+                            {{transaction.recipient_sender}}
+                        </div>
+                        <div id="transaction-li-cycle">
+                            {{transaction.cycle}}
+                        </div>
+                        <div id="transaction-li-buttons">
+                            <button id="update-transaction-{{transaction.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
+                            <button id="delete-transaction-{{transaction.id}}" class="orange-button">Usuń</button>
+                        </div>
+                    </div>
+                    <div id="delete-transaction-{{transaction.id}}-form" style="display:none; padding-top:10px; padding-bottom:30px;">
+                        <form method="post" action="{% url 'deleteTransaction' transaction.id %}" style="margin-left:20px;">
+                            {% csrf_token %}
+                            <a>Czy napewno chcesz usunąć rozliczenie ?</a>
+                            <input class="orange-button" type="submit" value="Tak">
+                        </form>
+                    </div>
+                    <div id="update-transaction-{{transaction.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:10px; text-align:left">
+                        <form method='post' action="{% url 'updateTransaction' transaction.id %}" style="margin-top:20px;">
+                            {% csrf_token %}
+                            <p>
+                                <label id="create-cycle-label" for="id_title">Tytuł:</label> 
+                                <input id="create-cycle-input" type="text" name="title" required value="{{transaction.title}}" id="id_title" style="width:300px;">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_recipient_sender">Kontrahent:</label> 
+                                <input id="create-cycle-input" type="text" name="recipient_sender" required value="{{transaction.recipient_sender}}" id="id_recipient_sender" style="width:300px;">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_worth">Wartość:</label> 
+                                <input id="create-cycle-input" type="number" name="worth" required value="{{transaction.worth}}" id="id_worth">
+                            </p>
+                            <p>
+                            <p>
+                                <label id="create-cycle-label" for="id_category">Kategoria:</label>
+                                <select id="create-cycle-input" name="category" required id="id_category" style="width:150px;">
+                                    <option selected value="{{transaction.category}}">{{transaction.category}}</option>
+                                    <option value="Pasza">Pasza</option>
+                                    <option value="Farmaceutyk">Farmaceutyk</option>
+                                    <option value="Stado">Stado</option>
+                                    <option value="Ubój">Ubój</option>
+                                    <option value="Inne">Inne</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_type">Typ:</label>
+                                <select id="create-cycle-input" name="type" required id="id_type" style="width:150px;">
+                                    <option selected value="{{transaction.type}}">{{transaction.type}}</option>
+                                    <option value="Przychód">Przychód</option>
+                                    <option value="Wydatek">Wydatek</option>
+                                </select>
+                            </p>
+                            <p>
+                                <input id="checkbox" type="checkbox" name="internal" id="id_internal" style="display:none;">
+                            </p>
+                            </p>
+                            <p>
+                                <input type="number" name="farm" required value="{{transaction.farm.id}}" id="id_farm" style="display:none;">
+                            </p>
+                            <p>
+                                <input type="number" name="cycle" required value="{{transaction.cycle.id}}" id="id_cycle" style="display:none;">
+                            </p>
+                            <p>
+                                <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                            </p>
+                        </form>
+                    </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+
+<script>
+tippy('#disabled', {
+        content: "Najpierw dodaj cykl",
+    });
+let parent = document.querySelector('#to-account-list');
+parent.addEventListener("click", toggleForm, false);
+let parent2 = document.querySelector('.farms-container');
+parent2.addEventListener("click", toggleForm, false);
+
+function toggleForm(e) {
+    if (e.target != e.currentTarget){
+        let clickedButton = e.target.id;
+        $(`#${clickedButton}-form`).slideToggle(50);
+    }
+};
+
+function getColor(){ 
+  return "hsl(" + 360 * Math.random() + ',' +
+             (80 + 20 * Math.random()) + '%,' + 
+             (25 + 25 * Math.random()) + '%)'
+}
+
+const closedCyclesCanvas = document.getElementById('closed-cycles-chart-canvas');
+
+var config = {
+    type: 'bar',
+    data: 
+    {
+        labels: 
+        [
+            {% for cycle in closedCycles %}
+                'Cykl Id: {{cycle.cycle.id}}'
+            {% endfor %}
+        ],
+        datasets: 
+        [
+            {% for cycle in closedCycles  %}
+            {
+                id: {{cycle.cycle.id}},
+                label: 'Przychody cyklu {{cycle.cycle.id}}',
+                data: 
+                [
+                    {{cycle.total_revenues}}
+                ],
+                backgroundColor: 'rgba(81, 154, 186, 0.2)',
+                borderColor: 'rgb(81, 154, 186)',
+                borderWidth: 3,
+            },
+            {
+                id: {{cycle.cycle.id}},
+                label: 'Wydatki cyklu {{cycle.cycle.id}}',
+                data: 
+                [
+                    {{cycle.total_expenses}}
+                ],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 3,
+            },
+            {
+                id: {{cycle.cycle.id}},
+                label: 'Dochód cyklu id {{cycle.cycle.id}}',
+                data: 
+                [
+                    {{cycle.total_balance}}
+                ],
+                backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                borderColor: 'rgb(43, 107, 100)',
+                borderWidth: 3,
+            },
+            {% endfor %}
+        ]
+    },
+    options: 
+    {
+        plugins:
+        {
+            annotation:
+            {
+                annotations: [],
+            },
+            title:
+            {
+                display: true,
+                text: 'Wyniki finansowe zakończonych cykli',  
+                font:
+                {
+                    size: 20
+                },
+                color: '#999999',
+            },
+            subtitle: 
+            {
+                display: true,
+                text: 'Kliknięcie na słupek przekieruję Cię do odpowiedniego cyklu',                                        
+            }
+        },
+        scales: 
+        {
+            x:
+            {
+                min: 0,
+                max: 3,
+            },
+            y: 
+            {
+                beginAtZero: true
+            }
+        }
+    }
+};
+
+const closedCyclesChart = new Chart(closedCyclesCanvas, config);
+
+function clickHandler(click){
+    const points = closedCyclesChart.getElementsAtEventForMode(click, 'nearest', {intersect: true}, true);
+    console.log('clicked');
+    console.log(points[0]);
+    if(points[0]){
+        location.href=`/cycle-detail/${closedCyclesChart.data.datasets[points[0].datasetIndex].id}`
+    }
+};
+
+closedCyclesCanvas.onclick = clickHandler;
+
+</script>
+{% endblock %}

@@ -1,0 +1,420 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block main %}
+<div class="medications-grid">
+    <div id="create-medication">
+        <h3>Dodaj farmaceutyk</h3>
+        <form method='post' action="{% url 'createMedication' farm.id %}" style="margin-top:20px; margin-bottom:20px;">
+            {% csrf_token %}
+            <p>
+                <label id="create-cycle-label" for="id_name">Nazwa:</label> 
+                <input id="create-cycle-input" type="text" name="name" required id="id_hyid_namebryd">
+            </p>
+            <p>
+                <label id="create-cycle-label" for="id_quantity">Ilość w ml lub g:</label> 
+                <input id="create-cycle-input" type="number" step="any" name="quantity" required id="id_quantity">
+            </p>
+            <p>
+                <label id="create-cycle-label" for="id_price">cena:</label> 
+                <input id="create-cycle-input" type="number" name="price" required id="id_price">
+            </p>
+            <p>
+                <label id="create-cycle-label" for="id_name">Typ:</label> 
+                <select id="create-cycle-input" name="type" required id="id_type">
+                    <option value="">-------------</option>
+                    <option value="Lek">Lek</option>
+                    <option value="Suplement">Suplement</option>
+                    <option value="Szczepienie">Szczepienie</option>
+                </select>
+            </p>
+            <p>
+                <label id="create-cycle-label" for="id_aggregate_state">Stan skupienia:</label> 
+                <select id="create-cycle-input" name="aggregate_state" required id="id_aggregate_state">
+                    <option value="">---------</option>
+                    <option value="Stały">Stały</option>
+                    <option value="Płynny">Płynny</option>
+                </select>
+            </p>
+            <p>
+                <input type="number" value="{{farm.id}}" name="farm" required id="id_farm" style="display:none;">
+            </p>
+            <p>
+                <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+            </p>
+        </form>
+    </div>
+    <div id="medications-list">
+    <h3>Ostatnio dodane</h3>
+    {% for medication in medications %}
+        <div class="medication-li">
+            <div id="medication-li-name">
+                {{medication.name}}
+            </div>
+            <div id="medication-li-quantity">
+                {% if medication.aggregate_state == 'Płynny' %}
+                    {{medication.quantity}}ml
+                {% else %}
+                    {{medication.quantity}}g
+                {% endif %}
+            </div>
+            <div id="medication-li-type">
+                {{medication.type}}
+            </div>
+            <div id="medication-li-aggregate_state">
+                {{medication.aggregate_state}}
+            </div>
+            <div id="medication-li-price">
+                {{medication.price}}zł
+            </div>
+            <div id="medication-li-date">
+                {{medication.date|date:"M d, Y"}}
+            </div>
+            <div id="medication-li-buttons">
+                <button id="update-medication-{{medication.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
+                <button id="delete-medication-{{medication.id}}" class="orange-button">Usuń</button>
+            </div>
+        </div>
+        <div id="update-medication-{{medication.id}}-form" style="display:none;">
+            <form method='post' action="{% url 'updateMedication' medication.id %}" style="margin:20px;">
+                {% csrf_token %}
+                <p>
+                    <label for="id_name">Nazwa:</label> 
+                    <input type="text" name="name" value="{{medication.name}}" required id="id_hyid_namebryd">
+                
+                    <label for="id_quantity">Ilość w ml lub g:</label> 
+                    <input type="number" step="any" name="quantity" value="{{medication.quantity}}" required id="id_quantity">
+        
+                    <label for="id_price">cena:</label> 
+                    <input type="number" name="price" value="{{medication.price}}" required id="id_price">
+                </p>
+                <p>
+                    <label for="id_name">Typ:</label> 
+                    <select name="type" required id="id_type">
+                        <option value="{{medication.type}}" selected>{{medication.type}}</option>
+                        <option value="Lek">Lek</option>
+                        <option value="Suplement">Suplement</option>
+                        <option value="Szczepienie">Szczepienie</option>
+                    </select>
+                
+                    <label for="id_aggregate_state">Stan skupienia:</label> 
+                    <select name="aggregate_state" required id="id_aggregate_state">
+                        <option value="{{medication.aggregate_state}}" selected>{{medication.aggregate_state}}</option>
+                        <option value="Stały">Stały</option>
+                        <option value="Płynny">Płynny</option>
+                    </select>
+                
+                    <input type="number" value="{{farm.id}}" name="farm" required id="id_farm" style="display:none;">
+                
+                    <input class="orange-button" type="submit" value="Zapisz"></input>
+                </p>
+            </form>
+        </div>
+        <div id="delete-medication-{{medication.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+            <form method="post" action="{% url "deleteMedication" medication.id %}">
+            {% csrf_token %}
+            <a>Czy napewno chcesz usunąć farmaceutyk ?</a>
+            <input class="orange-button" type="submit" value="Tak">
+            </form>
+        </div>
+    {% endfor %}
+    
+    </div>
+    {% comment %} <div id="medication-supply-list">
+    
+    </div> {% endcomment %}
+</div>
+
+{% endblock %}
+{% block content %}
+<div class="lists-grid">
+    <div id="drugs-list">
+        <h3>Leki</h3>
+        {% for medication in medications %}
+            {% if medication.type == 'Lek' %}
+                 <div class="medication-type-li">
+                    <div id="medication-type-li-name">
+                        {{medication.name}}
+                    </div>
+                    <div id="medication-type-li-date">
+                        {{medication.date|date:"M d, Y"}}
+                    </div>
+                    <div id="medication-type-li-buttons">
+                        <button id="expand-medication-{{medication.id}}" class="orange-button">Więcej</button>
+                    </div>
+                </div>
+                <div id="expand-medication-{{medication.id}}-form" style="display:none">
+                    <div class="medication-info" style="margin-bottom:20px;">
+                         <div id="info-quantity">
+                            {% if medication.aggregate_state == 'Płynny' %}
+                                {{medication.quantity}}ml
+                            {% else %}
+                                {{medication.quantity}}g
+                            {% endif %}
+                        </div>
+                        <div id="info-type">
+                            {{medication.type}}
+                        </div>
+                        <div id="info-aggregate_state">
+                            {{medication.aggregate_state}}
+                        </div>
+                        <div id="info-price">
+                            {{medication.price}}
+                        </div>
+                        <div id="info-buttons">
+                            <button id="info-update-medication-{{medication.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
+                            <button id="info-delete-medication-{{medication.id}}" class="orange-button">Usuń</button>
+                        </div>
+                    </div>
+                    <div id="info-delete-medication-{{medication.id}}-form" style="display:none">
+                        <form method='post' action="{% url 'updateMedication' medication.id %}" style="margin-top:20px; margin-bottom:20px;">
+                            {% csrf_token %}
+                            <p>
+                                <label id="create-cycle-label" for="id_name">Nazwa:</label> 
+                                <input id="create-cycle-input" type="text" value="{{medication.name}}" name="name" required id="id_hyid_namebryd">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_quantity">Ilość w ml lub g:</label> 
+                                <input id="create-cycle-input" type="number" value="{{medication.quantity}}" step="any" name="quantity" required id="id_quantity">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_price">cena:</label> 
+                                <input id="create-cycle-input" type="number" value="{{medication.price}}" name="price" required id="id_price">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_name">Typ:</label> 
+                                <select id="create-cycle-input" name="type" required id="id_type">
+                                    <option value="{{medication.type}}" selected>{{medication.type}}</option>
+                                    <option value="Lek">Lek</option>
+                                    <option value="Suplement">Suplement</option>
+                                    <option value="Szczepienie">Szczepienie</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_aggregate_state">Stan skupienia:</label> 
+                                <select id="create-cycle-input" name="aggregate_state" required id="id_aggregate_state">
+                                    <option value="{{medication.aggregate_state}}" selected>{{medication.aggregate_state}}</option>
+                                    <option value="Stały">Stały</option>
+                                    <option value="Płynny">Płynny</option>
+                                </select>
+                            </p>
+                            <p>
+                                <input type="number" value="{{farm.id}}" name="farm" required id="id_farm" style="display:none;">
+                            </p>
+                            <p>
+                                <input class="orange-button" type="submit" value="Zapisz" style="margin-left:200px"></input>
+                            </p>
+                        </form>
+                    </div>
+                    <div id="delete-medication-{{medication.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+                        <form method="post" action="{% url "deleteMedication" medication.id %}">
+                        {% csrf_token %}
+                        <a>Czy napewno chcesz usunąć farmaceutyk ?</a>
+                        <input class="orange-button" type="submit" value="Tak">
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+    
+    </div>
+    <div id="supplements-list">
+        <h3>Suplementy</h3>
+        {% for medication in medications %}
+            {% if medication.type == 'Suplement' %}
+                <div class="medication-type-li">
+                    <div id="medication-type-li-name">
+                        {{medication.name}}
+                    </div>
+                    <div id="medication-type-li-date">
+                        {{medication.date|date:"M d, Y"}}
+                    </div>
+                    <div id="medication-type-li-buttons">
+                        <button id="expand-medication-{{medication.id}}" class="orange-button">Więcej</button>
+                    </div>
+                </div>
+                <div id="expand-medication-{{medication.id}}-form" style="display:none">
+                    <div class="medication-info" style="margin-bottom:20px;">
+                         <div id="info-quantity">
+                            {% if medication.aggregate_state == 'Płynny' %}
+                                {{medication.quantity}}ml
+                            {% else %}
+                                {{medication.quantity}}g
+                            {% endif %}
+                        </div>
+                        <div id="info-type">
+                            {{medication.type}}
+                        </div>
+                        <div id="info-aggregate_state">
+                            {{medication.aggregate_state}}
+                        </div>
+                        <div id="info-price">
+                            {{medication.price}}
+                        </div>
+                        <div id="info-buttons">
+                            <button id="info-update-medication-{{medication.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
+                            <button id="info-delete-medication-{{medication.id}}" class="orange-button">Usuń</button>
+                        </div>
+                    </div>
+                    <div id="info-update-medication-{{medication.id}}-form" style="display:none;">
+                        <form method='post' action="{% url 'updateMedication' medication.id %}" style="margin-top:20px; margin-bottom:20px;">
+                            {% csrf_token %}
+                            <p>
+                                <label id="create-cycle-label" for="id_name">Nazwa:</label> 
+                                <input id="create-cycle-input" type="text" value="{{medication.name}}" name="name" required id="id_hyid_namebryd">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_quantity">Ilość w ml lub g:</label> 
+                                <input id="create-cycle-input" type="number" value="{{medication.quantity}}" step="any" name="quantity" required id="id_quantity">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_price">cena:</label> 
+                                <input id="create-cycle-input" type="number" value="{{medication.price}}" name="price" required id="id_price">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_name">Typ:</label> 
+                                <select id="create-cycle-input" name="type" required id="id_type">
+                                    <option value="{{medication.type}}" selected>{{medication.type}}</option>
+                                    <option value="Lek">Lek</option>
+                                    <option value="Suplement">Suplement</option>
+                                    <option value="Szczepienie">Szczepienie</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_aggregate_state">Stan skupienia:</label> 
+                                <select id="create-cycle-input" name="aggregate_state" required id="id_aggregate_state">
+                                    <option value="{{medication.aggregate_state}}" selected>{{medication.aggregate_state}}</option>
+                                    <option value="Stały">Stały</option>
+                                    <option value="Płynny">Płynny</option>
+                                </select>
+                            </p>
+                            <p>
+                                <input type="number" value="{{farm.id}}" name="farm" required id="id_farm" style="display:none;">
+                            </p>
+                            <p>
+                                <input class="orange-button" type="submit" value="Zapisz" style="margin-left:200px"></input>
+                            </p>
+                        </form>
+                    </div>
+                    <div id="info-delete-medication-{{medication.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+                        <form method="post" action="{% url "deleteMedication" medication.id %}">
+                        {% csrf_token %}
+                        <a>Czy napewno chcesz usunąć farmaceutyk ?</a>
+                        <input class="orange-button" type="submit" value="Tak">
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div id="vaccinations-list">
+        <h3>Szczepienia</h3>
+        {% for medication in medications %}
+            {% if medication.type == 'Szczepienie' %}
+                <div class="medication-type-li">
+                    <div id="medication-type-li-name">
+                        {{medication.name}}
+                    </div>
+                    <div id="medication-type-li-date">
+                        {{medication.date|date:"M d, Y"}}
+                    </div>
+                    <div id="medication-type-li-buttons">
+                        <button id="expand-medication-{{medication.id}}" class="orange-button">Więcej</button>
+                    </div>
+                </div>
+                <div id="expand-medication-{{medication.id}}-form" style="display:none">
+                    <div class="medication-info" style="margin-bottom:20px;">
+                         <div id="info-quantity">
+                            {% if medication.aggregate_state == 'Płynny' %}
+                                {{medication.quantity}}ml
+                            {% else %}
+                                {{medication.quantity}}g
+                            {% endif %}
+                        </div>
+                        <div id="info-type">
+                            {{medication.type}}
+                        </div>
+                        <div id="info-aggregate_state">
+                            {{medication.aggregate_state}}
+                        </div>
+                        <div id="info-price">
+                            {{medication.price}}
+                        </div>
+                        <div id="info-buttons">
+                            <button id="info-update-medication-{{medication.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
+                            <button id="info-delete-medication-{{medication.id}}" class="orange-button">Usuń</button>
+                        </div>
+                    </div>
+                    <div id="info-update-medication-{{medication.id}}-form" style="display:none">
+                        <form method='post' action="{% url 'updateMedication' medication.id %}" style="margin-top:20px; margin-bottom:20px;">
+                            {% csrf_token %}
+                            <p>
+                                <label id="create-cycle-label" for="id_name">Nazwa:</label> 
+                                <input id="create-cycle-input" type="text" value="{{medication.name}}" name="name" required id="id_hyid_namebryd">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_quantity">Ilość w ml lub g:</label> 
+                                <input id="create-cycle-input" type="number" value="{{medication.quantity}}" step="any" name="quantity" required id="id_quantity">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_price">cena:</label> 
+                                <input id="create-cycle-input" type="number" value="{{medication.price}}" name="price" required id="id_price">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_name">Typ:</label> 
+                                <select id="create-cycle-input" name="type" required id="id_type">
+                                    <option value="{{medication.type}}" selected>{{medication.type}}</option>
+                                    <option value="Lek">Lek</option>
+                                    <option value="Suplement">Suplement</option>
+                                    <option value="Szczepienie">Szczepienie</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_aggregate_state">Stan skupienia:</label> 
+                                <select id="create-cycle-input" name="aggregate_state" required id="id_aggregate_state">
+                                    <option value="{{medication.aggregate_state}}" selected>{{medication.aggregate_state}}</option>
+                                    <option value="Stały">Stały</option>
+                                    <option value="Płynny">Płynny</option>
+                                </select>
+                            </p>
+                            <p>
+                                <input type="number" value="{{farm.id}}" name="farm" required id="id_farm" style="display:none;">
+                            </p>
+                            <p>
+                                <input class="orange-button" type="submit" value="Zapisz" style="margin-left:200px"></input>
+                            </p>
+                        </form>
+                    </div>
+                    <div id="info-delete-medication-{{medication.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+                        <form method="post" action="{% url "deleteMedication" medication.id %}">
+                        {% csrf_token %}
+                        <a>Czy napewno chcesz usunąć farmaceutyk ?</a>
+                        <input class="orange-button" type="submit" value="Tak">
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<script>
+      let parent = document.querySelector('#medications-list');
+      parent.addEventListener("click", toggleForm, false);
+      let parent2 = document.querySelector('.lists-grid');
+      parent2.addEventListener("click", toggleForm, false);
+     
+
+
+      function toggleForm(e) {
+        if (e.target != e.currentTarget){
+          let clickedButton = e.target.id;
+          $(`#${clickedButton}-form`).slideToggle(50);
+          console.log(`${clickedButton}`)
+        }
+      }
+</script> 
+{% endblock %}

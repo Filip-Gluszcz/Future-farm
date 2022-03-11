@@ -1,0 +1,461 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block main %}
+<div class="silo-board">
+    <div id="active-silo">
+        <div id="active-silo-chart">
+            <canvas id="active-silo-canvas"></canvas>
+        </div>
+        <div id="active-silo-last-feed-delivery">
+            {% if activeSilo != None %}
+                <div id="feed-depletion-date">
+                    <h4 style="margin-bottom:0px;">
+                        Prognozowane wyczerpanie paszy - {{daysLeft}} dni
+                    </h4>
+                </div>      
+                <div id="last-feed-type">
+                    <h5>
+                        {{lastFeedDelivery.choices}} - {{lastFeedDelivery.quantity}}t   
+                    </h5>
+                </div>  
+                <div id="last-feed-quantity">
+                    <h5>
+                        {{lastFeedDelivery.price}}zł/t
+                    </h5>
+                </div>  
+                <div id="last-feed-price-cost">
+                    <h5>
+                        {% multiply lastFeedDelivery.quantity lastFeedDelivery.price %}zł
+                    </h5>
+                </div>      
+            {% else %}
+                <div id="feed-depletion-date">
+                    <h4 style="margin-bottom:0px;">
+                        Prognozowane wyczerpanie paszy - Brak danych
+                    </h4>
+                </div>      
+                <div id="last-feed-type">
+                    <h5>
+                        Brak danych  
+                    </h5>
+                </div>  
+                <div id="last-feed-quantity">
+                    <h5>
+                        Brak danych
+                    </h5>
+                </div>  
+                <div id="last-feed-price-cost">
+                    <h5>
+                        Brak danych
+                    </h5>
+                </div>   
+            {% endif %}
+        </div>
+        <div id="active-silo-contols">
+            <div id="active-silo-feed-type">
+                <h3>
+                    Typ paszy
+                </h3>
+                <h4>
+                    {% if activeSilo != None %}
+                        {{activeSilo.feet_type}}
+                    {% else %}
+                        Brak danych
+                    {% endif %}
+                </h4>
+            </div>
+            <div id="active-silo-feed-percent">
+                <h3>
+                    Stan
+                </h3>
+                {% if activeSilo != None %}
+                {% divide activeSilo.state activeSilo.capacity as activeDivided%}
+                {% multiply activeDivided 100 as activePercent%}
+                {% specyficRounded activePercent 2 as roundedActivePercent %}
+                <h4>
+                    {{roundedActivePercent}}%
+                </h4>
+                {% else %}
+                <h4>
+                    Brak danych
+                </h4>
+                {% endif %}
+            </div>
+            <div id="active-silo-feed-end">
+                
+            </div>
+            <div id="active-silo-feed-button">
+            {% if activeSilo.state > 0 %}
+                <form method="post" action="{% url 'createStoredFeed' activeSilo.farm.id activeSilo.id %}" style="margin-top:10px; margin-bottom:0px;">
+                    {% csrf_token %}
+                    {% comment %} {% rounded activeSilo.state as roundedState %} {% endcomment %}
+                    <input type="number" name="price" value="{{activeSilo.feeddelivery_set.last.price}}" required id="id_price" style="display:none;">
+                    <input type="text" name="type" value="{{activeSilo.feet_type}}" required id="id_type" style="display:none;">
+                    <input type="number" name="quantity" value="{{activeSilo.state}}" step="any" required id="id_quantity" style="display:none;">
+                    <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
+                </form>
+            {% else %}
+                <button id="disabled-store-feed" class="orange-button" style="width:140px; margin-left:10px; background:#666666;">Magazynuj</button>
+            {% endif %}
+            {% if activeSilo != None %}
+                <form method="post" action="{% url 'siloDeactivate' activeSilo.farm.id activeSilo.id %}" style="margin-top:10px; margin-bottom:0px;">
+                    {% csrf_token %}
+                    <input id="checkbox" type="checkbox" name="active" id="id_active" style="display:none;">
+                    <input class="orange-button" type="submit" value="Deaktywuj" style="width:140px">
+                </form>
+            {% else %}
+                <button class="orange-button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Deaktywuj</button>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    <div id="silos-panel-list">
+    {% for silo in silos %}
+        <div class="silo-list-item">
+            <div id="silo-icon">
+                <div id="silo-icon-holder">
+                    {% multiply silo.capacity 0.5 as capacity%}
+                    {% if silo.state == 0 %}
+                        <img id="silo-icon" src="{{ MEDIA_URL }}/static/siloRedFilled.png" style="width:40%;">
+                    {% else %}
+                        {% if silo.state < capacity%}
+                            <img id="silo-icon" src="{{ MEDIA_URL }}/static/siloYellowFilled.png" style="width:40%;">
+                        {% else %}
+                            {% if silo.state >= capacity %}
+                                <img id="silo-icon" src="{{ MEDIA_URL }}/static/siloGreenFilled.png" style="width:40%;">
+                            {% else %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% comment %} <h3>
+                        Silos {{silo.number}}
+                    </h3>     {% endcomment %}
+                </div>
+                <div id="silo-number">
+                    <h3>
+                        Silos {{silo.number}}
+                    </h3>
+                </div>
+            </div>
+            <div id="silo-controls-wrapper">
+                <div id="silo-buttons">
+                    <button id="add-feed-delivery-{{silo.id}}" class="orange-button" style="margin-top:10px; width:140px">Dostawa</button>
+                    {% if silo.state > 0 %}
+                        <form method="post" action="{% url 'createStoredFeed' silo.farm.id silo.id %}" style="margin-top:10px; margin-bottom:0px;">
+                            {% csrf_token %}
+                            <input type="number" name="price" value="{{silo.feeddelivery_set.last.price}}" required id="id_price" style="display:none;">
+                            <input type="text" name="type" value="{{silo.feet_type}}" required id="id_type" style="display:none;">
+                            <input type="number" name="quantity" value="{{silo.state}}" step="any" required id="id_quantity" style="display:none;">
+                            <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
+                        </form>
+                        {% if silo.active != True %}
+                            <form method="post" action="{% url 'siloActivate' silo.farm.id silo.id %}" style="margin-top:10px; margin-bottom:0px;">
+                                {% csrf_token %}
+                                <input checked id="checkbox" type="checkbox" name="active" id="id_active" style="display:none;">
+                                <input class="orange-button" type="submit" value="Aktywuj" style="width:140px">
+                            </form>
+                        {% else %}
+                            <button id="silo-is-active" class="orange-button" style="margin-top:10px; width:140px; background:#666666;">Aktywuj</button>
+                        {% endif %}
+                    {% else %}
+                        <button id="disabled-store-feed" class="orange-button" style="margin-top:10px; width:140px; background:#666666;">Magazynuj</button>
+                        <button id="disabled-activate-silo" class="orange-button" style="margin-top:10px; width:140px; background:#666666;">Aktywuj</button>
+                    {% endif %}
+                </div>
+                <div id="silo-info-1">
+                    <div id="silo-info-1-top">
+                        <h4>Typ paszy</h4>
+                        <h5>{{silo.feet_type}}</h5>
+                    </div>
+                    <div id="silo-info-1-bottom">
+                        <h4>Stan</h4>
+                        {% divide silo.state silo.capacity as divided%}
+                        {% multiply divided 100 as percent%}
+                        {% specyficRounded percent 2 as roundedPercent %}
+                        <h5>{{roundedPercent}}%</h5>
+                    </div>
+                </div>
+                <div id="silo-info-2">
+                    <div id="silo-info-2-top">
+                        <h4>Pojemność</h4>
+                        <h5>{{silo.capacity}}</h5>
+                    </div>
+                    <div id="silo-info-2-bottom">
+                        <h4>Ostatnia dostawa</h4>
+                        {% if silo.feeddelivery_set.last %}
+                            <h5>{{silo.feeddelivery_set.last.date|date:"M d, Y"}}</h5>
+                        {% else %}
+                            <h5>Brak ostatniej dostawy</h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="add-feed-delivery-{{silo.id}}-form" style="display:none; margin-left:20px">
+            <form  method="post" action="{% url 'createFeedDelivery' cycle.farm.id cycle.id%}">
+            {% csrf_token %}
+            <p>
+                <label for="id_choices">Rodzaj paszy:</label> 
+                <select name="choices" id="id_choices">
+                <option value="Starter" selected>Starter</option>
+                <option value="Grower">Grower</option>
+                <option value="Finisher">Finisher</option>
+                </select>
+                <label for="id_silo">Silos:</label> 
+                <select name="silo" id="id_silo" style="display:none">
+                    <option value="{{silo.id}}" selected style="display:none">--------</option>
+                </select>
+                <label for="id_quantity">Ilość w tonach:</label> 
+                <input type="number" name="quantity" value="0" step="any" required id="id_quantity">
+            </p>
+            <p>
+                <label for="id_price">Cena za tone:</label> 
+                <input type="number" name="price" value="1" step="any" required id="id_price">
+                <input class="orange-button" type="submit" value="Zapisz"</input>
+            </p>
+            </form>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="lists-container">
+    <div id="deliveries-list">
+        <h3 style="margin-left:20px;">Dostawy</h3>
+        {% for silo in silos reversed %}
+            {% if silo.feeddelivery_set.last %}
+                {% comment %} <h3 style="margin-left:20px;">Dostawy do silosa {{silo.number}}</h3> {% endcomment %}
+            {% else %}
+            {% endif %}
+            {% for delivery in silo.feeddelivery_set.all %}
+                <div class="delivery-li">
+                    <div id="delivery-li-cycle">
+                        {{delivery.cycle}}
+                    </div>
+                    <div id="delivery-li-date">
+                        {{delivery.date|date:"M d, Y"}}
+                    </div>
+                    <div id="delivery-li-type-quantity">
+                        {{delivery.silo}} - {{delivery.choices}}     {{delivery.quantity}}t
+                    </div>
+                    {% comment %} <div id="delivery-li-quantity">
+                        {{delivery.quantity}}t
+                    </div> {% endcomment %}
+                    <div id="delivery-li-price">
+                        {{delivery.price}}zł/t
+                    </div>
+                    <div id="delivery-li-cost">
+                        {% multiply delivery.quantity delivery.price %}zł
+                    </div>
+                    <div id="delivery-li-buttons">
+                        <button id="update-feed-delivery-{{delivery.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
+                        <button id="delete-feed-delivery-{{delivery.id}}" class="orange-button">Usuń</button>
+                    </div>
+                </div>
+                <div id="delete-feed-delivery-{{delivery.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+                    <form method="post" action="{% url "deleteFeedDelivery" delivery.id %}">
+                    {% csrf_token %}
+                    <a>Czy napewno chcesz usunąć dostawę ?</a>
+                    <input class="orange-button" type="submit" value="Tak">
+                    </form>
+                </div>
+                <div id="update-feed-delivery-{{delivery.id}}-form" style="display:none; margin-left:20px">
+                    <form method="post" action="{% url 'updateFeedDelivery' cycle.farm.id delivery.id%}">
+                        {% csrf_token %}
+                        <p>
+                            <label for="id_choices">Rodzaj paszy:</label> 
+                            <select name="choices" selected="{{delivery.choices}}" id="id_choices">
+                            <option value="Starter">Starter</option>
+                            <option value="Grower">Grower</option>
+                            <option value="Finisher">Finisher</option>
+                            </select>
+                            <label for="id_silo">Silos:</label> 
+                            <select name="silo" id="id_silo">
+                            <option value="{{delivery.silo.id}}" selected >Silos {{delivery.silo.number}}</option>
+                            {% for silo in cycle.farm.silo_set.all %}
+                                <option value="{{silo.id}}">Silos {{silo.number}}</option>
+                            {% endfor %}
+                            </select>
+                        <p>
+                        </p>
+                            <label for="id_quantity">Ilość w tonach:</label> 
+                            <input type="number" name="quantity" value="{{delivery.quantity}}" step="any" required id="id_quantity">
+                            <label for="id_price">Cena za tone:</label> 
+                            <input type="number" name="price" value="{{delivery.price}}" step="any" required id="id_price">
+                            <input class="orange-button" type="submit" value="Zapisz"></input>
+                        </p>
+                    </form>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div id="storage-list">
+    {% if storedFeeds.count > 0 %}
+        <h3 style="margin-left:20px;">Magazyn</h3>
+    {% else %}
+    {% endif %}
+    {% for storedFeed in storedFeeds %}
+        <div class="stored-feed-li">
+            <div id="stored-feed-li-type">
+                {{storedFeed.type}}
+            </div>
+            <div id="stored-feed-li-quantity-price">
+                {% rounded storedFeed.quantity as roundedQuantity%}
+                {{roundedQuantity}}kg
+            </div>
+            <div id="stored-feed-li-restore">
+                <form method="post" action="{% url 'restoreFeed' cycle.farm.id %}" style="margin-top:15px; margin-bottom:0px; float:right">
+                    {% csrf_token %}
+                    <p>
+                        <input type="number" name="storedFeedId" value="{{storedFeed.id}}" required id="id_storedFeedId" style="display:none;">
+                        <input type="text" name="type" value="{{storedFeed.type}}" required id="id_type" style="display:none;">
+                        <input type="number" name="quantity" value="{{storedFeed.quantity}}" step="any" required id="id_quantity" style="display:none;">
+                        <select name="siloId" id="id_siloId">
+                        {% for silo in silos %}
+                            <option value="{{silo.id}}">Silos {{silo.number}}</option>
+                        {% endfor %}
+                        </select>
+                        <input class="orange-button" type="submit" value="Przenieś paszę" style="width:140px;">
+                    </p>
+                </form>
+            </div>
+            <div id="stored-feed-li-buttons">
+                <button id="update-stored-feed-{{storedFeed.id}}" class="orange-button float-right-button" style="margin-bottom:5px;">Edytuj</button>
+                <button id="delete-stored-feed-{{storedFeed.id}}" class="orange-button float-right-button">Usuń</button>
+            </div>
+        </div>
+        <div id="delete-stored-feed-{{storedFeed.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+            <form method="post" action="{% url "deleteStoredFeed" cycle.farm.id storedFeed.id %}">
+            {% csrf_token %}
+            <a>Czy napewno chcesz usunąć zmagazynowaną paszę ?</a>
+            <input class="orange-button" type="submit" value="Tak">
+            </form>
+        </div>
+        <div id="update-stored-feed-{{storedFeed.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
+            <form method="post" action="{% url 'updateStoredFeed' cycle.farm.id storedFeed.id %}">
+                {% csrf_token %}
+                <label for="id_price">Cena tony:</label>
+                <input type="number" name="price" value="{{storedFeed.price}}" required id="id_price">
+                <input type="text" name="type" value="{{storedFeed.type}}" required id="id_type" style="display:none;">
+                <label for="id_quantity">Ilość:</label>
+                <input type="number" name="quantity" value="{{storedFeed.quantity}}" required id="id_quantity">
+                <input class="orange-button" type="submit" value="Zapisz">
+            </form>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+<script>
+    tippy('#disabled-store-feed', {
+        content: "Silos jest pusty",
+    });
+    tippy('#disabled-activate-silo', {
+        content: "Dodaj dostawę by aktywować",
+    });
+    tippy('#silo-is-active', {
+        content: "Silos jest aktywny",
+    });
+</script>
+<script>
+      let parent = document.querySelector('#silos-panel-list');
+      parent.addEventListener("click", toggleForm, false);
+      let parent2 = document.querySelector('#deliveries-list');
+      parent2.addEventListener("click", toggleForm, false);
+      let parent3 = document.querySelector('#storage-list');
+      parent3.addEventListener("click", toggleForm, false);
+
+
+      function toggleForm(e) {
+        if (e.target != e.currentTarget){
+          let clickedButton = e.target.id;
+          $(`#${clickedButton}-form`).slideToggle(50);
+          console.log(`${clickedButton}`)
+        }
+      }
+</script> 
+<script>
+    const siloCanvas = document.getElementById('active-silo-canvas').getContext('2d');
+
+    siloCanvas.width=20;
+    siloCanvas.height=20;
+
+    const siloChart = new Chart(siloCanvas, {
+            type: 'doughnut',
+            data: {
+            labels: 
+            {% if activeSilo != None %}
+                {% rounded activeSilo.state as roundedState %}
+                ['Stan {{roundedState}}kg','Pojemność {{ activeSilo.capacity }}kg'],          
+            {% else %}
+                ['Brak danych','Brak danych'],
+            {% endif %}
+            datasets: [
+                    {
+                        label: '',
+                        data: 
+                        {% if activeSilo != None %}
+                            [{{activeSilo.state}}, {{ activeSilo.capacity }} - {{ activeSilo.state }}],
+                        {% else %}
+                            [0,1],
+                        {% endif %} 
+                        backgroundColor: [
+                        'rgba(43, 107, 100, 0.2)',
+                        {% comment %} 'rgba(240, 239, 148, 0.2)', {% endcomment %}
+                        'rgba(255, 99, 132, 0.2)',
+                        ],
+                        borderColor: [
+                        'rgb(43, 107, 100)',
+                        {% comment %} 'rgb(240, 239, 148)', {% endcomment %}
+                        'rgb(255, 99, 132)',
+                        ],
+                    }],
+            },
+            options:
+            {
+                responsive: true,
+                
+                plugins:
+                {
+                    title:
+                    {
+                        display: true,
+                        text: 
+                        {% if activeSilo != None %}
+                            'Aktywny silos {{activeSilo.number}}', 
+                        font:
+                        {
+                            size: 30
+                        }, 
+                        color: '#999999',
+                        {% else %}
+                            'dane zostaną wyświetlone po aktywacji silosa',
+                        font:
+                        {
+                            size: 20
+                        },
+                        color: '#666666',
+                        {% endif %}
+                    },
+                    tooltip: 
+                    {
+                        enabled: false
+                    },
+                    legend:
+                    {
+                        display: true,
+                        position: 'bottom',
+                        labels:
+                        {
+                            font: {
+                            size: 20
+                        }
+                        }
+                    }
+                }
+            }
+        });
+</script>
+{% endblock %}

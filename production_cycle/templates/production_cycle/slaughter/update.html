@@ -1,0 +1,13 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% block content %}
+
+<form method="post" action="">
+    {% csrf_token %}
+    {{form.as_p}}
+
+    <input type="submit" name="Edytuj"</input>
+
+</form>
+
+{% endblock %}

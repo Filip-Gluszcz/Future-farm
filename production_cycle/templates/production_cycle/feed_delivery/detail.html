@@ -1,0 +1,35 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% block content %}
+
+<div class="grid-item">
+<div>
+    <a class="btn btn-sm btn-info" href="{% url 'cycles'%}">Wróć</a>
+    <a class="btn btn-sm btn-warning" href="{% url 'updateFeedDelivery' object.id %}">Edytuj</a>
+    <a class="btn btn-sm btn-danger" href="{% url 'deleteFeedDelivery' object.id %}">Usuń</a>
+    <a class="btn btn-sm btn-info" href="{% url 'createFeedDelivery' %}">Dodaj dostawę</a>
+  </div>
+</div>
+<div class="grid-item">
+  <h1 id="welcome-title">Dostawa</h1>
+  <table class="table table-borderless">
+    <thead>
+      <th>Data</th>
+      <th>Rodzaj</th>
+      <th>Ilość</th>
+      <th>Cena za tonę</th>
+      <th>Cena</th>
+      <th>Cykl</th>
+      </thead>
+      <tbody>
+      <td>{{object.data}}</td>
+      <td>{{object.choices}}</td>
+      <td>{{object.quantity}}</td>
+      <td>{{object.price}}</td>
+      {% comment %} <td>{{object.quantity * object.price}}zł</td> {% endcomment %}
+      <td>{{object.cycle}}</td>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

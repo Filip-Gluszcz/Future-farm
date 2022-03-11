@@ -1,0 +1,1454 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% load custom_tags %}
+
+{% block main %}
+
+<div class="compare-chart-container">
+    <div class="compare-chart" style="padding-top:5px;">
+        <canvas id="farms-chart-canvas" style="height:inherit; width:100%;"></canvas>
+    </div>
+        <div class="chart-controls">
+        <div id="water-control">
+            <button class="chart-control-button inline" onclick="watherDataset();">
+                <i id="water-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline" style="align-items:center;">Pobór wody</h5>
+        </div>
+        <div id="feed-control">
+            <button class="chart-control-button inline" onclick="feedDataset();">
+                <i id="feed-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline">Pobór paszy</h5>
+        </div>
+        <div id="deads-control">
+            <button class="chart-control-button inline" onclick="deadsDataset();">
+                <i id="deads-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline">Upadki</h5>
+        </div>
+        <div id="selection-control">
+            <button class="chart-control-button inline" onclick="selectionDataset();">
+                <i id="selection-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline">Selekcja</h5>
+        </div>
+        <div id="temperature-control">
+            <button class="chart-control-button inline" onclick="temperatureDataset();">
+                <i id="temperature-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline">Temperatura</h5>
+        </div>
+        <div id="humidity-control">
+            <button class="chart-control-button inline" onclick="humidityDataset();">
+                <i id="humidity-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline">Wilgotność</h5>
+        </div>
+        <div id="zoom-control">
+            <button class="chart-control-button inline" onclick="activateZoom();">
+                <i id="zoom-control-icon" class="fas fa-toggle-on"></i>
+            </button>
+            <h5 class="inline">Powiększenie</h5>
+        </div>
+        <div id="next-day-control">
+            <button class="chart-control-button inline" onclick="nextDay();">
+                <i id="next-day-control-icon" class="fas fa-arrow-alt-circle-right"></i>
+            </button>
+            <h5 class="inline">Następny</h5>
+        </div>
+        <div id="previous-day-control">
+            <button class="chart-control-button inline" onclick="previousDay();">
+                <i id="previous-day-control-icon" class="fas fa-arrow-alt-circle-left"></i>
+            </button>
+            <h5 class="inline">Poprzedni</h5>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<div class="info-row">
+    <div class="finances-chart">
+        <canvas id="finances-chart-canvas"></canvas>
+    </div>
+    <div class="farm-form">
+        <h5 style="text-align:center;">Dodaj fermę</h5>
+        <form method='post' action="{% url 'createFarm' %}" style="margin-top:40px;">
+            {% csrf_token %}
+            <p>
+            <label id="bottom-info-box-label" for="id_name">Nazwa:</label> 
+            <input id="create-cycle-input" type="text" name="name" required id="id_name">
+            </p>
+            <p>
+            <label id="bottom-info-box-label" for="id_max_herd_size">Rozmiar stada:</label> 
+            <input id="create-cycle-input" type="number" name="max_herd_size" required id="id_max_herd_size">
+            </p>
+            <p>
+            <label id="bottom-info-box-label" for="id_surface">Powierzchnia:</label> 
+            <input id="create-cycle-input" type="number" name="surface" required id="id_surface">
+            </p>
+            <p>
+            <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz" style="margin-top:20px; margin-right:30px;"></input>
+            </p>
+        </form>
+    </div>
+    <div class="compare-block-chart">
+        <div id="doughnut-chart-tasks-text">
+            <h1 style="margin-top:10px;">{{ activeCycles }}</h1>
+            <h5 style="margin-top:0px;">Liczba 
+            <br>
+            aktywntch cykli</h5>
+            <h1 style="margin-top:10px;">{{ closedCycles }}</h1>
+            <h5 style="margin-top:0px;">Liczba 
+            <br>
+            zakończonych cykli</h5>
+        </div>
+        <canvas id="doughnut-chart-tasks"></canvas>
+    </div>
+</div>
+<div class="farms-container">
+    
+    {% for farm in farms %}
+        <div class="farm-list-component">
+            <div id="farm-chart" style="padding-top:5px;">
+                <canvas id="farm-{{ farm.id }}-chart-canvas" style="height:100%; width:100%;"></canvas>
+                <script>
+                    new Chart($('#farm-{{ farm.id }}-chart-canvas'),
+                    {
+                        type: 'line',
+                        data: 
+                        {
+                            labels: 
+                            [
+                                {% for standard in standards %}
+                                    {% if standard.cycle_day <= farm.cycle_set.last.day_set.last.cycle_day %}
+                                        'Dzień {{ standard.cycle_day }}',
+                                    {% endif %}
+                                {% endfor %}
+                            ],
+                            datasets: 
+                            [
+                                
+                                {
+                                    label: 'Waga',
+                                    data: 
+                                    [
+                                        {% for day in farm.cycle_set.last.day_set.all %}
+                                            {{ day.average_body_weight }},
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(255, 99, 132, 0)',
+                                    borderColor: 'rgb(255, 99, 132)',
+                                    {% comment %} borderColor: '#519ABA', {% endcomment %}
+                                    borderWidth: 1,
+                                    cubicInterpolationMode: 'monotone',
+                                },
+                                {
+                                    label: 'Pobór wody',
+                                    data: 
+                                    [
+                                        {% for day in farm.cycle_set.last.day_set.all %}
+                                            {{ day.daily_wather_consumption }},
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(81, 154, 186, 0)',
+                                    borderColor: 'rgb(81, 154, 186)',
+                                    {% comment %} borderColor: '#519ABA', {% endcomment %}
+                                    borderWidth: 1,
+                                    cubicInterpolationMode: 'monotone',
+                                },
+                                {
+                                    label: 'Pobór paszy',
+                                    data: 
+                                    [
+                                        {% for day in farm.cycle_set.last.day_set.all %}
+                                            {{ day.feed_consumption }},
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(240, 239, 148, 0)',
+                                    borderColor: 'rgb(240, 239, 148)',
+                                    {% comment %} borderColor: '#519ABA', {% endcomment %}
+                                    borderWidth: 1,
+                                    cubicInterpolationMode: 'monotone',
+                                },
+                                {
+                                    label: 'Upadki',
+                                    data: 
+                                    [
+                                        {% for day in farm.cycle_set.last.day_set.all %}
+                                            {{ day.deads }},
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(137, 92, 226, 0)',
+                                    borderColor: 'rgb(137, 92, 226)',
+                                    {% comment %} borderColor: '#519ABA', {% endcomment %}
+                                    borderWidth: 1,
+                                    cubicInterpolationMode: 'monotone',
+                                },
+                                {
+                                    label: 'Selekcja',
+                                    data: 
+                                    [
+                                        {% for day in farm.cycle_set.last.day_set.all %}
+                                            {{ day.selection }},
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(176, 148, 233, 0)',
+                                    borderColor: 'rgb(176, 148, 233)',
+                                    {% comment %} borderColor: '#519ABA', {% endcomment %}
+                                    borderWidth: 1,
+                                    cubicInterpolationMode: 'monotone',
+                                },
+                                {
+                                    label: 'Standardowa waga',
+                                    data: 
+                                    [
+                                        {% for standard in standards %}
+                                            {% if standard.cycle_day <= statsEnd %}
+                                                {{ standard.average_body_weight }},
+                                            {% endif %}
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                                    borderColor: 'rgb(43, 107, 100)',
+                                    borderWidth: 3,
+                                    cubicInterpolationMode: 'monotone',
+                                    hidden: true
+                                },
+                                {
+                                    label: 'Standardowy pobór wody',
+                                    data: 
+                                    [
+                                        {% for standard in standards %}
+                                            {% if standard.cycle_day <= statsEnd %}
+                                                {{ standard.water_consumption }},
+                                            {% endif %}
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(131, 227, 161, 0.2)',
+                                    borderColor: 'rgb(131, 227, 161)',
+                                    borderWidth: 3,
+                                    cubicInterpolationMode: 'monotone',
+                                    hidden: true
+                                },
+                                {
+                                    label: 'Standardowy pobór paszy',
+                                    data: 
+                                    [
+                                        {% for standard in standards %}
+                                            {% if standard.cycle_day <= statsEnd %}
+                                                {{ standard.feed_consumption }},
+                                            {% endif %}
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(102, 240, 47, 0.2)',
+                                    borderColor: 'rgb(102, 240, 47)',
+                                    borderWidth: 3,
+                                    cubicInterpolationMode: 'monotone',
+                                    hidden: true
+                                },
+                            ]
+                        },
+                        options: 
+                            {
+                                plugins:
+                                {  
+                                    title:
+                                    {
+                                        display: true,
+                                        text: '{{farm.name}}        max: {{farm.max_herd_size}}szt. powierzchnia: {{farm.surface}}m2',  
+                                        font:
+                                        {
+                                            size: 20
+                                        },
+                                        color: '#999999',
+                                    },
+                                    subtitle: 
+                                    {
+                                        display: true,
+                                        text: 'Kliknij nazwę by wyłączyć wykres',
+                                        
+                                    },
+                                    autocolors: false,
+                                    annotation: {
+                                        annotations: 
+                                        [
+                                            {% for day in farm.cycle_set.last.day_set.all %}
+                                                {% if day.medicationsupply_set.all.count > 0 %}
+                                                    {
+                                                        id: 'a-line-{{supply.id}}',
+                                                        type: 'line',
+                                                        mode: 'vertical',
+                                                        scaleID: 'x',
+                                                        {% if day.cycle_day == 0 %}
+                                                            value:{{day.cycle_day}},
+                                                        {% else %}
+                                                            value:{{day.cycle_day}} + 1,
+                                                        {% endif %}
+                                                        borderColor: 'rgb(251, 115, 68)',
+                                                        borderWidth: 4,
+                                                        label:
+                                                        {
+                                                            enabled: true,
+                                                            position: '0%',
+                                                            content: 
+                                                            [
+                                                                {% for supply in day.medicationsupply_set.all %}
+                                                                    `{{supply.medication.name}} {{supply.quantity}}`,
+                                                                {% endfor %}
+                                                            ],
+                                                            backgroundColor: 'rgba(0,0,0,0.3)',
+                                                        },
+                                                    },
+                                                {% else %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        ],
+                                        
+                                    }
+                                },
+                                scales: 
+                                {     
+                                    x:
+                                    {
+                                        {% if farm.cycle_set.last.day_set.last.cycle_day > 7 %}
+                                            min: {{statsEnd}} - 7,
+                                            max: {{statsEnd}},
+                                        {% else %}
+                                            min: 0,
+                                            max: 7,
+                                        {% endif %}
+                                    },                               
+                                    y: 
+                                    {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                    })
+                </script>
+            </div>
+            <div id="top-box-one" class="box">
+                <h5>Stan stada</h5>
+                <div class="description">
+                    Procentowa warość 
+                    przeywalności.
+                </div>
+                {% if farm.cycle_set.last.status == 'ACTIVE' %}
+                <h1 id="{{farm.id}}-herd-size-percent" style="margin-top:10px"></h1>
+                <script>
+                    $('#{{farm.id}}-herd-size-percent').text(`${Math.round(({{farm.cycle_set.last.current_herd_size}} / {{ farm.cycle_set.last.herd_size }}) * 100)}%`);
+                    if((({{farm.cycle_set.last.current_herd_size}} / {{ farm.cycle_set.last.herd_size }}) * 100) > 95)
+                    {
+                        $('#{{farm.id}}-herd-size-percent').css('color', 'rgb(131, 227, 161)')
+                    }
+                    else
+                    {
+                        $('#{{farm.id}}-herd-size-percent').css('color', 'rgb(240, 101, 96)')
+                    }
+                </script>
+                {% else %}
+                    {% if farm.cycle_set.count > 0 %}
+                    {% specyficRounded farm.cycle_set.last.cyclecompleted.survival_rate 2 as roundedSurvivalRate %}
+                    <h1 id="{{farm.id}}-herd-size-percent" style="margin-top:10px">{{roundedSurvivalRate}}%</h1>
+                    {% else %}
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div id="top-box-two" class="box">
+                <h5>Średnia waga</h5>
+                <div id="{{farm.id}}-weight-standard" class="description">
+                    Idealna waga
+                    <br>
+                    norma ROSS 308:
+                </div>
+                <h1 id="{{farm.id}}-average-body-weight" style="margin-top:10px">{{ farm.cycle_set.last.day_set.last.average_body_weight }}g</h1>
+                {% for standard in standards %}
+                        {% if standard.cycle_day == farm.cycle_set.last.day_set.last.cycle_day %}
+                            <script>
+                                $('#{{farm.id}}-weight-standard').append('{{ standard.average_body_weight }}g')
+                                if({{ farm.cycle_set.last.day_set.last.average_body_weight }} >= (0.9 * {{ standard.average_body_weight }}) )
+                                {
+                                    $('#{{farm.id}}-average-body-weight').css('color', 'rgb(131, 227, 161)')
+                                }
+                                else
+                                {
+                                    $('#{{farm.id}}-average-body-weight').css('color', 'rgb(240, 101, 96)')
+                                }
+                            </script>
+                        {% endif %}
+                    {% endfor %}
+            </div>
+            <div id="top-box-three" class="box">
+                <h5>Pobór wody / paszy</h5>
+                <h1>{{ farm.cycle_set.last.day_set.last.daily_wather_consumption }}ml</h1>
+                <h1>{{ farm.cycle_set.last.day_set.last.feed_consumption }}g</h1>
+            </div>
+            <div id="bottom-box-one" class="box">
+                <h5>WŚD</h5>
+                <div class="description">
+                    Wskaźnik
+                    <br>
+                    śmiertelności 
+                    dziennej.
+                </div>
+                <h1 style="margin-top:10px" id="{{farm.id}}-wsd">{{ farm.cycle_set.last.day_set.last.daily_mortality_rate }}%</h1>
+                <script>
+                    
+                    if({{ farm.cycle_set.last.day_set.last.daily_mortality_rate }} > 0.1)
+                    {
+                        $('#{{farm.id}}-wsd').css('color', 'rgb(240, 101, 96)')
+                    }
+                    else
+                    {
+                        $('#{{farm.id}}-wsd').css('color', 'rgb(131, 227, 161)')
+                    }
+                </script>
+            </div>
+            <div id="bottom-box-two" class="box">
+                <h5>EWW</h5>
+                <div class="description">
+                    Europejski
+                    <br>
+                    wskaźnik 
+                    wydajności.
+                </div>
+                <h1 style="margin-top:10px" id="{{farm.id}}-eww">{{ farm.cycle_set.last.day_set.last.eww }}</h1>
+            </div>
+            <div id="bottom-box-three" class="box">
+                <h5>FCR</h5>
+                <div class="description">
+                    Współczynnik 
+                    <br>
+                    konwersji 
+                    paszy.
+                </div>
+                <h1 style="margin-top:10px" id="{{farm.id}}-fcr">{{ farm.cycle_set.last.day_set.last.fcr }}</h1>
+            </div>
+            <div id="create-cycle-silo">
+                <div id="create-silo-cycle-buttons">
+                    <div>
+                        {% if farm.silo_set.all.count == 0 %}
+                            <button id="disabled" class="orange-button" style="width:140px; background:#666666">Dodaj cykl</button>
+                            <button id="create-{{farm.id}}-silo" class="orange-button" style="width:140px">Dodaj silos</button>
+                            <button id="disabled" class="orange-button" style="width:140px; background:#666666">Silosy</button>
+                        {% else %}
+                            <button id="create-{{farm.id}}-cycle" class="orange-button" style="width:140px">Dodaj cykl</button>
+                            <button id="create-{{farm.id}}-silo" class="orange-button" style="width:140px">Dodaj silos</button>
+                            {% if farm.cycle_set.all.count > 0 %}
+                            <a href="{% url 'silos' farm.id %}">
+                                <button class="orange-button" style="width:140px">Silosy</button>
+                            </a>
+                            {% else %}
+                            <button id="disabled-no-cycle" class="orange-button" style="width:140px; background:#666666">Silosy</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div id="create-{{farm.id}}-silo-form" style="display:none; padding-bottom:30px; margin-left:10px;">
+                        <form method="post" action="{% url 'createSilo' %}" style="margin-top:20px; margin-bottom:20px;">
+                            {% csrf_token %}
+                            <p>
+                                <label id="create-cycle-label" for="id_number">Numer:</label> 
+                                <input id="create-cycle-input" type="number" name="number" value="0" required="" id="id_number">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_capacity">Pojemność:</label> 
+                                <input id="create-cycle-input" type="number" name="capacity" value="0" step="any" required="" id="id_capacity">
+                            </p>
+                            <p>
+                                <select id="create-cycle-input" name="feet_type" id="id_feet_type" style="display:none;">
+                                    <option value="Starter" selected="">Starter</option>
+
+                                    <option value="GR">Grower</option>
+
+                                    <option value="FR">Finisher</option>
+
+                                </select>
+                            </p>
+                            <p>
+                                <input id="create-cycle-input" type="number" name="state" value="0" step="any" required="" id="id_state" style="display:none;">
+                            </p>
+                            <p>
+                                <select id="create-cycle-input" name="farm" required="" id="id_farm" style="display:none;">
+                                    <option value="{{farm.id}}" selected="">{{farm.name}}</option>
+                                </select>
+                            </p>
+
+                            <input class="orange-button float-right-button" type="submit" value="Zapisz">
+
+                        </form>
+                    </div>              
+                    <div id="create-{{farm.id}}-cycle-form" style="display:none; padding-bottom:30px; margin-left:10px;">
+                        <form method='post' action="{% url 'createCycle' farm.id %}" style="margin-top:20px; margin-bottom:20px;">
+                            {% csrf_token %}
+                            <p>
+                                <label id="create-cycle-label" for="id_hybryd">Hybryd:</label> 
+                                <input id="create-cycle-input" type="text" name="hybryd" required id="id_hybryd">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_age_of_the_reproductive_stock">Wiek stada reprodukcyjnego:</label> 
+                                <input id="create-cycle-input" type="text" name="age_of_the_reproductive_stock" required id="id_age_of_the_reproductive_stock">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_hatchery">Wylęgarnia:</label> 
+                                <input id="create-cycle-input" type="text" name="hatchery" required id="id_hatchery">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_herd_size">Rozmiar stada:</label> 
+                                <input id="create-cycle-input" type="number" name="herd_size" required id="id_herd_size">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_chick_avarage_weight">Średnia waga pisklęcia:</label> 
+                                <input id="create-cycle-input" type="number" name="chick_avarage_weight" required id="id_chick_avarage_weight">
+                            </p>
+                            <p>
+                                <label id="create-cycle-label" for="id_water_meter_value">Stan licznika wody:</label> 
+                                <input id="create-cycle-input" type="number" name="water_meter_value" required id="id_water_meter_value">
+                            </p>
+                            <p>
+                                <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                            </p>
+                        </form>
+                    </div>                
+                </div>
+                <div id="silos-list">
+                    <ul>
+                        {% for silo in farm.silo_set.all %}
+                            <li class="silo-li">
+                                <div id="silo-id" style="padding-left:20px;">
+                                    Silos {{silo.number}}
+                                </div>
+                                <div id="silo-capacity">
+                                    Pojemność {{silo.capacity}}kg
+                                </div>
+                                <div id="edit-silo">
+                                    <button id="edit-silo-{{silo.id}}" class="orange-button">Edytuj</button>                                     
+                                </div>
+                                <div id="delete-silo">
+                                    <button id="delete-silo-{{silo.id}}" class="orange-button">Usuń</button>                                    
+                                </div>
+                            </li>
+                            <div id="delete-silo-{{silo.id}}-form" style="display:none; padding-left:10px; padding-bottom:30px;">
+                                <form method="post" action="{% url "deleteSilo" silo.id %}">
+                                    {% csrf_token %}
+                                    <a>Czy napewno chcesz usunąć silos ?</a>
+                                    <input class="orange-button" type="submit" value="Tak"></input>
+                                </form>
+                            </div>
+                             <div id="edit-silo-{{silo.id}}-form" style="display:none; margin-bottom:20px; margin-left:10px;">
+                                <form method="post" action="{% url 'updateSilo' silo.id %}" style="margin-top:20px; margin-bottom:20px;">
+                                    {% csrf_token %}
+                                    <p>
+                                        <label id="create-cycle-label" for="id_number">Numer:</label> 
+                                        <input id="create-cycle-input" type="number" name="number" value="{{silo.number}}" required="" id="id_number">
+                                    </p>
+                                    <p>
+                                        <label id="create-cycle-label" for="id_capacity">Pojemność:</label> 
+                                        <input id="create-cycle-input" type="number" name="capacity" value="{{silo.capacity}}" step="any" required="" id="id_capacity">
+                                    </p>
+                                    <p>
+                                        <select id="create-cycle-input" name="feet_type" id="id_feet_type" style="display:none;">
+                                            <option value="Starter" selected="">Starter</option>
+
+                                            <option value="Grower">Grower</option>
+
+                                            <option value="FFinisherR">Finisher</option>
+
+                                        </select>
+                                    </p>
+                                    <p>
+                                        <input id="create-cycle-input" type="number" name="state" value="0" step="any" required="" id="id_state" style="display:none;">
+                                    </p>
+                                    <p>
+                                        <select id="create-cycle-input" name="farm" required="" id="id_farm" style="display:none;">
+                                            <option value="{{farm.id}}" selected>{{farm.name}}</option>
+                                        </select>
+                                    </p>
+
+                                    <input class="orange-button" type="submit" value="Zapisz">
+
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div id="list-container">
+                <div id="buttons">
+                    <div id="{{farm.id}}-farm-edit" >
+                        <button id="edit-{{farm.id}}-farm" class="orange-button" style="width:140px">Edytuj ferme</button>
+                        <button id="delete-{{farm.id}}-farm" class="orange-button" style="width:140px">Usuń ferme</button>
+                        <button class="orange-button" onclick="location.href='{% url 'medications' farm.id %}'" style="width:140px">Farmaceutyki</button>
+                    </div>
+                    <div id="delete-{{farm.id}}-farm-form" style="display:none; padding-left:10px; padding-bottom:30px;">
+                            <form method="post" action="{% url "deleteFarm" farm.id %}" style="margin-top:20px;">
+                            {% csrf_token %}
+                            <a>Czy napewno chcesz usunąć ferme ?</a>
+                            <input class="orange-button" type="submit" value="Tak"></input>
+                            </form>
+                        </div>
+                    <div id="edit-{{farm.id}}-farm-form" style="display:none; margin-bottom:20px; margin-left:10px;">
+                        <form method='post' action="{% url 'updateFarm' farm.id %}" style="margin-top:20px;">
+                            {% csrf_token %}
+                            
+                            <label for="id_name">Nazwa:</label> 
+                            <input type="text" name="name" value="{{farm.name}}" required id="id_name">
+                            
+                            
+                            <label for="id_max_herd_size">Rozmiar stada:</label> 
+                            <input type="number" name="max_herd_size" value="{{farm.max_herd_size}}" required id="id_max_herd_size" style="width:190px">
+                            
+                            
+                            <label for="id_surface">Powierzchnia:</label> 
+                            <input type="number" name="surface" value="{{farm.surface}}" required id="id_surface" style="width:190px">
+                            
+                            <input class="orange-button" type="submit" value="Zapisz" style="float:right;"></input>
+                        
+                        </form>
+                    </div> 
+                </div>
+                <div id="cycles-list">
+                    <ul>
+                        {% for cycle in farm.cycle_set.all reversed%}
+                        <li class='cycle-li'>
+                            {% if cycle.day_set.all.count == 0 %}
+                                <div id="cycle-id">
+                                    Cykl ID {{ cycle.id }}
+                                </div>
+                                <div id="create-zero-day">
+                                    <form method="post" action="{% url 'createDay' cycle.id %}" style="display: inline-block;">
+                                        {% csrf_token %} 
+
+                                        <label for="id_temperature">Temperatura:</label> 
+                                        <input type="number" name="temperature" value="0" step="any" required id="id_temperature" style="width:60px;">
+                                    
+                                        <label for="id_humidity">Wilgotność:</label> 
+                                        <input type="number" name="humidity" value="0" step="any" required id="id_humidity" style="width:60px;">
+                                        
+                                        <input type="number" name="average_body_weight" value="{{ cycle.chick_avarage_weight }}" required id="id_average_body_weight" style="display:none;">
+
+                                        <input type="number" name="cycle_day" value="0" required= id="id_cycle_day" style="display:none;">
+                                            
+                                        <input type="number" name="deads" value="0" required id="id_deads" style="display:none;">
+                                            
+                                        <input type="number" name="selection" value="0" required= id="id_selection" style="display:none;">
+                                            
+                                        <input type="number" name="feed_consumption" value="0" step="any" required id="id_feed_consumption" style="display:none;">
+                                            
+                                        <input type="number" name="daily_wather_consumption" value="0" step="any" required id="id_daily_wather_consumption" style="display:none;">  
+
+                                        <input type="number" name="water_meter_value" value="{{ cycle.water_meter_value }}" required id="id_water_meter_value" style="display:none;">  
+
+                                        <input class="orange-button float-right-button" type="submit" value="Zapisz"</input>
+                                    </form>
+                                </div>
+                            {% else %}
+                                {% if cycle.status == 'ACTIVE' %}
+                                <div class="active" id="cycle-id">
+                                    Cykl ID {{ cycle.id }}
+                                </div>
+                                {% else %}
+                                <div class="closed" id="cycle-id">
+                                    Cykl ID {{ cycle.id }}
+                                </div>
+                                {% endif %}
+                                <div id="cycle-insertion-date">Data wstawienia: {{ cycle.date_of_insertion|date:"M d, Y" }}</div>
+                                <div id="cycle-current-herd-size">Rozmiar stada: {{ cycle.herd_size }}szt.</div>
+                                <div id="cycle-open">
+                                    <a href="{% url 'cycleDetail' cycle.id %}">
+                                        <button class="orange-button">Otwórz</button>
+                                    </a>
+                                </div>
+                                <div id="cycle-edit">
+                                    <button id="edit-cycle-{{cycle.id}}" class="orange-button">Edytuj</button>                                    
+                                </div>
+                                <div id="cycle-delete">
+                                        <button id="delete-cycle-{{cycle.id}}" class="orange-button">Usuń</button>
+                                </div>
+                            {% endif %}
+                        </li>
+                        <div id="delete-cycle-{{cycle.id}}-form" style="display:none; padding-left:10px; padding-bottom:30px;">
+                            <form method="post" action="{% url "deleteCycle" cycle.id %}">
+                            {% csrf_token %}
+                            <a>Czy napewno chcesz usunąć cykl ?</a>
+                            <input class="orange-button" type="submit" value="Tak"></input>
+                            </form>
+                        </div>
+                        <div id="edit-cycle-{{cycle.id}}-form" style="display:none; padding-bottom:20px; padding-left:10px;">
+                            <form method='post' action="{% url 'updateCycle' cycle.id %}" style="margin-top:20px; margin-botton:40px;">
+                                {% csrf_token %}
+                                <p>
+                                    <label for="id_hybryd">Hybryd:</label> 
+                                    <input type="text" name="hybryd" value="{{ cycle.hybryd }}" required id="id_hybryd">
+                                
+                                
+                                    <label for="id_age_of_the_reproductive_stock">Wiek stada reprodukcyjnego:</label> 
+                                    <input type="text" name="age_of_the_reproductive_stock" value="{{ cycle.age_of_the_reproductive_stock }}" required id="id_age_of_the_reproductive_stock">
+                                
+                                
+                                    <label for="id_hatchery">Wylęgarnia:</label> 
+                                    <input type="text" name="hatchery" value="{{ cycle.hatchery }}" required id="id_hatchery">
+                                </p>
+                                <p>
+                                    <label for="id_herd_size">Rozmiar stada:</label> 
+                                    <input type="number" name="herd_size" value="{{ cycle.herd_size }}" required id="id_herd_size">
+                                
+                                
+                                    <label for="id_chick_avarage_weight">Średnia waga pisklęcia:</label> 
+                                    <input type="number" name="chick_avarage_weight" value="{{ cycle.chick_avarage_weight }}" required id="id_chick_avarage_weight">                            
+                                </p>
+                                    
+                                    <label for="id_water_meter_value">Stan licznika wody:</label> 
+                                    <input type="number" name="water_meter_value" value="{{ cycle.water_meter_value }}" required id="id_water_meter_value">
+                                
+                                    <input class="orange-button" type="submit" value="Zapisz"></input>
+                                
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+        
+    {% empty %}
+
+    {% endfor %}
+    </div>
+<script>
+    tippy('#disabled', {
+        content: "Najpierw dodaj silosy",
+    });
+    tippy('#disabled-no-cycle', {
+        content: "Najpierw dodaj cykl",
+    });
+</script>
+<script>
+      let parent = document.querySelector('.farms-container','#cycles-list');
+      parent.addEventListener("click", toggleForm, false);
+
+      function toggleForm(e) {
+        if (e.target != e.currentTarget){
+          let clickedButton = e.target.id;
+          $(`#${clickedButton}-form`).slideToggle(50);
+        }
+      }
+</script> 
+
+<script>
+    const tasksCanvas = document.getElementById('doughnut-chart-tasks').getContext('2d');
+
+    tasksCanvas.width=20;
+    tasksCanvas.height=20;
+
+    const tasksChart = new Chart(tasksCanvas, {
+            type: 'doughnut',
+            data: {
+            labels:
+            {% if tasksCount > 0 %}
+                ['Zadania nowe: {{newTasks.all.count}}','Zadania w trakcie: {{duringTasks.all.count}}','Zadania zakończone: {{doneTasks.all.count}}'],
+            {% else %}
+                ['Zadania nowe: 0','Zadania w trakcie: 0','Zadania zakończone: 0'],
+            {% endif %}
+            datasets: [
+                    {
+                        label: '',
+                        data: 
+                        {% if tasksCount > 0 %}
+                            [{{ newTasks.all.count }}, {{ duringTasks.all.count }}, {{ doneTasks.all.count }}],
+                        {% else %}
+                            [1,1,1],
+                        {% endif %}
+                        backgroundColor: [
+                        'rgba(43, 107, 100, 0.2)',
+                        'rgba(240, 239, 148, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        ],
+                        borderColor: [
+                        'rgb(43, 107, 100)',
+                        'rgb(240, 239, 148)',
+                        'rgb(255, 99, 132)',
+                        ],
+                    }],
+            },
+            options:
+            {
+                responsive: true,
+                
+                plugins:
+                {
+                    title:
+                    {
+                        display: true,
+                        text: 'Zadania',  
+                        font:
+                        {
+                            size: 40
+                        },
+                        color: '#999999',
+                    },
+                    tooltip: 
+                    {
+                        enabled: false
+                    },
+                    legend:
+                    {
+                        display: true,
+                        position: 'bottom',
+                        labels:
+                        {
+                            font: {
+                            size: 25
+                        }
+                        }
+                    }
+                }
+            }
+        });
+
+</script>
+
+<script>
+
+    function getColor(){ 
+    return "hsl(" + 360 * Math.random() + ',' +
+                (80 + 20 * Math.random()) + '%,' + 
+                (25 + 25 * Math.random()) + '%)'
+    }
+
+        
+    const farmsCanvas = document.getElementById('farms-chart-canvas').getContext('2d');
+
+
+    var config = {
+        type: 'line',
+        data: 
+        {
+            labels: 
+            [
+                {% for standard in standards %}
+                    'Dzień {{ standard.cycle_day }}',
+                {% endfor %}
+            ],
+            datasets: 
+            [
+                {
+                    label: 'Standardowa waga',
+                    data: 
+                    [
+                        {% for standard in standards %}
+                            {{ standard.average_body_weight }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                    borderColor: 'rgb(43, 107, 100)',
+                    cubicInterpolationMode: 'monotone',
+                    borderWidth: 3,
+                },
+                {% for farm in farms %}   
+                    {
+                        label: 'Waga {{ farm.name }}',
+                        data: 
+                        [
+                            {% for day in farm.cycle_set.last.day_set.all %}
+                                {{ day.average_body_weight }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0)',
+                        borderColor: getColor(),
+                        cubicInterpolationMode: 'monotone',
+                        borderWidth: 1,
+                    },
+                {% endfor %}
+            ]
+        },
+        options: 
+        {
+        plugins:
+        {
+            annotation: 
+            {
+                annotations: 
+                [
+                    {% for farm in farms %}
+                        {% for day in farm.cycle_set.last.day_set.all %}
+                            {% if day.medicationsupply_set.all.count > 0 %}
+                                {
+                                    id: 'a-line-{{supply.id}}',
+                                    type: 'line',
+                                    mode: 'vertical',
+                                    scaleID: 'x',
+                                    {% if day.cycle_day == 0 %}
+                                        value:{{day.cycle_day}},
+                                    {% else %}
+                                        value:{{day.cycle_day}} + 1,
+                                    {% endif %}
+                                    borderColor: 'rgb(251, 115, 68)',
+                                    borderWidth: 4,
+                                    label:
+                                    {
+                                        enabled: true,
+                                        position: '0%',
+                                        content: 
+                                        [
+                                            '{{farm.name}}',
+                                            {% for supply in day.medicationsupply_set.all %}
+                                                `{{supply.medication.name}} {{supply.quantity}}`,
+                                            {% endfor %}
+                                        ],
+                                        backgroundColor: 'rgba(0,0,0,0.3)',
+                                    },
+                                },
+                            {% else %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                ],
+                
+            },
+            title:
+            {
+                display: true,
+                text: 'Porównaj dane',  
+                font:
+                {
+                    size: 20
+                },
+                color: '#999999',
+            },
+            subtitle: 
+            {
+                display: true,
+                text: 'Kliknij nazwę by wyłączyć wykres',                    
+            },
+            zoom:
+            {
+                zoom:
+                {
+                    wheel: 
+                    {
+                        enabled: false,
+                    },
+                    pinch: 
+                    {
+                        enabled: false
+                    },
+                    mode: 'y',
+                    
+                },
+                pan:
+                {
+                    enabled: true,
+                }
+            }
+        },
+        scales: 
+        {
+            x:
+            {
+                {% if statsEnd > 7 %}
+                    min: {{statsEnd}} - 7,
+                    max: {{statsEnd}},
+                {% else %}
+                    min: 0,
+                    max: 7,
+                {% endif %}
+            },
+            y: 
+            {
+                beginAtZero: true,
+            }
+        }
+        }
+    };
+    const farmsChart = new Chart(farmsCanvas, config);
+
+    var financeConfig = {
+        type: 'bar',
+        data: 
+        {
+            labels: 
+            [
+                    ''
+            ],
+            datasets: 
+            [
+                {
+                    label: 'Przychody',
+                    data: 
+                    [
+                        {{companyFinance.total_revenues}}
+                    ],
+                    backgroundColor: 'rgba(81, 154, 186, 0.2)',
+                    borderColor: 'rgb(81, 154, 186)',
+                    borderWidth: 3,
+                },
+                {
+                    label: 'Wydatki',
+                    data: 
+                    [
+                        {{companyFinance.total_expenses}}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    borderWidth: 3,
+                },
+                {
+                    label: 'Saldo',
+                    data: 
+                    [
+                        {{companyFinance.total_balance}}
+                    ],
+                    backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                    borderColor: 'rgb(43, 107, 100)',
+                    borderWidth: 3,
+                },
+            ]
+        },
+        options:
+        {
+            indexAxis: 'y',
+            plugins:
+            {
+                title:
+                {
+                    display: true,
+                    text: 'Finanse',  
+                    font:
+                    {
+                        size: 20
+                    },
+                    color: '#999999',
+                },
+                subtitle: 
+                {
+                    display: true,
+                    text: 'Kliknięcie na wykres przekieruję do strony finansów',
+                }
+            },
+            onClick: () => {
+                    location.href='/finances/'
+                }
+            
+        },
+    };
+
+    const financeCanvas = $('#finances-chart-canvas');
+
+    const financeChart = new Chart(financeCanvas,financeConfig);
+
+
+    function nextDay()
+    {
+        if(farmsChart.options.scales.x.max < farmsChart.data.datasets[0].data.length)
+        {
+            farmsChart.options.scales.x.min += 1;
+            farmsChart.options.scales.x.max += 1;
+            farmsChart.update()
+        }
+    };
+
+    function previousDay()
+    {
+        if(farmsChart.options.scales.x.min > 0)
+        {
+            farmsChart.options.scales.x.min -= 1;
+            farmsChart.options.scales.x.max -= 1;
+            farmsChart.update()
+        }
+    };
+
+    var zoomActive = false;
+
+    function activateZoom(){
+        if(zoomActive){
+            farmsChart.options.plugins.zoom.zoom.wheel.enabled = false;
+            farmsChart.options.plugins.zoom.zoom.pinch.enabled = false;
+            zoomActive = false;
+        }
+        else{
+            farmsChart.options.plugins.zoom.zoom.wheel.enabled = true;
+            farmsChart.options.plugins.zoom.zoom.pinch.enabled = true;
+            zoomActive = true;
+        }
+        farmsChart.update();
+        $("#zoom-control-icon").toggleClass("fa-rotate-180")
+    }
+        
+    var waterAdded = false;
+
+    function watherDataset()
+    {
+    var data = farmsChart.data;
+        
+        if(waterAdded == false)
+        {
+            {% for farm in farms %}
+                data.datasets.push(   
+                {
+                    label: 'Pobór wody {{ farm.name }}',
+                    data: 
+                    [
+                        {% for day in farm.cycle_set.last.day_set.all %}
+                            {{ day.daily_wather_consumption }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0)',
+                    borderColor: getColor(),
+                    cubicInterpolationMode: 'monotone',
+                    borderWidth: 1,
+                },
+                );
+            {% endfor %}
+            waterAdded = true;
+        }
+        else if(waterAdded == true)
+        {
+            {% for farm in farms %}
+                for(var dataset of data.datasets)
+                {
+                    if( dataset.label == 'Pobór wody {{ farm.name }}')
+                    {
+                        data.datasets.splice(data.datasets.indexOf(dataset), 1)
+                    }
+                }
+            {% endfor %}
+            waterAdded = false;
+        }
+        farmsChart.update(); 
+        $("#water-control-icon").toggleClass("fa-rotate-180")
+    }
+
+
+
+    var feedAdded = false;
+
+    function feedDataset()
+    {
+    var data = farmsChart.data;
+        
+        if(feedAdded == false)
+        {
+            {% for farm in farms %}
+                data.datasets.push(   
+                {
+                    label: 'Pobór paszy {{ farm.name }}',
+                    data: 
+                    [
+                        {% for day in farm.cycle_set.last.day_set.all %}
+                            {{ day.feed_consumption }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0)',
+                    borderColor: getColor(),
+                    cubicInterpolationMode: 'monotone',
+                    borderWidth: 1,
+                },
+                );
+            {% endfor %}
+            feedAdded = true;
+        }
+        else if(feedAdded == true)
+        {
+            {% for farm in farms %}
+                for(var dataset of data.datasets)
+                {
+                    if( dataset.label == 'Pobór paszy {{ farm.name }}')
+                    {
+                        data.datasets.splice(data.datasets.indexOf(dataset), 1)
+                    }
+                }
+            {% endfor %}
+            feedAdded = false;
+        }
+        farmsChart.update(); 
+        $("#feed-control-icon").toggleClass("fa-rotate-180");
+    }
+
+
+    var deadAdded = false;
+
+    function deadsDataset()
+    {
+    var data = farmsChart.data;
+        
+        if(deadAdded == false)
+        {
+            {% for farm in farms %}
+                data.datasets.push(   
+                {
+                    label: 'Upadki {{ farm.name }}',
+                    data: 
+                    [
+                        {% for day in farm.cycle_set.last.day_set.all %}
+                            {{ day.deads }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0)',
+                    borderColor: getColor(),
+                    cubicInterpolationMode: 'monotone',
+                    borderWidth: 1,
+                },
+                );
+            {% endfor %}
+            deadAdded = true;
+        }
+        else if(deadAdded == true)
+        {
+            {% for farm in farms %}
+                for(var dataset of data.datasets)
+                {
+                    if( dataset.label == 'Upadki {{ farm.name }}')
+                    {
+                        data.datasets.splice(data.datasets.indexOf(dataset), 1)
+                    }
+                }
+            {% endfor %}
+            deadAdded = false;
+        }
+        farmsChart.update(); 
+        $("#deads-control-icon").toggleClass("fa-rotate-180");
+    }
+
+
+    var selectionAdded = false;
+
+    function selectionDataset()
+    {
+        var data = farmsChart.data;
+            
+            if(selectionAdded == false)
+            {
+                {% for farm in farms %}
+                data.datasets.push(   
+                    {
+                        label: 'Selekcja {{ farm.name }}',
+                        data: 
+                        [
+                            {% for day in farm.cycle_set.last.day_set.all %}
+                                {{ day.selection }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0)',
+                        borderColor: getColor(),
+                        cubicInterpolationMode: 'monotone',
+                        borderWidth: 1,
+                    },
+                    );
+                    
+                {% endfor %}
+                selectionAdded = true;
+            }
+            else if(selectionAdded == true)
+            {
+                {% for farm in farms %}
+                    for(var dataset of data.datasets)
+                    {
+                        if( dataset.label == 'Selekcja {{ farm.name }}')
+                        {
+                            data.datasets.splice(data.datasets.indexOf(dataset), 1)
+                        }
+                    }
+                {% endfor %}
+                selectionAdded = false;
+            }
+            farmsChart.update(); 
+            $("#selection-control-icon").toggleClass("fa-rotate-180");
+    }
+
+
+    var temperatureAdded = false;
+
+    function temperatureDataset()
+    {
+        var data = farmsChart.data;
+            
+            if(temperatureAdded == false)
+            {
+                {% for farm in farms %}
+                data.datasets.push(   
+                    {
+                        label: 'Temperatura {{ farm.name }}',
+                        data: 
+                        [
+                            {% for day in farm.cycle_set.last.day_set.all %}
+                                {{ day.temperature }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0)',
+                        borderColor: getColor(),
+                        cubicInterpolationMode: 'monotone',
+                        borderWidth: 1,
+                    },
+                    );
+                    
+                {% endfor %}
+                temperatureAdded = true;
+            }
+            else if(temperatureAdded == true)
+            {
+                {% for farm in farms %}
+                    for(var dataset of data.datasets)
+                    {
+                        if( dataset.label == 'Temperatura {{ farm.name }}')
+                        {
+                            data.datasets.splice(data.datasets.indexOf(dataset), 1)
+                        }
+                    }
+                {% endfor %}
+                temperatureAdded = false;
+            }
+            farmsChart.update(); 
+            $("#temperature-control-icon").toggleClass("fa-rotate-180");
+    }
+
+    var humidityAdded = false;
+
+    function humidityDataset()
+    {
+        var data = farmsChart.data;
+            
+            if(humidityAdded == false)
+            {
+                {% for farm in farms %}
+                data.datasets.push(   
+                    {
+                        label: 'Wilgotność {{ farm.name }}',
+                        data: 
+                        [
+                            {% for day in farm.cycle_set.last.day_set.all %}
+                                {{ day.humidity }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0)',
+                        borderColor: getColor(),
+                        cubicInterpolationMode: 'monotone',
+                        borderWidth: 1,
+                    },
+                    );
+                    
+                {% endfor %}
+                humidityAdded = true;
+            }
+            else if(humidityAdded == true)
+            {
+                {% for farm in farms %}
+                    for(var dataset of data.datasets)
+                    {
+                        if( dataset.label == 'Wilgotność {{ farm.name }}')
+                        {
+                            data.datasets.splice(data.datasets.indexOf(dataset), 1)
+                        }
+                    }
+                {% endfor %}
+                humidityAdded = false;
+            }
+            farmsChart.update(); 
+            $("#humidity-control-icon").toggleClass("fa-rotate-180");
+    }
+
+
+    var flag = false;
+
+    {% comment %} function addDataset(data)
+    {
+        console.log(data)
+        var data = farmsChart.data;
+        if(data = 'selection')
+        {
+            flag = selectionAdded;
+        }
+        console.log(flag);
+        {% for farm in farms %}
+            if(flag == false)
+            {
+                console.log('1 if')
+                if(data == 'selection')
+                {   
+                    console.log('2 if')
+                    data.datasets.push(
+                        {
+                            label: `Selekcja {{ farm.name }}`,
+                            data: 
+                            [
+                                {% for day in farm.cycle_set.last.day_set.all %}
+                                    {{day.selection}},
+                                {% endfor %}
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0)',
+                            borderColor: getColor(),
+                            borderWidth: 3
+                        },
+                    );
+                }
+                else if(data=='deads')
+                {
+                    data.datasets.push(   
+                        {
+                            label: `Upadki {{ farm.name }}`,
+                            data: 
+                            [
+                                {% for day in farm.cycle_set.last.day_set.all %}
+                                    {{day.deads}},
+                                {% endfor %}
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0)',
+                            borderColor: getColor(),
+                            borderWidth: 3
+                        },
+                    );
+                }
+                else if(data=='feed')
+                {
+                    data.datasets.push(   
+                        {
+                            label: `Pobór paszy {{ farm.name }}`,
+                            data: 
+                            [
+                                {% for day in farm.cycle_set.last.day_set.all %}
+                                    {{day.feed_consumption}},
+                                {% endfor %}
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0)',
+                            borderColor: getColor(),
+                            borderWidth: 3
+                        },
+                    );
+                }
+                else if(data=='water')
+                {
+                    data.datasets.push(   
+                        {
+                            label: `Pobór wody {{ farm.name }}`,
+                            data: 
+                            [
+                                {% for day in farm.cycle_set.last.day_set.all %}
+                                    {{day.daily_wather_consumption}},
+                                {% endfor %}
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0)',
+                            borderColor: getColor(),
+                            borderWidth: 3
+                        },
+                    );
+                }
+            }
+        {% endfor %}
+        flag = true;
+        console.log(flag);
+        farmsChart.update();
+    } {% endcomment %}
+</script>
+<script>
+window.onload = function() {
+  watherDataset();
+  feedDataset();
+  deadsDataset();
+};
+</script>
+        
+{% endblock %}

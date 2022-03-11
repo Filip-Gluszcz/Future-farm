@@ -1,0 +1,44 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% block main %}
+<form method="post" action="">
+    {% csrf_token %}
+    <p>
+        <label for="id_number">Numer:</label> 
+        <input type="number" name="number" value="0" required="" id="id_number">
+    </p>
+    <p>
+        <label for="id_capacity">Pojemność:</label> 
+        <input type="number" name="capacity" value="1" step="any" required="" id="id_capacity">
+    </p>
+    <p>
+        <label for="id_feet_type">Rodzaj paszy:</label> 
+        <select name="feet_type" id="id_feet_type">
+            <option value="ST" selected="">Starter</option>
+
+            <option value="GR">Grower</option>
+
+            <option value="FR">Finisher</option>
+
+        </select>
+    </p>
+    <p>
+        <label for="id_state">Stan:</label> 
+        <input type="number" name="state" value="1" step="any" required="" id="id_state">
+    </p>
+    <p>
+        <label for="id_farm">Farm:</label> 
+        <select name="farm" required="" id="id_farm">
+            <option value="" selected="">---------</option>
+            {% for farm in farms %}
+                <option value="{{farm.id}}">{{farm.name}}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <input class="orange-button float-right-button" type="submit" value="Zapisz">
+
+</form>
+
+
+{% endblock %}

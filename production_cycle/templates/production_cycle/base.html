@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0"
+      crossorigin="anonymous"
+    />
+    <link rel="shortcut icon" href="#" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static '/css/main2.css'%}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static '/css/all.min.css'%}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" 
+      integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" 
+      crossorigin="anonymous" 
+      referrerpolicy="no-referrer">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.0/chartjs-plugin-zoom.min.js" 
+      integrity="sha512-TT0wAMqqtjXVzpc48sI0G84rBP+oTkBZPgeRYIOVRGUdwJsyS3WPipsNh///ay2LJ+onCM23tipnz6EvEy2/UA==" 
+      crossorigin="anonymous" 
+      referrerpolicy="no-referrer">
+    </script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    {% comment %} <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+      integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E="
+      crossorigin="anonymous"
+    /> {% endcomment %}
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.3.1/chartjs-plugin-annotation.min.js" 
+      integrity="sha512-y7WpspnUHkKaewKb/dwPyBDJhigLAA9eH2rdvXGwZonWs/5NpSxKI6ZG2TWQVo+JY+tfNdgPgjcTGDhG/GMriA==" 
+      crossorigin="anonymous" 
+      referrerpolicy="no-referrer">
+    </script>
+    {% block scripts %} {% endblock scripts %}
+  </head>
+  <body>
+    <div class="top-container">
+      <div class="grid">
+        <div class="icon">
+          <i id="logo-icon" class="fas fa-laptop-house"></i>
+        </div>
+        <div class="farm">
+          <p id="farm-name"></p>
+          {% if cycle.farm %} {{ cycle.farm.name }} {% else %} FUTURE FARM {% endif %}
+        </div>
+
+        <div class="account">
+          <div class="account-icon">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <div class="account-username">
+            {% if userFullName %}
+              <h3>{{ userFullName }}</h3>
+            {% else %}
+              <h3>{{user.first_name}} {{user.last_name}}</h3>
+            {% endif %}
+          </div>
+          <div class="account-logout">
+            <h3>
+              Wyloguj
+              <a
+                href="{% url 'logout' %}"
+                id="menu-links"
+                class="fas fa-power-off"
+                style="padding-left: 10px; color: #FD7157"
+              ></a>
+            </h3>
+          </div>
+        </div>
+        <div class="menu-side-bar">
+          <div id="farm-list-menu-icon">
+            <a
+              id="menu-links"
+              href="{% url 'farmList' %}"
+              class="fas fa-list-ol">
+            </a>
+          </div>
+          <div id="finances-menu-icon">
+            <a
+              id="menu-links"
+              href="{% url 'finances' %}"
+              class="fas fa-file-invoice-dollar">
+            </a>
+          </div>
+          <div id="tasks-menu-icon">
+            <a
+              id="menu-links"
+              href="{% url 'tasks' %}"
+              class="fas fa-tasks"
+            ></a>
+          </div>
+          <div id="account-menu-icon">
+            <a
+              id="menu-links"
+              href="{% url 'account' %}"
+              class="fas fa-user-alt">
+            </a>
+          </div>
+        </div>
+        <div class="content-container">{% block main %} {% endblock %}</div>
+      </div>
+      {% block content %} {% endblock %}
+    </div>
+    <script>
+      tippy('.fa-list-ol', {
+          content: "Lista ferm",
+      });
+      tippy('.fa-file-invoice-dollar', {
+          content: "Finanse",
+      });
+      tippy('.fa-tasks', {
+          content: "Zadania",
+      });
+      tippy('.fa-user-alt', {
+          content: "Profil",
+      });
+  </script>
+  </body>
+</html>
+{% comment %} https://drobiarze.pl/wp-content/uploads/ {% endcomment %}

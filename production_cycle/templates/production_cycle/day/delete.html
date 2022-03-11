@@ -1,0 +1,27 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% comment %} {% block content %} {% endcomment %}
+{% block main %} 
+<div class="table-container">
+    <table class="table table-borderless">
+        <p>Nr dnia: {{day.cycle_day}}</p>
+        <p>Data: {{day.date}}</p>
+        <p>Upadki: {{day.deads}}</p>
+        <p>Selekcja: {{day.selection}}</p>
+        <p>WSD: {{day.daily_mortality_rate}}</p>
+        <p>Pobór paszy:{{day.feed_consumption}}</p>
+        <p>Pobór wody: {{day.wather_consumption}}</p>
+        <p>Śr. waga: {{day.average_body_weight}}</p>
+        <p>Temperatura: {{day.temperature}}</p>
+        <p>Wilgotność: {{day.humidity}}</p>
+        <p>Witaminy: {{day.medications}}</p>
+        <div>
+            <form method="post">{% csrf_token %}
+                <a>Czy napewno chcesz usunąć dzień ?</a>
+                <a class="btn btn-sm btn-info" href="{% url 'cycles'%}">Nie</a>
+                <input class="btn btn-sm btn-danger" type="submit" value="Tak">
+            </form>
+        </div>
+    </table>
+</div>
+{% endblock %}

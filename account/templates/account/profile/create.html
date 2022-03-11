@@ -1,0 +1,29 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="{% static '/css/main2.css'%}"
+        />
+    </head>
+    <body>
+       <div class="login-container" >
+            <h2>Dodaj profil</h2>
+            <div class="login-box table-container" >
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{form.as_p}}
+
+                    <input class="orange-button float-right-button" type="submit" value="Zapisz">
+
+                </form>
+            </div>
+       </div>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% block main %}
+<div class="account-container">
+    <div id="user-form">
+        <h3>Dane użytkownika</h3>
+        <form method="POST" action="{% url 'updateUser' user.id%}" style="margin-top:40px;">
+            {% csrf_token %}
+            <p>
+                <label id="bottom-info-box-label" for="id_first_name">Imię:</label>
+                <input id="create-cycle-input" type="text" name="first_name" value="{{user.first_name}}" maxlength="150"
+                    id="id_first_name">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_last_name">Nazwisko:</label>
+                <input id="create-cycle-input" type="text" name="last_name" value="{{user.last_name}}" maxlength="150"
+                    id="id_last_name">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_username">Login:</label>
+                <input id="create-cycle-input" type="text" name="username" value="{{user.username}}" maxlength="150"
+                    autofocus="" required="" id="id_username">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_email">Email:</label>
+                <input id="create-cycle-input" type="email" name="email" value="{{user.email}}" maxlength="254"
+                    id="id_email">
+            </p>
+
+            <input class="orange-button float-right-button" type="submit" value="Zapisz">
+        </form>
+    </div>
+    <div id="profile-form">
+        <h3>Dane profilowe</h3>
+        <form method="post" action="{% url 'updateProfile' user.profile.id%}" style="margin-top:40px;">
+            {% csrf_token %}
+            <p>
+                <label id="bottom-info-box-label" for="id_nip">Nip:</label>
+                <input id="create-cycle-input" type="number" name="nip" value="{{user.profile.nip}}" required=""
+                    id="id_nip">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_regon">Regon:</label>
+                <input id="create-cycle-input" type="number" name="regon" value="{{user.profile.regon}}" required=""
+                    id="id_regon">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_city">Miasto:</label>
+                <input id="create-cycle-input" type="text" name="city" value="{{user.profile.city}}" maxlength="30"
+                    id="id_city">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_street">Ulica:</label>
+                <input id="create-cycle-input" type="text" name="street" value="{{user.profile.street}}" maxlength="30"
+                    id="id_street">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_number">Numer domu:</label>
+                <input id="create-cycle-input" type="text" name="number" value="{{user.profile.number}}" maxlength="30"
+                    id="id_number">
+            </p>
+            <p>
+                <label id="bottom-info-box-label" for="id_postal_code">Kod pocztowy:</label>
+                <input id="create-cycle-input" type="number" name="postal_code" value="{{user.profile.postal_code}}"
+                    id="id_postal_code">
+            </p>
+
+            <input class="orange-button float-right-button" type="submit" value="Zapisz">
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

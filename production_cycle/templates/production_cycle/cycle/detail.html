@@ -1,0 +1,92 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% block content %}
+
+<div class="grid-item">
+<div>
+    <a class="btn btn-sm btn-info" href="{% url 'cycles'%}">Wróć</a>
+    <a class="btn btn-sm btn-warning" href="{% url 'updateCycle' object.id %}">Edytuj</a>
+    <a class="btn btn-sm btn-danger" href="{% url 'deleteCycle' object.id %}">Usuń</a>
+    <a class="btn btn-sm btn-info" href="{% url 'createSlaughter' %}">Dodaj ubój</a>
+    <a class="btn btn-sm btn-info" href="{% url 'createFeedDelivery' %}">Dodaj dostawę paszy</a>
+  </div>
+</div>
+<div class="grid-item">
+  <h1 id="welcome-title">Cykl</h1>
+  <table class="table table-borderless">
+    <thead>
+      <th>Nr cyklu</th>
+      <th>Data wstawienia</th>
+      <th>Hybryd</th>
+      <th>Rozmiar stada</th>
+      <th>Średnia waga pisklęcia</th>
+      <th>Wiek stada reprodukcyjnego</th>
+      <th>Wylegarnia</th>
+      <th>Aktualny rozmiar stada</th>
+      </thead>
+      <tbody>
+      <td>{{object.id}}</td>
+      <td>{{object.date_of_insertion}}</td>
+      <td>{{object.hybryd}}</td>
+      <td>{{object.herd_size}}</td>
+      <td>{{object.chick_avarage_weight}}</td>
+      <td>{{object.age_of_the_reproductive_stock}}</td>
+      <td>{{object.hatchery}}</td>
+      <td>{{object.current_herd_size}}</td>
+    </tbody>
+  </table>
+</div>
+<div class="grid-item">
+  <h1 id="welcome-title">Uboje</h1>
+  <table class="table table-borderless">
+    <thead>
+      <th>Data</th>
+      <th>Cykl</th>
+      <th>Ilość</th>
+    </thead>
+    <tbody>
+      {% for slaughter in cycle.slaughter_set.all reversed %}
+      <tr>
+        <td>{{slaughter.date}}</td>
+        <td>{{slaughter.cycle}}</td>
+        <td>{{slaughter.quantity}}</td>
+        <td>
+          <a class="btn btn-sm btn-warning" href="{% url 'updateSlaughter' slaughter.id%}">Edytuj</a>
+          <a class="btn btn-sm btn-danger" href="{% url 'deleteSlaughter' slaughter.id%}">Usuń</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="grid-item">
+  <h1 id="welcome-title">Dostawa paszy</h1>
+  <table class="table table-borderless">
+    <thead>
+      <th>Data</th>
+      <th>Rodzaj</th>
+      <th>Ilość</th>
+      <th>Cena za tonę</th>
+      <th>Cena</th>
+      <th>Cykl</th>
+      </thead>
+      <tbody>
+      {% for delivery in cycle.feeddelivery_set.all reversed %}
+      <tr>
+      <td>{{delivery.date}}</td>
+      <td>{{delivery.choices}}</td>
+      <td>{{delivery.quantity}}</td>
+      <td>{{delivery.price}}</td>
+      {% comment %} <td>{{delivery.quantity * delivery.price}}zł</td> {% endcomment %}
+      <td>{{delivery.cycle}}</td>
+      <td>
+          <a class="btn btn-sm btn-warning" href="{% url 'updateFeedDelivery' delivery.id%}">Edytuj</a>
+          <a class="btn btn-sm btn-danger" href="{% url 'deleteFeedDelivery' delivery.id%}">Usuń</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

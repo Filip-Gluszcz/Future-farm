@@ -1,0 +1,18 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% block content %}
+
+<table class="table table-borderless">
+    <p>Data: {{slaughter.date}}</p>
+    <p>Cykl: {{slaughter.cycle}}</p>
+    <p>Ilość: {{slaughter.quantity}}</p>
+<div>
+    <form method="post">{% csrf_token %}
+        <a>Czy napewno chcesz usunąć ubój ?</a>
+        <a class="btn btn-sm btn-info" href="{% url 'cycles'%}">Nie</a>
+        <input class="btn btn-sm btn-danger" type="submit" value="Tak">
+    </form>
+</div>
+</table>
+
+{% endblock %}

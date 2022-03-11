@@ -1,0 +1,39 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% block content %}
+<div class="grid-item">
+<table class="table table-borderless">
+<thead>
+  <th>Nr dnia</th>
+  <th>Data</th>
+  <th>Upadki</th>
+  <th>Selekcja</th>
+  <th>WSD</th>
+  <th>Pobór paszy</th>
+  <th>Pobór wody</th>
+  <th>Śr. waga</th>
+  <th>Temperatura</th>
+  <th>Wilgotność</th>
+  <th>Witaminy</th>
+</thead>
+<tbody>
+  <td>{{day.cycle_day}}</td>
+  <td>{{day.date}}</td>
+  <td>{{day.deads}}</td>
+  <td>{{day.selection}}</td>
+  <td>{{day.daily_mortality_rate}}</td>
+  <td>{{day.feed_consumption}}</td>
+  <td>{{day.wather_consumption}}</td>
+  <td>{{day.average_body_weight}}</td>
+  <td>{{day.temperature}}</td>
+  <td>{{day.humidity}}</td>
+  <td>{{day.medications}}</td>
+</tbody>
+</div>
+  <div>
+    <a class="btn btn-sm btn-info" href="{% url 'cycles'%}">Wróć</a>
+    <a class="btn btn-sm btn-danger" href="{% url 'cycles'%}">Usuń</a>
+  </div>
+</table>
+
+{% endblock %}

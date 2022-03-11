@@ -1,0 +1,11 @@
+{% extends 'production_cycle/base.html' %}
+{% load static %}
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <p>Usunąć dostawę paszy?</p>
+    <input type="submit" value="potwierdz">
+</form>
+
+{% endblock %}

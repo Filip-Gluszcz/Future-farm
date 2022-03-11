@@ -1,0 +1,258 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% load custom_tags %}
+
+{% block main %}
+
+<dic class="start-screen-grid">
+<div class="tasks-grid">
+    <div class="create-task">
+        <h5>Dodaj</h5>
+        <form method="post" action="{% url 'createTask' %}">
+            {% csrf_token %}
+            <p>
+            <label for="id_text">Tekst:</label>
+            <input type="text" name="text" required id="id_text" style="height:100px; width:100%;">
+            </p>
+            <p>
+            <label for="farm">Ferma:</label>
+            <select name="farm" required id="id_farm" style="width:100%;">
+                <option value="">---------</option>
+                {% for farm in farms %}
+                    <option value={{ farm.id }}>{{ farm.name }}</option>
+                {% endfor %}
+            </select>
+            </p>
+            <p>
+            
+            <select name="status" id="id_status" style="display:none;">
+                <option selected value="NEW">Nowe</option>
+            </select>
+            </p>
+            <p>
+            <label for="id_important">Ważne?</label>
+            <input id="checkbox" type="checkbox" name="important" id="id_important">
+            </p>
+            <p>
+            <input class="orange-button" type="submit" value="Zapisz"></input>
+            </p>
+        </form>
+    </div>
+    <div id="new-tasks">
+        <h5>Nowe</h5>
+        {% for task in tasks %}
+            {% if task.status == 'NEW' %}
+                <div class="task">
+                    <div id="task-farm-name">
+                        <h5>{{ task.farm.name }}</h5>
+                    </div>
+                    <div id="task-status">
+                        <form id="task-status-form" method="post" action="{% url 'updateTaskStatus' task.id%}">
+                            {% csrf_token %}
+                            <select name="status" id="id_status" style="margin-right:0px;">
+                                <option value="NEW" selected>Nowe</option>
+                                <option value="DURING">W trakcie</option>
+                                <option value="DONE">Wykonane</option>
+                            </select>
+                            <button type="submit" class="fas fa-check-circle"></button>
+                        </form>
+                        <button id="edit-task-{{task.id}}" class="orange-button float-right-button" style="width:80px; height:25px; margin-right:5px;">Edytuj</button>
+                    </div>
+                    <div id="task-text">
+                        {{ task.text }}
+                    </div>
+                    <div id="task-important">
+                        {% if task.important %}
+                            <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                        {% else %}
+                            <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="edit-task-{{task.id}}-form" style="display:none;">
+                    <form method="post" action="{% url 'updateTask' task.id %}">
+                        {% csrf_token %}
+                        <p>
+                        <label for="id_text">Tekst:</label>
+                        <input type="text" name="text" value="{{task.text}}" required id="id_text" style="height:100px; width:100%;">
+                        </p>
+                        <p>
+                        <label for="farm">Ferma:</label>
+                        <select name="farm" required id="id_farm" style="width:30%;">
+                            <option value="">---------</option>
+                            {% for farm in farms %}
+                                <option value={{ farm.id }}>{{ farm.name }}</option>
+                            {% endfor %}
+                        </select>
+                        </p>
+                        <p>
+                        
+                        <select name="status" id="id_status" style="display:none;">
+                            <option selected value="NEW">Nowe</option>
+                        </select>
+                        </p>
+                        <p>
+                        <label for="id_important">Ważne?</label>
+                        <input id="checkbox" type="checkbox" name="important" id="id_important">
+                        </p>
+                        <p>
+                        <input class="orange-button" type="submit" value="Zapisz"></input>
+                        </p>
+                    </form>
+                </div>
+            {% endif %}
+        {% empty %}
+        
+        {% endfor %}
+    </div>
+    <div id="during-tasks">
+        <h4>W trakcie</h4>
+        {% for task in tasks %}
+            {% if task.status == 'DURING' %}
+                <div class="task">
+                    <div id="task-farm-name">
+                        <h5>{{ task.farm.name }}</h5>
+                    </div>
+                    <div id="task-status">
+                        <form id="task-status-form" method="post" action="{% url 'updateTaskStatus' task.id%}">
+                            {% csrf_token %}
+                            <select name="status" id="id_status" style="margin-right:0px;">
+                                <option value="NEW">Nowe</option>
+                                <option value="DURING" selected>W trakcie</option>
+                                <option value="DONE">Wykonane</option>
+                            </select>
+                            <button type="submit" class="fas fa-check-circle"></button>   
+                        </form>
+                        <button id="edit-task-{{task.id}}" class="orange-button float-right-button" style="width:80px; height:25px; margin-right:5px;">Edytuj</button>
+                    </div>
+                    <div id="task-text">
+                        {{ task.text }}
+                    </div>
+                    <div id="task-important">
+                        {% if task.important %}
+                            <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                        {% else %}
+                            <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="edit-task-{{task.id}}-form" style="display:none;">
+                    <form method="post" action="{% url 'createTask' %}">
+                        {% csrf_token %}
+                        <p>
+                        <label for="id_text">Tekst:</label>
+                        <input type="text" name="text" required id="id_text" style="height:100px; width:100%;">
+                        </p>
+                        <p>
+                        <label for="farm">Ferma:</label>
+                        <select name="farm" required id="id_farm" style="width:30%;">
+                            <option value="">---------</option>
+                            {% for farm in farms %}
+                                <option value={{ farm.id }}>{{ farm.name }}</option>
+                            {% endfor %}
+                        </select>
+                        </p>
+                        <p>
+                        
+                        <select name="status" id="id_status" style="display:none;">
+                            <option selected value="NEW">Nowe</option>
+                        </select>
+                        </p>
+                        <p>
+                        <label for="id_important">Ważne?</label>
+                        <input id="checkbox" type="checkbox" name="important" id="id_important">
+                        </p>
+                        <p>
+                        <input class="orange-button" type="submit" value="Zapisz"></input>
+                        </p>
+                    </form>
+                </div>
+            {% endif %}
+        {% empty %}
+        
+        {% endfor %}
+    </div>
+    <div id="done-tasks">
+        <h4>Wykonane</h4>
+        {% for task in tasks %}
+            {% if task.status == 'DONE' %}
+                <div class="task">
+                    <div id="task-farm-name">
+                        <h5>{{ task.farm.name }}</h5>
+                    </div>
+                    <div id="task-status">
+                        <form id="task-status-form" method="post" action="{% url 'updateTaskStatus' task.id%}">
+                            {% csrf_token %}
+                            <select name="status" id="id_status" style="margin-right:0px;">
+                                <option value="NEW">Nowe</option>
+                                <option value="DURING">W trakcie</option>
+                                <option value="DONE" selected>Wykonane</option>
+                            </select>
+                            <button type="submit" class="fas fa-check-circle"></button>
+                        </form>
+                        <button id="edit-task-{{task.id}}" class="orange-button float-right-button" style="width:80px; height:25px; margin-right:5px;">Edytuj</button>
+                    </div>
+                    <div id="task-text">
+                        {{ task.text }}
+                    </div>
+                    <div id="task-important">
+                        {% if task.important %}
+                            <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                        {% else %}
+                            <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="edit-task-{{task.id}}-form" style="display:none;">
+                    <form method="post" action="{% url 'createTask' %}">
+                        {% csrf_token %}
+                        <p>
+                        <label for="id_text">Tekst:</label>
+                        <input type="text" name="text" required id="id_text" style="height:100px; width:100%;">
+                        </p>
+                        <p>
+                        <label for="farm">Ferma:</label>
+                        <select name="farm" required id="id_farm" style="width:30%;">
+                            <option value="">---------</option>
+                            {% for farm in farms %}
+                                <option value={{ farm.id }}>{{ farm.name }}</option>
+                            {% endfor %}
+                        </select>
+                        </p>
+                        <p>
+                        
+                        <select name="status" id="id_status" style="display:none;">
+                            <option selected value="NEW">Nowe</option>
+                        </select>
+                        </p>
+                        <p>
+                        <label for="id_important">Ważne?</label>
+                        <input id="checkbox" type="checkbox" name="important" id="id_important">
+                        </p>
+                        <p>
+                        <input class="orange-button" type="submit" value="Zapisz"></input>
+                        </p>
+                    </form>
+                </div>
+            {% endif %}
+        {% empty %}
+        
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+{% endblock %}
+{% block content %}
+<script>
+      let parent = document.querySelector('.tasks-grid');
+      parent.addEventListener("click", toggleForm, false);
+
+      function toggleForm(e) {
+        if (e.target != e.currentTarget){
+          let clickedButton = e.target.id;
+          $(`#${clickedButton}-form`).slideToggle(50);
+        }
+      }
+</script> 
+{% endblock %}

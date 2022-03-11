@@ -1,0 +1,798 @@
+{% extends 'production_cycle/base.html' %} 
+{% load static %} 
+{% load custom_tags %}
+
+{% block scripts %} 
+<script>
+      $(document).ready(function () {
+        $(".day-slider").slick({
+          slidesToShow: 4,
+          slidesToScroll: 1,
+          prevArrow:
+            '<span class="prev-arrow"><i class="fas fa-angle-left"></i></span>',
+          nextArrow:
+            '<span class="next-arrow"><i class="fas fa-angle-right"></i></span>',
+        });
+      });
+</script>
+{% endblock scripts %}
+
+{% block main %}
+<div class="start-screen-grid">
+  <div class="price-box">
+    <div class="price" >
+    {{ minrolRounded }} zł
+    </div>
+    <div class="minrol">
+      <h3 style="font-weight: bold">MinRol</h3>
+      <h3>Aktualizacja: {{minrol.date}}</h3>
+    </div>
+  </div>
+  <div class="price-box-2">
+    {% if minrolsDifference > 0 %}
+      <i class="fas fa-arrow-alt-circle-up" style="color: rgb(131, 227, 161); font-size: 40px;"></i>
+    {% else %}
+      <i class="fas fa-arrow-alt-circle-down" style="color: rgb(240, 101, 96); font-size: 40px;"></i>
+    {% endif %}
+    <div class="price" style="margin-left: 15px;">
+    <h3>
+      {{ minrolsDifference }} gr
+    </h3>
+    </div>
+  </div>
+  <div class="day-slider">
+  {% for day in cycle.day_set.all reversed %}
+    <div class="day-slide">
+      <div class="day-stats-element">
+        <h1 style="margin-bottom: 50px;text-align: center;">Dzień {{ day.cycle_day }}</h1>
+        <h5 class="smaller-text" style="margin-bottom:20px">
+          <i class="far fa-circle" style="color: rgb(137, 92, 226); margin-right:10px;"></i>
+          Śr. waga: {{ day.average_body_weight }}g
+        </h5>
+        <h5 class="smaller-text" style="margin-bottom:20px">
+          <i class="far fa-circle" style="color: rgb(122, 185, 98); margin-right:10px;"></i>
+          Upadki: {{ day.deads }}szt.
+        </h5>
+        <h5 class="smaller-text" style="margin-bottom:20px">
+          <i class="far fa-circle" style="color: rgb(231, 42, 68); margin-right:10px;"></i>
+          Woda: {{ day.daily_wather_consumption }}ml
+        </h5>
+        <h5 class="smaller-text" style="margin-bottom:20px">
+          <i class="far fa-circle" style="color: rgb(237, 213, 84); margin-right:10px;"></i>
+          Pasza: {{ day.feed_consumption }}g
+        </h5>
+        <div style="display: flex; justify-content: center;margin-top: 40px;">
+          <a id="plus-icon-scroll" class="fas fa-plus-circle" onclick="scrollDown();"></a>
+        </div>      
+      </div>
+    </div>
+  {% empty %}
+    
+  {% endfor %}
+  {% if cycle.day_set.all.count < 4 %}
+      {% for i in daysRange %}
+        <div class="day-slide">
+          <div class="day-stats-element">
+
+          </div>  
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div class="task-box">
+    {% if tasksCount == 0 %}
+        <div class="empty-task-box" style="text-align:center; padding-top: 35px">
+          <div id="tasks-title">
+            <h4>Zadania</h4>
+            <h5>Brak zadań do wykonania</h5>
+          </div>
+          <div class="empty-task-center">
+            <a id="plus-icon" class="fas fa-plus-circle" href="{% url 'tasks' %}"></a>
+            <h4>Dodaj zadanie</h4>
+          </div>
+        </div>
+      {% else %}
+        {% for task in tasks %}
+          {% if task.status != 'DONE' %}
+              <div class="task" style="padding-left:20px;">
+                  <div id="task-farm-name-cycle">
+                      <h5 id="welcome-title">{{ task.farm.name }}</h5>
+                  </div>
+                  <div id="task-status-cycle">
+                      <form id="task-status-form" method="post" action="{% url 'updateTaskStatus' task.id%}" style="float:right;">
+                          {% csrf_token %}
+                          <select name="status" id="id_status" style="margin-right:0px;">
+                              {% if task.status == 'NEW' %}
+                                <option selected value="NEW">Nowe</option>
+                                <option value="DURING">W trakcie</option>
+                                <option value="DONE">Wykonane</option>
+                              {% else %}
+                                <option value="NEW">Nowe</option>
+                                <option selected value="DURING">W trakcie</option>
+                                <option value="DONE">Wykonane</option>
+                              {% endif %}
+                          </select>
+                          <button type="submit" class="fas fa-check-circle"></button>
+                      </form>
+                  </div>
+                  <div class="smaller-text" id="task-text">
+                      {{ task.text }}
+                  </div>
+                  <div id="task-important">
+                      {% if task.important %}
+                          <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                      {% else %}
+                          <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                      {% endif %}
+                  </div>
+              </div>
+          {% endif %}
+        {% empty %}
+          
+        {% endfor %}
+        {% comment %} {% if tasksCount < 4 %}
+          {% for i in tasksRange %}
+            <div class="task" style="padding-left:20px;">
+
+            </div>
+          {% endfor %}
+        {% endif %} {% endcomment %}
+      {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+{% if cycle.status == 'CLOSED' %}
+<h1 style="text-align:center; margin-top:40px;">Podsumowanie cyklu</h1>
+<div class="closed-cycle-container">
+  <div class="background-color" id="closed-cycle-total-weight">
+  <h2>{{cycleCompleted.total_weight}}kg</h2>
+  <h5>Łączna waga odstawionego żywca</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-total-sold-units">
+  <h2>{{cycleCompleted.number_of_units_sold}}</h2>
+  <h5>Liczba sprzedanych sztuk</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-average-weight">
+  {% specyficRounded cycleCompleted.average_weight 3 as roundedAverageWeight %}
+  <h2>{{roundedAverageWeight}}g</h2>
+  <h5>Średnia waga odstawionego żywca</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-total-feed">
+  {% specyficRounded cycleCompleted.total_feed 2 as roundedTotalFeed %}
+  <h2>{{roundedTotalFeed}}kg</h2>
+  <h5>Skarmiona pasza</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-survival-rate">
+  {% specyficRounded cycleCompleted.survival_rate 2 as roundedSurvivalRate %}
+  <h2>{{roundedSurvivalRate}}%</h2>
+  <h5>Przeżywalność</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-total-days">
+  <h2>{{cycleCompleted.total_days}}</h2>
+  <h5>Liczba dni</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-fcr">
+  {% specyficRounded cycleCompleted.fcr 3 as roundedFcr %}
+  <h2>{{roundedFcr}}</h2>
+  <h5>FCR - współczynnik konwersji paszy</h5>
+  </div>
+  <div class="background-color" id="closed-cycle-eww">
+  {% specyficRounded cycleCompleted.eww 3 as roundedEww %}
+  <h2>{{roundedEww}}</h2>
+  <h5>EWW - współczynnik wydajności</h5>
+  </div>
+</div>
+{% else %}
+{% endif %}
+
+{% comment %} CHARTS {% endcomment %}
+
+<div class="charts-grid">
+  <div class="water-consumption-chart">
+    <canvas id="water-consumption-chart-canvas" height="115"></canvas>
+  </div>
+  <div class="feed-consumption-chart">
+    <canvas id="feed-consumption-chart-canvas" height="115"></canvas>
+  </div>
+  <div class="weight-chart">
+    <canvas id="weight-chart-canvas" height="75"></canvas>
+  </div>
+</div>
+
+{% comment %} RAPORTS {% endcomment %}
+
+<div class="tables-container">
+<div class="table-container">
+  <h3 id="welcome-title">Ubój
+  {% if cycle.status == 'ACTIVE' %}
+    <button id="add-slaughter" class="orange-button">Dodaj</button>
+  {% else %}
+  {% endif %}
+    
+    {% if cycle.status == 'ACTIVE' %}
+      {% if cycle.slaughter_set.all.count > 0 %}
+        {% if cycle.toaccount_set.all.count > 0 %}
+          <button id="disabled-close-cycle" class="orange-button" style="width:140px; background:#666666">Zakończ cykl</button>
+          <button class="orange-button" onclick="location.href='{% url 'finances' %}'">Finanse</button>
+        {% else %}
+          <button id="close-cycle" class="orange-button" style="width:140px;">Zakończ cykl</button>
+        {% endif %}
+      {% else %}
+      {% endif %}
+    {% else %}
+    {% endif %}
+  </h3>
+  <div id="add-slaughter-form">
+    <form method="post" action="{% url 'createSlaughter' cycle.id%}" style="margin-left:20px;">
+      {% csrf_token %}
+      <p>
+        <input type="text" name="day_id" maxlength="50" value="{{ lastDay.id }}" required id="id_day_id" style="display:none;">
+        <label for="id_quantity">Ilość sztuk:</label> 
+        <input type="number" name="quantity" value="0" required id="id_quantity">
+        <label for="id_weight">Waga w kg:</label> 
+        <input type="number" name="weight" value="0" step="any" required id="id_weight">
+        <label for="id_average_weight">Średnia waga w g:</label> 
+        <input type="number" name="average_weight" value="0" step="any" required id="id_average_weight">
+        <label for="id_slaughterhouse">Ubojnia:</label> 
+        <input type="text" name="slaughterhouse" maxlength="50" required id="id_slaughterhouse">
+        <input class="orange-button" type="submit" value="Zapisz"></input>
+      </p>
+
+    </form>
+  </div>
+  <div id="close-cycle-form" style="display:none;">
+    <form method="post" action="{% url 'createCycleCompleted' cycle.id%}" style="margin-left:20px; margin-top:30px; margin-bottom:30px">
+      {% csrf_token %}
+      <p>
+        <label for="id_total_weight">Łączna waga w kg:</label> 
+        <input type="number" name="total_weight" value="{{totalWeight}}" step="any" required id="id_total_weight">
+        
+        <label for="id_number_of_units_sold">Łączna ilość sztuk:</label> 
+        <input type="number" name="number_of_units_sold" value="{{totalSoldUnits}}" required id="id_number_of_units_sold">
+        
+        <label for="id_average_weight">Średnia waga:</label> 
+        <input type="number" name="average_weight" value="{{averageWeight}}" step="any" required id="id_average_weight">
+      </p>  
+      <p>
+        <label for="id_total_feed">Pobrana pasza w kg:</label> 
+        <input type="number" name="total_feed" value="{{totalFeed}}" step="any" required id="id_total_feed">
+
+        <label for="id_survival_rate">Przeżywalność w %:</label> 
+        <input type="number" name="survival_rate" value="{{survivalRate}}" step="any" required id="id_survival_rate">
+
+        <label for="id_total_days">Łączna liczba dni cyklu:</label> 
+        <input type="number" name="total_days" value="{{lastDay.cycle_day}}" step="any" required id="id_total_days">
+
+        <input class="orange-button" type="submit" value="Zapisz"></input>
+      </p>
+
+    </form>
+  </div>
+  <table id="table-text" class="table table-borderless table-hover">
+    <thead>
+      <th>Data</th>
+      <th>Ilość</th>
+      <th>Łączna waga</th>
+      <th>Średnia waga</th>
+      <th>Ubojnia</th>
+    </thead>
+    <tbody>
+      {% for slaughter in cycle.slaughter_set.all reversed %}
+      <tr>
+        <td>{{slaughter.date|date:"M d, Y"}}</td>
+        <td>{{slaughter.quantity}}</td>
+        <td>{{slaughter.weight}}</td>
+        <td>{{slaughter.average_weight}}</td>
+        <td>{{slaughter.slaughterhouse}}</td>
+        <td>
+          <button id="update-slaughter-{{ slaughter.id }}" class="orange-button float-right-button">Edytuj</button>
+          <button id="delete-slaughter-{{ slaughter.id }}" class="orange-button float-right-button">Usuń</button>
+        </td>
+        <div id="update-slaughter-{{ slaughter.id }}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
+          <h3 id="welcome-title">Edycja</h3>
+          <form method="post" action="{% url 'updateSlaughter' slaughter.id%}" style="margin-left:20px;">
+          {% csrf_token %}
+          <p>
+          <label for="id_day_id" style="display:none;">Day id:</label> 
+          <input type="text" name="day_id" maxlength="50" value="{{ lastDay.id }}" required id="id_day_id" style="display:none;">
+          <label for="id_quantity">Ilość sztuk:</label> 
+          <input type="number" name="quantity" value="{{slaughter.quantity}}" required id="id_quantity">
+          <label for="id_weight">Waga:</label> 
+          <input type="number" name="weight" value="{{slaughter.weight}}" step="any" required id="id_weight">
+          <label for="id_average_weight">Średnia waga:</label> 
+          <input type="number" name="average_weight" value="{{slaughter.average_weight}}" step="any" required id="id_average_weight">
+          <label for="id_slaughterhouse">Ubojnia:</label> 
+          <input type="text" name="slaughterhouse" maxlength="50" value="{{slaughter.slaughterhouse}}" required id="id_slaughterhouse">
+          <input class="orange-button" type="submit" value="Zapisz"></input>
+          </p>
+
+          </form>
+        </div>
+      </tr>
+      <div id="delete-slaughter-{{ slaughter.id }}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
+        <form method="post" action="{% url "deleteSlaughter" slaughter.id %}" style="margin-left:20px;">
+          {% csrf_token %}
+          <a>Czy napewno chcesz usunąć ubój ?</a>
+          <input class="orange-button" type="submit" value="Tak">
+        </form>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="table-container">
+  <h3 id="welcome-title">Podaż farmaceutyków
+  {% if cycle.status == 'ACTIVE' %}
+    <button id="add-medication-supply" class="orange-button">Dodaj</button>
+    <button class="orange-button" onclick="location.href='{% url 'medications' cycle.farm.id %}'" style="width:140px">Farmaceutyki</button>
+  {% else %}
+  {% endif %}
+  </h3>
+  <div id="add-medication-supply-form" style="display:none;">
+    <form  method="post" action="{% url 'createMedicationSupply' cycle.day_set.last.id %}" style="margin-left:20px;">
+      {% csrf_token %}
+      <p>
+        <label for="id_medication">Farmaceutyk:</label> 
+        <select name="medication" id="id_medication">
+          <option value="" selected></option>
+          {% for medication in medications %}
+          {% if medication.quantity > 0 %}
+            <option value="{{medication.id}}">{{medication.name}} {{medication.quantity}}</option>
+          {% else %}
+          {% endif %}
+          {% endfor %}
+        </select>
+
+        <label for="id_quantity">Ilość w ml lub g:</label> 
+        <input type="number" name="quantity" value="" step="any" required id="id_quantity">
+       
+        <input type="number" name="cycle_day" value="{{nextDayNumber}}" required id="id_cycle_day" style="display:none">
+
+        <input type="number" name="cycle" value="{{cycle.id}}" required id="id_cycle" style="display:none">
+        
+        <input class="orange-button" type="submit" value="Zapisz"</input>
+      </p>
+    </form>
+  </div>
+  <table id="table-text" class="table table-borderless table-hover">
+    <thead>
+      <th>Farmaceutyk</th>
+      <th>Typ</th>
+      <th>Podana ilość</th>
+      <th>Ilość pozostała</th>
+      <th>Dzień cyklu</th>
+      <th>Data</th>
+    </thead>
+    <tbody>
+      {% for supply in supplies reversed %}
+        <tr id="table-row">
+          <td>{{supply.medication.name}}</td>
+          <td>{{supply.medication.type}}</td>
+          <td>{{supply.quantity}}</td>
+          <td>{{supply.medication.quantity}}</td>
+          <td>Dzień {{supply.cycle_day}}</td>
+          <td>{{supply.date|date:"M d, Y"}}</td>
+          <td>
+            <button id="update-medication-supply-{{supply.id}}" class="orange-button float-right-button">Edytuj</button>
+            <button id="delete-medication-supply-{{supply.id}}" class="orange-button float-right-button">Usuń</button>
+          </td>
+          <div id="update-medication-supply-{{supply.id}}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
+            <h3 id="welcome-title">Edycja</h3>
+            <form  method="post" action="{% url 'updateMedicationSupply' supply.id %}">
+                {% csrf_token %}
+                <p>
+                  <label for="id_medication">FARMACEUTYK:</label> 
+                  <select name="medication" id="id_medication">
+                    <option value="{{supply.medication.id}}" selected>{{supply.medication.name}}</option>
+                    {% for medication in medications %}
+                    <option value="{{medication.id}}">{{medication.name}}</option>
+                    {% endfor %}
+                  </select>
+
+                  <label for="id_quantity">Ilość w ml lub g:</label> 
+                  <input type="number" name="quantity" value="{{supply.quantity}}" step="any" required id="id_quantity">
+                
+                  <input type="number" name="cycle_day" value="{{nextDayNumber}}" required id="id_cycle_day" style="display:none">
+
+                  <input type="number" name="cycle" value="{{cycle.id}}" required id="id_cycle" style="display:none">
+                  
+                  <input class="orange-button" type="submit" value="Zapisz"</input>
+                </p>
+              </form>
+          </div>
+          <div id="delete-medication-supply-{{supply.id}}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
+            <form method="post" action="{% url "deleteMedicationSupply" supply.id %}">
+              {% csrf_token %}
+              <a>Czy napewno chcesz usunąć podaż {{supply.medication.name}} ?</a>
+              <input class="orange-button" type="submit" value="Tak">
+            </form>
+          </div>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+<div class="table-container">
+  <div class="daily-raport-info-title">
+    <h3 id="welcome-title">Raporty dobowe
+    {% if cycle.status == 'ACTIVE' %}
+      {% if acttiveSilo != None %}
+        {% if acttiveSilo.state > 0 %}
+          {% if acttiveSilo.state < projectedFeedConsumption %}
+            <button id="disabled-daily-raport-low-feed-state" class="orange-button" style="background:#666666">Dodaj</button>
+            <button class="orange-button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
+          {% else %}
+            <button id="add-daily-raport" class="orange-button">Dodaj</button>
+          {% endif %}  
+        {% else %}
+          <button id="disabled-daily-raport" class="orange-button" style="background:#666666">Dodaj</button>
+          <button class="orange-button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
+        {% endif %}  
+      {% else %}
+        <button id="disabled-daily-raport" class="orange-button" style="background:#666666">Dodaj</button>
+        <button class="orange-button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
+      {% endif %}
+    {% else %}
+    {% endif %}
+    </h3>
+    <div id="add-daily-raport-form">
+      <form method="post" action="{% url 'createDay' cycle.id%}">
+      {% csrf_token %}
+      <p>
+        <input type="number" name="cycle_day" value="{{ nextDayNumber }}" required id="id_cycle_day" style="display:none;">
+        
+        <label for="id_deads">Upadki:</label> 
+        <input type="number" name="deads" value="0" required id="id_deads">
+        
+        <label for="id_selection">Selekcja:</label> 
+        <input type="number" name="selection" value="0" required id="id_selection">
+            
+        <label for="id_water_meter_value">Stan licznika wody:</label> 
+        <input type="number" name="water_meter_value" value="0" required id="id_water_meter_value">
+        
+        <label for="id_average_body_weight">Średnia waga:</label> 
+        <input type="number" name="average_body_weight" value="{{ nextDayStats.average_body_weight }}" step="any" required id="id_average_body_weight">
+      </p>
+      <p>
+        <label for="id_temperature">Temperatura:</label> 
+        <input type="number" name="temperature" value="0" step="any" required id="id_temperature">
+        
+        <label for="id_humidity">Wilgotność:</label> 
+        <input type="number" name="humidity" value="0" step="any" required id="id_humidity">
+        
+        <input class="orange-button" type="submit" value="Zapisz"></input>
+      </p>
+
+      </form>
+    </div>
+  </div>
+  <div class="daily-raport-info-grid">
+    <div class="actual-herd-size">
+        {{ cycle.current_herd_size }}
+    </div>
+    <div class="actual-size-text">
+      <div>
+        <h3 id="welcome-title">Aktualny stan stada: </h3>
+        <h3 id="welcome-title">{{ sizePercent }} %</h3>
+      </div>
+    </div>
+    <div class="left-days-chart">
+      <canvas id="doughnut-chart-canvas" width="20" height="20"></canvas>
+    </div>
+    <div class="left-days-info">
+      <div>
+        <h3 id="welcome-title">Do końca cyklu pozostało:  </h3>
+        <h3 id="welcome-title"> {{ remainingDays }} dni</h3>
+      </div>
+    </div>
+  </div>
+
+
+    <table id="table-text" class="table table-borderless table-hover">
+      <thead>
+        <th>Data</th>
+        <th>Dzień cyklu</th>
+        <th>Upadki</th>
+        <th>Selekcja</th>
+        <th>Średnia waga</th>
+        <th>Pobór wody</th>
+        <th>Pobór paszy</th>
+      </thead>
+      <tbody>
+        {% for day in cycle.day_set.all reversed %}
+        <tr>
+          <td>{{day.date|date:"M d, Y"}}</td>
+          <td>{{day.cycle_day}}</td>
+          <td>{{day.deads}}</td>
+          <td>{{day.selection}}</td>
+          <td>{{day.average_body_weight}}</td>
+          <td>{{day.daily_wather_consumption}}</td>
+          <td>{{day.feed_consumption}}</td>
+          <td>
+            <button id="update-daily-raport-{{ day.id }}" class="orange-button float-right-button">Edytuj</button>
+            <button id="delete-daily-raport-{{ day.id }}" class="orange-button float-right-button">Usuń</button>
+          </td>
+        </tr>
+        <div id="update-daily-raport-{{ day.id }}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
+          <h3 id="welcome-title">Edycja</h3>
+          <form method="post" action="{% url 'updateDay' day.id %}">
+          {% csrf_token %}
+          <p>
+            <input type="number" name="cycle_day" value="{{day.cycle_day}}" required id="id_cycle_day" style="display:none;">
+            
+            <label for="id_deads">Upadki:</label> 
+            <input type="number" name="deads" value="{{day.deads}}" required id="id_deads">
+            
+            <label for="id_selection">Selekcja:</label> 
+            <input type="number" name="selection" value="{{day.selection}}" required id="id_selection">
+            
+            <label for="id_water_meter_value">Stan licznika wody:</label> 
+            <input type="number" name="water_meter_value" value="{{ day.water_meter_value }}" required id="id_water_meter_value">    
+            
+            <label for="id_average_body_weight">Średnia waga:</label> 
+            <input type="number" name="average_body_weight" value="{{ day.average_body_weight }}" placeholder= "Norma:{{day.average_body_weight}}" step="any" required id="id_average_body_weight">
+          </p>
+          <p>
+            <label for="id_temperature">Temperatura:</label> 
+            <input type="number" name="temperature" value="{{ day.temperature }}" step="any" required id="id_temperature">
+            <label for="id_humidity">Wilgotność:</label> 
+            <input type="number" name="humidity" value="{{ day.humidity }}" step="any" required id="id_humidity">
+            <input class="orange-button" type="submit" value="Zapisz"</input>
+          </p>
+
+          </form>
+        </div>
+        <div id="delete-daily-raport-{{ day.id }}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
+          <form method="post" action="{% url "deleteDay" day.id %}">
+            {% csrf_token %}
+            <a>Czy napewno chcesz usunąć dzień ?</a>
+            <input class="orange-button" type="submit" value="Tak"></input>
+          </form>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+    tippy('#disabled-daily-raport', {
+        content: "Najpierw aktywuj silos",
+    });
+    tippy('#disabled-daily-raport-low-feed-state', {
+        content: "Za niski stan paszy - zrób dostawę",
+    });
+    tippy('#disabled-close-cycle', {
+        content: "Masz nierozliczone transakcje",
+    });
+</script>
+<script>
+
+function scrollDown(){
+  document.getElementById("add-daily-raport").scrollIntoView();
+}
+
+</script>
+<script>
+
+      let parent = document.querySelector('.tables-container');
+      parent.addEventListener("click", toggleCycleList, false);
+
+      function toggleCycleList(e) {
+        if (e.target != e.currentTarget){
+          let clickedAddButton = e.target.id
+          $(`#${clickedAddButton}-form`).slideToggle(50)
+        }
+      }
+
+</script> 
+
+<script>
+    $(document).ready(function(){
+      const watherCanvas = document.getElementById('water-consumption-chart-canvas').getContext('2d');
+      const watherChart = new Chart(watherCanvas, {
+          type: 'line',
+          data: {
+              labels: [{% for standard in standards %}
+                {% if standard.cycle_day <= statsRangeEnd %}
+                  'Dzień {{ standard.cycle_day }}',
+                {% endif %}
+              {% endfor %}],
+              datasets: [{
+                  label: 'Standardowy pobór wody',
+                  data: [{% for standard in standards %}
+                {% if standard.cycle_day <= statsRangeEnd %}
+                  {{ standard.water_consumption }},
+                {% endif %}
+              {% endfor %}],
+                  backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                  borderColor: 'rgb(43, 107, 100)',
+                  borderWidth: 1
+              },
+              {
+                  label: 'Pobór wody',
+                  data: 
+                  [{% for day in cycle.day_set.all %}
+                    {{ day.daily_wather_consumption }},
+                  {% endfor %}],
+                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                  borderColor: 'rgb(255, 99, 132)',
+                  borderWidth: 3
+              }]
+          },
+          options: 
+          {
+              plugins:
+              {
+                title:
+                {
+                    display: true,
+                    text: 'Pobór wody',  
+                    font:
+                    {
+                        size: 20
+                    },
+                    color: '#999999',
+                },
+                subtitle: 
+                {
+                    display: true,
+                    text: 'Kliknij nazwę by wyłączyć wykres',                                        
+                }
+              },
+              scales: 
+              {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+
+      const feedCanvas = document.getElementById('feed-consumption-chart-canvas').getContext('2d');
+      const feedChart = new Chart(feedCanvas, {
+          type: 'line',
+          data: {
+              labels: [{% for standard in standards %}
+                {% if standard.cycle_day <= statsRangeEnd %}
+                  'Dzień {{ standard.cycle_day }}',
+                {% endif %}
+              {% endfor %}],
+              datasets: [{
+                  label: 'Standardowy pobór paszy',
+                  data: [{% for standard in standards %}
+                {% if standard.cycle_day <= statsRangeEnd %}
+                  {{ standard.feed_consumption }},
+                {% endif %}
+              {% endfor %}],
+                  backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                  borderColor: 'rgb(43, 107, 100)',
+                  borderWidth: 1
+              },
+              {
+                  label: 'Pobór paszy',
+                  data: 
+                  [{% for day in cycle.day_set.all %}
+                    {{ day.feed_consumption }},
+                  {% endfor %}],
+                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                  borderColor: 'rgb(255, 99, 132)',
+                  borderWidth: 3
+              }]
+          },
+          options: 
+          {
+            plugins:
+              { 
+                title:
+                {
+                    display: true,
+                    text: 'Pobór paszy',  
+                    font:
+                    {
+                        size: 20
+                    },
+                    color: '#999999',
+                },
+                subtitle: 
+                {
+                    display: true,
+                    text: 'Kliknij nazwę by wyłączyć wykres',                                        
+                }
+              },
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+
+      const weightCanvas = document.getElementById('weight-chart-canvas').getContext('2d');
+      const weightChart = new Chart(weightCanvas, {
+          type: 'line',
+          data: {
+              labels: [{% for standard in standards %}
+                {% if standard.cycle_day <= statsRangeEnd %}
+                  'Dzień {{ standard.cycle_day }}',
+                {% endif %}
+              {% endfor %}],
+              datasets: 
+              [
+              {
+                  label: 'Waga',
+                  data: 
+                  [{% for day in cycle.day_set.all %}
+                    {{ day.average_body_weight }},
+                  {% endfor %}],
+                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                  borderColor: 'rgb(255, 99, 132)',
+                  borderWidth: 3
+              },
+              {
+                  label: 'Standardowa waga',
+                  data: [{% for standard in standards %}
+                {% if standard.cycle_day <= statsRangeEnd %}
+                  {{ standard.average_body_weight }},
+                {% endif %}
+              {% endfor %}],
+                  backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                  borderColor: 'rgb(43, 107, 100)',
+                  borderWidth: 3
+              }
+              ]
+          },
+          options: 
+          {
+              plugins:
+              { 
+                title:
+                {
+                    display: true,
+                    text: 'Waga',  
+                    font:
+                    {
+                        size: 20
+                    },
+                    color: '#999999',
+                },
+                subtitle: 
+                {
+                    display: true,
+                    text: 'Kliknij nazwę by wyłączyć wykres',                                        
+                }
+              },
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const doughnutCanvas = document.getElementById('doughnut-chart-canvas').getContext('2d');
+      const doughnutChart = new Chart(doughnutCanvas, {
+        type: 'doughnut',
+        data: {
+          labels:['Pozostałe dni','Dni aktualnie'],
+          datasets: [{
+            label: 'Pozostałe dni',
+            data: [49-{{cycle.day_set.all.count}},{{cycle.day_set.all.count}}],
+            backgroundColor: [
+            'rgba(43, 107, 100, 0.2)',
+            'rgba(255, 99, 132, 0.2)',
+            ],
+            borderColor: [
+            'rgb(43, 107, 100)',
+            'rgb(255, 99, 132)',
+            ],
+          }],
+        }
+      });
+    });
+    </script>
+{% endblock %}
