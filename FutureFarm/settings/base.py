@@ -135,8 +135,8 @@ BASE_DIR
 MEDIA_URL = '/media/'
 
 # Celery config
-# CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_BROKER_URL = os.environ['REDIS_URL']
+CELERY_BROKER_URL = 'redis://localhost:6379'
+# CELERY_BROKER_URL = os.environ['REDIS_URL']
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
