@@ -72,7 +72,7 @@
     <div class="top-container">
       <div class="grid">
         <div class="icon">
-          <i id="logo-icon" class="fa fa-laptop-house"></i>
+          <i id="logo-icon" class="fas fa-laptop-house"></i>
         </div>
         <div class="farm">
           <p id="farm-name"></p>
@@ -81,7 +81,7 @@
 
         <div class="account">
           <div class="account-icon">
-            <i class="fa fa-user-circle"></i>
+            <i class="fas fa-user-circle"></i>
           </div>
           <div class="account-username">
             {% if userFullName %}
@@ -96,7 +96,7 @@
               <a
                 href="{% url 'logout' %}"
                 id="menu-links"
-                class="fa fa-power-off"
+                class="fas fa-power-off"
                 style="padding-left: 10px; color: #FD7157"
               ></a>
             </h3>
@@ -107,28 +107,28 @@
             <a
               id="menu-links"
               href="{% url 'farmList' %}"
-              class="fa fa-list-ol">
+              class="fas fa-list-ol">
             </a>
           </div>
           <div id="finances-menu-icon">
             <a
               id="menu-links"
               href="{% url 'finances' %}"
-              class="fa fa-file-invoice-dollar">
+              class="fas fa-file-invoice-dollar">
             </a>
           </div>
           <div id="tasks-menu-icon">
             <a
               id="menu-links"
               href="{% url 'tasks' %}"
-              class="fa fa-tasks"
+              class="fas fa-tasks"
             ></a>
           </div>
           <div id="account-menu-icon">
             <a
               id="menu-links"
               href="{% url 'account' %}"
-              class="fa fa-user-alt">
+              class="fas fa-user-alt">
             </a>
           </div>
         </div>
