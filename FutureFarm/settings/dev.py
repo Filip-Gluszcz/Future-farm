@@ -10,3 +10,5 @@ SECRET_KEY = '&t!z4#p9l(oqnhsud3-xgf7z^neppnxdwrl#s1=(pgtmb6b#cf'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
