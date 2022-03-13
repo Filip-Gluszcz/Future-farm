@@ -1,3 +1,4 @@
+from ast import operator
 import time
 from celery.schedules import crontab
 import openpyxl
@@ -17,8 +18,11 @@ def get_ministerial_price():
     print('cena minrol')
 
     options = webdriver.ChromeOptions()
-    prefs = {'download.default_directory' : '/Users/FilipGluszcz/Desktop/Django/Projects/static'}
+    prefs = {'download.default_directory' : os.path.abspath('files')}
     options.add_experimental_option('prefs', prefs)
+    operator.add_argument("--headless")
+    operator.add_argument("--no-sandbox")
+    operator.add_argument("--disable-dev-sh-usage")
     driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), chrome_options=options)
     
     driver.get('https://www.gov.pl/web/rolnictwo/rynek-drobiu')
@@ -53,7 +57,7 @@ def get_ministerial_price():
 app.conf.beat_schedule = {
     'get_ministerial_price': {
         'task': 'get_ministerial_price',
-        'schedule': crontab(hour=12, minute=39),
+        'schedule': crontab(hour=18, minute=56),
     },
 }
 
