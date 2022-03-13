@@ -20,9 +20,9 @@ def get_ministerial_price():
     options = webdriver.ChromeOptions()
     prefs = {'download.default_directory' : os.path.abspath('files')}
     options.add_experimental_option('prefs', prefs)
-    operator.add_argument("--headless")
-    operator.add_argument("--no-sandbox")
-    operator.add_argument("--disable-dev-sh-usage")
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-sh-usage")
     driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), chrome_options=options)
     
     driver.get('https://www.gov.pl/web/rolnictwo/rynek-drobiu')
@@ -34,15 +34,17 @@ def get_ministerial_price():
     weekLink = weekElement.get_attribute('href')
     
     driver.get(weekLink)
-    driver.execute_script("window.scrollTo(0, 400)") 
-    file = driver.find_element_by_xpath('//*[@id="main-content"]/a')
+    file =  driver.find_element_by_css_selector('.file-download')
+    location = file.location["y"] - 100
+    driver.execute_script("window.scrollTo(0, %d);" %location)
     file.click()
     print('Downloading file')
 
     time.sleep(10)
     driver.close()
 
-    filePath = glob('/Users/FilipGluszcz/Desktop/Django/Projects/static/drob*.xlsx')
+    filePath = glob(os.path.abspath('files/drob*.xlsx'))
+    # filePath = glob('/Users/FilipGluszcz/Desktop/Django/Projects/static/drob*.xlsx')
     path = filePath[0]
 
     book = openpyxl.load_workbook(path)
