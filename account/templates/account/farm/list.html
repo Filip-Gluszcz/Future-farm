@@ -282,11 +282,7 @@
                                                         type: 'line',
                                                         mode: 'vertical',
                                                         scaleID: 'x',
-                                                        {% if day.cycle_day == 0 %}
-                                                            value:{{day.cycle_day}},
-                                                        {% else %}
-                                                            value:{{day.cycle_day}} + 1,
-                                                        {% endif %}
+                                                        value:{{day.cycle_day}} + 1,
                                                         borderColor: 'rgb(251, 115, 68)',
                                                         borderWidth: 4,
                                                         label:
