@@ -84,11 +84,7 @@
             <i class="fas fa-user-circle"></i>
           </div>
           <div class="account-username">
-            {% if userFullName %}
-              <h3>{{ userFullName }}</h3>
-            {% else %}
-              <h3>{{user.login}}</h3>
-            {% endif %}
+            <h3>{{user.username}}</h3>
           </div>
           <div class="account-logout">
             <h3>
