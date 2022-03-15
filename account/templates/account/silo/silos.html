@@ -146,7 +146,7 @@
                     {% if silo.state > 0 %}
                         <form method="post" action="{% url 'createStoredFeed' silo.farm.id silo.id %}" style="margin-top:10px; margin-bottom:0px;">
                             {% csrf_token %}
-                            <input type="number" name="price" value="{{silo.feeddelivery_set.last.price}}" required id="id_price" style="display:none;">
+                            <input type="number" name="price" value="{{silo.feeddelivery_set.last.price}}" step="any" required id="id_price" style="display:none;">
                             <input type="text" name="type" value="{{silo.feet_type}}" required id="id_type" style="display:none;">
                             <input type="number" name="quantity" value="{{silo.state}}" step="any" required id="id_quantity" style="display:none;">
                             <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
@@ -340,10 +340,10 @@
             <form method="post" action="{% url 'updateStoredFeed' cycle.farm.id storedFeed.id %}">
                 {% csrf_token %}
                 <label for="id_price">Cena tony:</label>
-                <input type="number" name="price" value="{{storedFeed.price}}" required id="id_price">
+                <input type="number" name="price" value="{{storedFeed.price}}" step="any" required id="id_price">
                 <input type="text" name="type" value="{{storedFeed.type}}" required id="id_type" style="display:none;">
                 <label for="id_quantity">Ilość:</label>
-                <input type="number" name="quantity" value="{{storedFeed.quantity}}" required id="id_quantity">
+                <input type="number" name="quantity" value="{{storedFeed.quantity}}" step="any" required id="id_quantity">
                 <input class="orange-button" type="submit" value="Zapisz">
             </form>
         </div>
