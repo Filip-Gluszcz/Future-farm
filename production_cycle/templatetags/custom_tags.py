@@ -9,6 +9,8 @@ register = template.Library()
 
 @register.simple_tag
 def multiply(a, b, *args, **kwargs):
+    if b == None:
+        return a * 1
     return a * b
 
 @register.simple_tag
