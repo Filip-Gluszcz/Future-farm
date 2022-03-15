@@ -170,7 +170,7 @@ class SiloListView(LoginRequiredMixin, ListView):
                 if cycle.day_set.all().count() > 1:
                     last_day = cycle.day_set.last()
                     lastDayStandard = Standard.objects.get(cycle_day=last_day.cycle_day)
-                    if (((cycle.current_herd_size * (standard.cumulative_feed_consumption / 1000)) * (lastDayStandard.feed_consumption / last_day.feed_consumption)) - last_day.total_increasing_feed_consumption) > context['activeSilo'].state:
+                    if ((cycle.current_herd_size * (standard.cumulative_feed_consumption / 1000)) * (lastDayStandard.feed_consumption / last_day.feed_consumption)) > context['activeSilo'].state + last_day.total_increasing_feed_consumption:
                         context['daysLeft'] = standard.cycle_day - last_day.cycle_day
                         break
                 else:
