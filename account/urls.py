@@ -45,6 +45,9 @@ urlpatterns = [
     
     path('silo-activate/<int:farmId>/<str:pk>', views.SiloActivateView.as_view(), name='siloActivate'),
     path('silo-deactivate/<int:farmId>/<str:pk>', views.SiloDeactivateView.as_view(), name='siloDeactivate'),
+
+    path('silo-additional-feed/<int:farmId>', views.AdditionalFeedView.as_view(), name='siloAdditionalFeed'),
+    path('silo-empty-feed/<int:farmId>', views.EmptyFeedView.as_view(), name='siloEmptyFeed'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -85,7 +85,18 @@
                 {% endif %}
             </div>
             <div id="active-silo-feed-end">
-                
+                <form method="post" action="{% url 'siloAdditionalFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
+                    {% csrf_token %}
+                    <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
+                    <input type="number" name="cycleDay" value="{{cycle.day_set.last.cycle_day}}" step="any" required id="id_cycleDay" style="display:none;">
+                    <input type="number" name="herdSize" value="{{cycle.current_herd_size}}" step="any" required id="id_herdSize" style="display:none;">
+                    <input id="additional-feed" class="orange-button" type="submit" value="Dodaj" style="width:140px">
+                </form>
+                <form method="post" action="{% url 'siloEmptyFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
+                    {% csrf_token %}
+                    <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
+                    <input id="empty-feed" class="orange-button" type="submit" value="Usuń" style="width:140px">
+                </form>
             </div>
             <div id="active-silo-feed-button">
             {% if activeSilo.state > 0 %}
@@ -361,7 +372,13 @@
         content: "Silos jest aktywny",
     });
     tippy('#active-silo-canvas', {
-        content: "Rzeczywiste zużycie paszy może się różnić od obliczanego na podstawie poboru wody. Zmagazynuj paszę i usuń jeśli w rzeczywistości silos jest pusty lub dodaj dodatkową paszę by zachować poprawność danych.",
+        content: "Rzeczywiste zużycie paszy może się różnić od obliczanego na podstawie poboru wody. Usuń paszę jeśli w rzeczywistości silos jest pusty lub dodaj dodatkową paszę by zachować poprawność danych.",
+    });
+    tippy('#additional-feed', {
+        content: "Dodatkowa pasza niewliczana w statystyki",
+    });
+    tippy('#empty-feed', {
+        content: "Opróżnienie silosa",
     });
 </script>
 <script>

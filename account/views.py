@@ -1,7 +1,8 @@
 
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.views import View
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -12,7 +13,7 @@ from django.contrib.auth import authenticate, login
 from finances.models import CompanyFinance
 
 from production_cycle.models import Cycle, Standard, StoredFeed
-from .forms import ActivateSiloForm, FarmForm, ProfileForm, RegisterForm, SiloForm, UserUpdateForm
+from .forms import ActivateSiloForm, AdditionalFeedForm, EmptyFeedForm, FarmForm, ProfileForm, RegisterForm, SiloForm, UserUpdateForm
 from .models import Farm, Profile, Silo
 from tasks.models import Task
 
@@ -207,3 +208,32 @@ class SiloDeactivateView(LoginRequiredMixin, UpdateView):
     form_class = ActivateSiloForm
     template_name = 'account/silo/create.html'
     success_url = '/silos/{farm_id}'
+
+
+class AdditionalFeedView(LoginRequiredMixin, FormView):
+    form_class = AdditionalFeedForm
+
+    def get_success_url(self):
+        return reverse('silos', kwargs={'farmId': self.kwargs['farmId']})
+
+    def form_valid(self, form):
+        activeSilo = Silo.objects.get(id=form.cleaned_data['activeSiloId'])
+        standard = Standard.objects.get(cycle_day=form.cleaned_data['cycleDay'] + 1)
+        herdSize = form.cleaned_data['herdSize']
+        activeSilo.state += (standard.feed_consumption * herdSize) / 1000
+        activeSilo.save()
+        return super().form_valid(form)
+
+
+class EmptyFeedView(LoginRequiredMixin, FormView):
+    form_class = EmptyFeedForm
+
+    def get_success_url(self):
+        return reverse('silos', kwargs={'farmId': self.kwargs['farmId']})
+
+    def form_valid(self, form):
+        activeSilo = Silo.objects.get(id=form.cleaned_data['activeSiloId'])
+        activeSilo.state = 0
+        activeSilo.save()
+        return super().form_valid(form)
+

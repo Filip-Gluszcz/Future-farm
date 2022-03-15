@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import ModelForm
@@ -38,3 +39,11 @@ class ActivateSiloForm(ModelForm):
     class Meta:
         model = Silo
         fields = ['active']
+
+class AdditionalFeedForm(forms.Form):
+    activeSiloId = forms.IntegerField()
+    cycleDay = forms.IntegerField()
+    herdSize = forms.IntegerField()
+    
+class EmptyFeedForm(forms.Form):
+    activeSiloId = forms.IntegerField()
