@@ -27,7 +27,8 @@
                 </div>  
                 <div id="last-feed-price-cost">
                     <h5>
-                        {% multiply lastFeedDelivery.quantity lastFeedDelivery.price %}zł
+                        {% multiply lastFeedDelivery.quantity lastFeedDelivery.price as lastFeedCost %}
+                        {% specyficRounded lastFeedCost 2 %}zł
                     </h5>
                 </div>      
             {% else %}
@@ -248,7 +249,8 @@
                         {{delivery.price}}zł/t
                     </div>
                     <div id="delivery-li-cost">
-                        {% multiply delivery.quantity delivery.price %}zł
+                        {% multiply delivery.quantity delivery.price as cost %}
+                        {% specyficRounded cost 2 %}zł
                     </div>
                     <div id="delivery-li-buttons">
                         <button id="update-feed-delivery-{{delivery.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
