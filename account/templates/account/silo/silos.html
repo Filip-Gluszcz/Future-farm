@@ -85,18 +85,23 @@
                 {% endif %}
             </div>
             <div id="active-silo-feed-end">
-                <form method="post" action="{% url 'siloAdditionalFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
-                    {% csrf_token %}
-                    <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
-                    <input type="number" name="cycleDay" value="{{cycle.day_set.last.cycle_day}}" step="any" required id="id_cycleDay" style="display:none;">
-                    <input type="number" name="herdSize" value="{{cycle.current_herd_size}}" step="any" required id="id_herdSize" style="display:none;">
-                    <input id="additional-feed" class="orange-button" type="submit" value="Dodaj" style="width:140px">
-                </form>
-                <form method="post" action="{% url 'siloEmptyFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
-                    {% csrf_token %}
-                    <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
-                    <input id="empty-feed" class="orange-button" type="submit" value="Usuń" style="width:140px">
-                </form>
+                {% if activeSilo.state > 0 %}
+                    <form method="post" action="{% url 'siloAdditionalFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
+                        {% csrf_token %}
+                        <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
+                        <input type="number" name="cycleDay" value="{{cycle.day_set.last.cycle_day}}" step="any" required id="id_cycleDay" style="display:none;">
+                        <input type="number" name="herdSize" value="{{cycle.current_herd_size}}" step="any" required id="id_herdSize" style="display:none;">
+                        <input id="additional-feed" class="orange-button" type="submit" value="Dodaj" style="width:140px">
+                    </form>
+                    <form method="post" action="{% url 'siloEmptyFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
+                        {% csrf_token %}
+                        <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
+                        <input id="empty-feed" class="orange-button" type="submit" value="Usuń" style="width:140px">
+                    </form>
+                {% else %}
+                    <button id="disabled" class="orange-button" style="width:140px; margin-left:10px; background:#666666;">Dodaj</button>
+                    <button id="disabled" class="orange-button" style="width:140px; margin-left:10px; margin-top:10px; background:#666666;">Usuń</button>
+                {% endif %}
             </div>
             <div id="active-silo-feed-button">
             {% if activeSilo.state > 0 %}
@@ -109,7 +114,7 @@
                     <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
                 </form>
             {% else %}
-                <button id="disabled-store-feed" class="orange-button" style="width:140px; margin-left:10px; background:#666666;">Magazynuj</button>
+                <button id="disabled" class="orange-button" style="width:140px; margin-left:10px; background:#666666;">Magazynuj</button>
             {% endif %}
             {% if activeSilo != None %}
                 <form method="post" action="{% url 'siloDeactivate' activeSilo.farm.id activeSilo.id %}" style="margin-top:10px; margin-bottom:0px;">
@@ -118,7 +123,7 @@
                     <input class="orange-button" type="submit" value="Deaktywuj" style="width:140px">
                 </form>
             {% else %}
-                <button class="orange-button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Deaktywuj</button>
+                <button id="disabled" class="orange-button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Deaktywuj</button>
             {% endif %}
             </div>
         </div>
@@ -364,6 +369,9 @@
 <script>
     tippy('#disabled-store-feed', {
         content: "Silos jest pusty",
+    });
+    tippy('#disabled', {
+        content: "Brak aktywnego silosa",
     });
     tippy('#disabled-activate-silo', {
         content: "Dodaj dostawę by aktywować",
