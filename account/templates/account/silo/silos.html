@@ -27,8 +27,8 @@
                 </div>  
                 <div id="last-feed-price-cost">
                     <h5>
-                        {% comment %} {% multiply lastFeedDelivery.quantity lastFeedDelivery.price as lastFeedCost %}
-                        {% specyficRounded lastFeedCost 2 %}zł {% endcomment %}
+                        {% multiply lastFeedDelivery.quantity lastFeedDelivery.price as lastFeedCost %}
+                        {% specyficRounded lastFeedCost 2 %}zł
                     </h5>
                 </div>      
             {% else %}
