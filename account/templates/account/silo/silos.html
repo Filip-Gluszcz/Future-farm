@@ -92,7 +92,7 @@
                 <form method="post" action="{% url 'createStoredFeed' activeSilo.farm.id activeSilo.id %}" style="margin-top:10px; margin-bottom:0px;">
                     {% csrf_token %}
                     {% comment %} {% rounded activeSilo.state as roundedState %} {% endcomment %}
-                    <input type="number" name="price" value="{{activeSilo.feeddelivery_set.last.price}}" required id="id_price" style="display:none;">
+                    <input type="number" name="price" value="{{activeSilo.feeddelivery_set.last.price}}" step="any" required id="id_price" style="display:none;">
                     <input type="text" name="type" value="{{activeSilo.feet_type}}" required id="id_type" style="display:none;">
                     <input type="number" name="quantity" value="{{activeSilo.state}}" step="any" required id="id_quantity" style="display:none;">
                     <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
