@@ -10,27 +10,50 @@
         </div>
         <div id="active-silo-last-feed-delivery">
             {% if activeSilo != None %}
-                <div id="feed-depletion-date">
-                    <h4 style="margin-bottom:0px;">
-                        Prognozowane wyczerpanie paszy - {{daysLeft}} dni
-                    </h4>
-                </div>      
-                <div id="last-feed-type">
-                    <h5>
-                        {{lastFeedDelivery.choices}} - {{lastFeedDelivery.quantity}}t   
-                    </h5>
-                </div>  
-                <div id="last-feed-quantity">
-                    <h5>
-                        {{lastFeedDelivery.price}}zł/t
-                    </h5>
-                </div>  
-                <div id="last-feed-price-cost">
-                    <h5>
-                        {% multiply lastFeedDelivery.quantity lastFeedDelivery.price as lastFeedCost %}
-                        {% specyficRounded lastFeedCost 2 %}zł
-                    </h5>
-                </div>      
+                {% if lastFeedDelivery %}
+                    <div id="feed-depletion-date">
+                        <h4 style="margin-bottom:0px;">
+                            Prognozowane wyczerpanie paszy - {{daysLeft}} dni
+                        </h4>
+                    </div>      
+                    <div id="last-feed-type">
+                        <h5>
+                            {{lastFeedDelivery.choices}} - {{lastFeedDelivery.quantity}}t   
+                        </h5>
+                    </div>  
+                    <div id="last-feed-quantity">
+                        <h5>
+                            {{lastFeedDelivery.price}}zł/t
+                        </h5>
+                    </div>  
+                    <div id="last-feed-price-cost">
+                        <h5>
+                            {% multiply lastFeedDelivery.quantity lastFeedDelivery.price as lastFeedCost %}
+                            {% specyficRounded lastFeedCost 2 %}zł
+                        </h5>
+                    </div> 
+                {% else %}
+                    <div id="feed-depletion-date">
+                        <h4 style="margin-bottom:0px;">
+                            Prognozowane wyczerpanie paszy - {{daysLeft}} dni
+                        </h4>
+                    </div> 
+                    <div id="last-feed-type">
+                        <h5>
+                            Brak danych  
+                        </h5>
+                    </div>  
+                    <div id="last-feed-quantity">
+                        <h5>
+                            Brak danych
+                        </h5>
+                    </div>  
+                    <div id="last-feed-price-cost">
+                        <h5>
+                            Brak danych
+                        </h5>
+                    </div> 
+                {% endif %}     
             {% else %}
                 <div id="feed-depletion-date">
                     <h4 style="margin-bottom:0px;">
@@ -85,7 +108,7 @@
                 {% endif %}
             </div>
             <div id="active-silo-feed-end">
-                {% if activeSilo.state > 0 %}
+                {% if activeSilo %}
                     <form method="post" action="{% url 'siloAdditionalFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
                         {% csrf_token %}
                         <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
@@ -162,7 +185,11 @@
                     {% if silo.state > 0 %}
                         <form method="post" action="{% url 'createStoredFeed' silo.farm.id silo.id %}" style="margin-top:10px; margin-bottom:0px;">
                             {% csrf_token %}
-                            <input type="number" name="price" value="{{silo.feeddelivery_set.last.price}}" step="any" required id="id_price" style="display:none;">
+                            {% if silo.feeddelivery_set.last %}
+                                <input type="number" name="price" value="{{silo.feeddelivery_set.last.price}}" step="any" required id="id_price" style="display:none;">
+                            {% else %}
+                                <input type="number" name="price" value="0" step="any" required id="id_price" style="display:none;">
+                            {% endif %}
                             <input type="text" name="type" value="{{silo.feet_type}}" required id="id_type" style="display:none;">
                             <input type="number" name="quantity" value="{{silo.state}}" step="any" required id="id_quantity" style="display:none;">
                             <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
