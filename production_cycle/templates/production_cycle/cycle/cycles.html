@@ -192,7 +192,37 @@
 {% endif %}
 
 {% comment %} CHARTS {% endcomment %}
-
+<div class="general-chart-container">
+  <div class="general-chart-grid" style="padding-top: 5px; padding-bottom: 5px;">
+    <div id="general-chart">
+      <canvas id="general-chart-canvas" height="120"></canvas>
+    </div>
+    <div id="general-chart-all-days-button">
+      <button class="chart-control-button inline" onclick="allDays();">
+          <i id="all-days-control-icon" class="fas fa-toggle-on fa-rotate-180"></i>
+      </button>
+      <h5 class="inline">Wszystkie dni</h5>
+    </div>
+    <div id="general-chart-last-week-button">
+      <button class="chart-control-button inline" onclick="lastWeek();">
+          <i id="last-week-control-icon" class="fas fa-toggle-on"></i>
+      </button>
+      <h5 class="inline">Ostatnie 7 dni</h5>
+    </div>
+    <div id="general-chart-previous-day-button">
+      <button class="chart-control-button inline" onclick="previousDay();">
+          <i id="previous-day-control-icon" class="fas fa-arrow-alt-circle-left"></i>
+      </button>
+      <h5 class="inline">Poprzedni dzień</h5>
+    </div>
+    <div id="general-chart-next-day-button">
+      <button class="chart-control-button inline" onclick="nextDay();">
+          <i id="next-day-control-icon" class="fas fa-arrow-alt-circle-right"></i>
+      </button>
+      <h5 class="inline">Następny dzień</h5>
+    </div>
+  </div>
+</div>
 <div class="charts-grid">
   <div class="water-consumption-chart">
     <canvas id="water-consumption-chart-canvas" height="115"></canvas>
@@ -593,20 +623,291 @@ function scrollDown(){
 </script> 
 
 <script>
-    $(document).ready(function(){
+    
+      
+      const generalChartCanvas = document.getElementById('general-chart-canvas').getContext('2d');
+      const generalChart = new Chart(generalChartCanvas,
+      {
+          type: 'line',
+          data: 
+          {
+              labels: 
+              [
+                  {% for standard in standards %}
+                      {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
+                          'Dzień {{ standard.cycle_day }}',
+                      {% endif %}
+                  {% endfor %}
+              ],
+              datasets: 
+              [
+                  
+                  {
+                      label: 'Waga',
+                      data: 
+                      [
+                          {% for day in cycle.day_set.all %}
+                              {{ day.average_body_weight }},
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(255, 99, 132, 0)',
+                      borderColor: 'rgb(255, 99, 132)',
+                      {% comment %} borderColor: '#519ABA', {% endcomment %}
+                      borderWidth: 1,
+                      cubicInterpolationMode: 'monotone',
+                  },
+                  {
+                      label: 'Pobór wody',
+                      data: 
+                      [
+                          {% for day in cycle.day_set.all %}
+                              {{ day.daily_wather_consumption }},
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(81, 154, 186, 0)',
+                      borderColor: 'rgb(81, 154, 186)',
+                      {% comment %} borderColor: '#519ABA', {% endcomment %}
+                      borderWidth: 1,
+                      cubicInterpolationMode: 'monotone',
+                  },
+                  {
+                      label: 'Pobór paszy',
+                      data: 
+                      [
+                          {% for day in cycle.day_set.all %}
+                              {{ day.feed_consumption }},
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(240, 239, 148, 0)',
+                      borderColor: 'rgb(240, 239, 148)',
+                      {% comment %} borderColor: '#519ABA', {% endcomment %}
+                      borderWidth: 1,
+                      cubicInterpolationMode: 'monotone',
+                  },
+                  {
+                      label: 'Upadki',
+                      data: 
+                      [
+                          {% for day in cycle.day_set.all %}
+                              {{ day.deads }},
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(137, 92, 226, 0)',
+                      borderColor: 'rgb(137, 92, 226)',
+                      {% comment %} borderColor: '#519ABA', {% endcomment %}
+                      borderWidth: 1,
+                      cubicInterpolationMode: 'monotone',
+                  },
+                  {
+                      label: 'Selekcja',
+                      data: 
+                      [
+                          {% for day in cycle.day_set.all %}
+                              {{ day.selection }},
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(176, 148, 233, 0)',
+                      borderColor: 'rgb(176, 148, 233)',
+                      {% comment %} borderColor: '#519ABA', {% endcomment %}
+                      borderWidth: 1,
+                      cubicInterpolationMode: 'monotone',
+                  },
+                  {
+                      label: 'Standardowa waga',
+                      data: 
+                      [
+                          {% for standard in standards %}
+                              {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
+                                  {{ standard.average_body_weight }},
+                              {% endif %}
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(43, 107, 100, 0.2)',
+                      borderColor: 'rgb(43, 107, 100)',
+                      borderWidth: 3,
+                      cubicInterpolationMode: 'monotone',
+                      hidden: true
+                  },
+                  {
+                      label: 'Standardowy pobór wody',
+                      data: 
+                      [
+                          {% for standard in standards %}
+                              {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
+                                  {{ standard.water_consumption }},
+                              {% endif %}
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(131, 227, 161, 0.2)',
+                      borderColor: 'rgb(131, 227, 161)',
+                      borderWidth: 3,
+                      cubicInterpolationMode: 'monotone',
+                      hidden: true
+                  },
+                  {
+                      label: 'Standardowy pobór paszy',
+                      data: 
+                      [
+                          {% for standard in standards %}
+                              {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
+                                  {{ standard.feed_consumption }},
+                              {% endif %}
+                          {% endfor %}
+                      ],
+                      backgroundColor: 'rgba(102, 240, 47, 0.2)',
+                      borderColor: 'rgb(102, 240, 47)',
+                      borderWidth: 3,
+                      cubicInterpolationMode: 'monotone',
+                      hidden: true
+                  },
+              ]
+          },
+          options: 
+              {
+                  plugins:
+                  {  
+                      title:
+                      {
+                          display: true,
+                          text: 'Wykres parametrów cyklu',  
+                          font:
+                          {
+                              size: 20
+                          },
+                          color: '#999999',
+                      },
+                      subtitle: 
+                      {
+                          display: true,
+                          text: 'Kliknij nazwę by wyłączyć wykres',
+                          
+                      },
+                      autocolors: false,
+                      annotation: {
+                          annotations: 
+                          [
+                              {% for day in cycle.day_set.all %}
+                                  {% if day.medicationsupply_set.all.count > 0 %}
+                                      {
+                                          id: 'a-line-{{supply.id}}',
+                                          type: 'line',
+                                          mode: 'vertical',
+                                          scaleID: 'x',
+                                          value:{{day.cycle_day}} + 1,
+                                          borderColor: 'rgb(251, 115, 68)',
+                                          borderWidth: 4,
+                                          label:
+                                          {
+                                              enabled: true,
+                                              position: '0%',
+                                              content: 
+                                              [
+                                                  {% for supply in day.medicationsupply_set.all %}
+                                                      `{{supply.medication.name}} {{supply.quantity}}`,
+                                                  {% endfor %}
+                                              ],
+                                              backgroundColor: 'rgba(0,0,0,0.3)',
+                                          },
+                                      },
+                                  {% else %}
+                                  {% endif %}
+                              {% endfor %}
+                          ],
+                          
+                      }
+                  },
+                  scales: 
+                  {     
+                      x:
+                      {
+                          min: 0,
+                          max: {{cycle.day_set.last.cycle_day}},
+                      },                               
+                      y: 
+                      {
+                          beginAtZero: true
+                      }
+                  }
+              }
+      });
+
+      function nextDay()
+      {
+          if(generalChart.options.scales.x.max < generalChart.data.datasets[0].data.length)
+          {
+              generalChart.options.scales.x.min += 1;
+              generalChart.options.scales.x.max += 1;
+              generalChart.update()
+          }
+      };
+
+      function previousDay()
+      {
+          if(generalChart.options.scales.x.min > 0)
+          {
+              generalChart.options.scales.x.min -= 1;
+              generalChart.options.scales.x.max -= 1;
+              generalChart.update()
+          }
+      };
+
+      var allDaysMode = true;
+
+      function allDays()
+      {
+        if(allDaysMode==false){
+          generalChart.options.scales.x.min = 0;
+          generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.update();
+          allDaysMode = true;
+          $("#all-days-control-icon").toggleClass("fa-rotate-180");
+          $("#last-week-control-icon").toggleClass("fa-rotate-180");
+        }
+        else
+        {
+          generalChart.options.scales.x.min = {{cycle.day_set.last.cycle_day}} - 6;
+          generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.update();
+          allDaysMode = false;
+          $("#last-week-control-icon").toggleClass("fa-rotate-180");
+          $("#all-days-control-icon").toggleClass("fa-rotate-180");
+        }
+      };
+
+      function lastWeek()
+      {
+        if(allDaysMode){
+          generalChart.options.scales.x.min = {{cycle.day_set.last.cycle_day}} - 6;
+          generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.update();
+          allDaysMode = false;
+          $("#last-week-control-icon").toggleClass("fa-rotate-180");
+          $("#all-days-control-icon").toggleClass("fa-rotate-180");
+        }
+        else
+        {
+          generalChart.options.scales.x.min = 0;
+          generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.update();
+          allDaysMode = true;
+          $("#all-days-control-icon").toggleClass("fa-rotate-180");
+          $("#last-week-control-icon").toggleClass("fa-rotate-180");
+        }
+      };
+
       const watherCanvas = document.getElementById('water-consumption-chart-canvas').getContext('2d');
       const watherChart = new Chart(watherCanvas, {
           type: 'line',
           data: {
               labels: [{% for standard in standards %}
-                {% if standard.cycle_day <= statsRangeEnd %}
+                {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
                   'Dzień {{ standard.cycle_day }}',
                 {% endif %}
               {% endfor %}],
               datasets: [{
                   label: 'Standardowy pobór wody',
                   data: [{% for standard in standards %}
-                {% if standard.cycle_day <= statsRangeEnd %}
+                {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
                   {{ standard.water_consumption }},
                 {% endif %}
               {% endfor %}],
@@ -659,14 +960,14 @@ function scrollDown(){
           type: 'line',
           data: {
               labels: [{% for standard in standards %}
-                {% if standard.cycle_day <= statsRangeEnd %}
+                {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
                   'Dzień {{ standard.cycle_day }}',
                 {% endif %}
               {% endfor %}],
               datasets: [{
                   label: 'Standardowy pobór paszy',
                   data: [{% for standard in standards %}
-                {% if standard.cycle_day <= statsRangeEnd %}
+                {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
                   {{ standard.feed_consumption }},
                 {% endif %}
               {% endfor %}],
@@ -718,7 +1019,7 @@ function scrollDown(){
           type: 'line',
           data: {
               labels: [{% for standard in standards %}
-                {% if standard.cycle_day <= statsRangeEnd %}
+                {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
                   'Dzień {{ standard.cycle_day }}',
                 {% endif %}
               {% endfor %}],
@@ -737,7 +1038,7 @@ function scrollDown(){
               {
                   label: 'Standardowa waga',
                   data: [{% for standard in standards %}
-                {% if standard.cycle_day <= statsRangeEnd %}
+                {% if standard.cycle_day <= cycle.day_set.last.cycle_day %}
                   {{ standard.average_body_weight }},
                 {% endif %}
               {% endfor %}],
@@ -793,6 +1094,6 @@ function scrollDown(){
           }],
         }
       });
-    });
+    
     </script>
 {% endblock %}

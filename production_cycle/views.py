@@ -50,12 +50,13 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
         if context['lastDay'] != None:
             if context['lastDay'].cycle_day < 4:
                 context['daysRange'] = range(4 - context['lastDay'].cycle_day)
-        
-            context['nextDayNumber'] = context['lastDay'].cycle_day + 1
-            context['nextDayStats'] = Standard.objects.get(cycle_day=context['nextDayNumber'])
-            context['projectedFeedConsumption'] = (context['nextDayStats'].feed_consumption * context['cycle'].current_herd_size) / 1000
+
+            if context['lastDay'].cycle_day < 49:
+                context['nextDayNumber'] = context['lastDay'].cycle_day + 1
+                context['nextDayStats'] = Standard.objects.get(cycle_day=context['nextDayNumber'])
+                context['projectedFeedConsumption'] = (context['nextDayStats'].feed_consumption * context['cycle'].current_herd_size) / 1000
+            
             context['remainingDays'] = 49 - context['lastDay'].cycle_day
-            context['statsRangeEnd'] = context['nextDayNumber'] + 4
             context['totalFeed'] = context['lastDay'].total_increasing_feed_consumption
         
         if context['cycle'].herd_size > 0:
