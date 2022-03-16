@@ -271,39 +271,6 @@
                                         text: 'Kliknij nazwę by wyłączyć wykres',
                                         
                                     },
-                                    autocolors: false,
-                                    annotation: {
-                                        annotations: 
-                                        [
-                                            {% for day in farm.cycle_set.last.day_set.all %}
-                                                {% if day.medicationsupply_set.all.count > 0 %}
-                                                    {
-                                                        id: 'a-line-{{supply.id}}',
-                                                        type: 'line',
-                                                        mode: 'vertical',
-                                                        scaleID: 'x',
-                                                        value:{{day.cycle_day}} + 1,
-                                                        borderColor: 'rgb(251, 115, 68)',
-                                                        borderWidth: 4,
-                                                        label:
-                                                        {
-                                                            enabled: true,
-                                                            position: '0%',
-                                                            content: 
-                                                            [
-                                                                {% for supply in day.medicationsupply_set.all %}
-                                                                    `{{supply.medication.name}} {{supply.quantity}}`,
-                                                                {% endfor %}
-                                                            ],
-                                                            backgroundColor: 'rgba(0,0,0,0.3)',
-                                                        },
-                                                    },
-                                                {% else %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        ],
-                                        
-                                    }
                                 },
                                 scales: 
                                 {     
