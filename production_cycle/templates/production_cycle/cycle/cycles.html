@@ -859,6 +859,7 @@ function scrollDown(){
         if(allDaysMode==false){
           generalChart.options.scales.x.min = 0;
           generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = -45)
           generalChart.update();
           allDaysMode = true;
           $("#all-days-control-icon").toggleClass("fa-rotate-180");
@@ -868,6 +869,7 @@ function scrollDown(){
         {
           generalChart.options.scales.x.min = {{cycle.day_set.last.cycle_day}} - 6;
           generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = 0)
           generalChart.update();
           allDaysMode = false;
           $("#last-week-control-icon").toggleClass("fa-rotate-180");
@@ -880,6 +882,7 @@ function scrollDown(){
         if(allDaysMode){
           generalChart.options.scales.x.min = {{cycle.day_set.last.cycle_day}} - 6;
           generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = 0)
           generalChart.update();
           allDaysMode = false;
           $("#last-week-control-icon").toggleClass("fa-rotate-180");
@@ -889,6 +892,7 @@ function scrollDown(){
         {
           generalChart.options.scales.x.min = 0;
           generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
+          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = -45)
           generalChart.update();
           allDaysMode = true;
           $("#all-days-control-icon").toggleClass("fa-rotate-180");
