@@ -96,14 +96,15 @@
     </div>
     <div class="compare-block-chart">
         <div id="doughnut-chart-tasks-text">
-            <h1 style="margin-top:10px;">{{ activeCycles }}</h1>
-            <h5 style="margin-top:0px;">Liczba 
-            <br>
-            aktywntch cykli</h5>
-            <h1 style="margin-top:10px;">{{ closedCycles }}</h1>
-            <h5 style="margin-top:0px;">Liczba 
-            <br>
-            zakończonych cykli</h5>
+            <div id="active-cycles">
+                <h4>Aktywne cykle: {{ activeCycles }}</h4>
+            </div>
+            <div id="closed-cycles">
+                <h4>Zakończone cykle: {{ closedCycles }}</h4>
+            </div>
+            <div id="to-account">
+                <h4>Do rozliczenia: {{ closedCycles }}</h4>
+            </div>
         </div>
         <canvas id="doughnut-chart-tasks"></canvas>
     </div>
@@ -713,28 +714,26 @@
             data: {
             labels:
             {% if tasksCount > 0 %}
-                ['Zadania nowe: {{newTasks.all.count}}','Zadania w trakcie: {{duringTasks.all.count}}','Zadania zakończone: {{doneTasks.all.count}}'],
+                ['Zadania nowe: {{newTasks.all.count}}','Zadania w trakcie: {{duringTasks.all.count}}'],
             {% else %}
-                ['Zadania nowe: 0','Zadania w trakcie: 0','Zadania zakończone: 0'],
+                ['Zadania nowe: 0','Zadania w trakcie: 0'],
             {% endif %}
             datasets: [
                     {
                         label: '',
                         data: 
                         {% if tasksCount > 0 %}
-                            [{{ newTasks.all.count }}, {{ duringTasks.all.count }}, {{ doneTasks.all.count }}],
+                            [{{ newTasks.all.count }}, {{ duringTasks.all.count }}],
                         {% else %}
                             [1,1,1],
                         {% endif %}
                         backgroundColor: [
                         'rgba(43, 107, 100, 0.2)',
                         'rgba(240, 239, 148, 0.2)',
-                        'rgba(255, 99, 132, 0.2)',
                         ],
                         borderColor: [
                         'rgb(43, 107, 100)',
                         'rgb(240, 239, 148)',
-                        'rgb(255, 99, 132)',
                         ],
                     }],
             },

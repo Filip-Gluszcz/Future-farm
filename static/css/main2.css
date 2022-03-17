@@ -600,13 +600,43 @@ body {
 
 #doughnut-chart-tasks-text{
   grid-column: 1/2;
-  text-align: center;
+  /* padding-top: 15px; */
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
 }
+
+#doughnut-chart-tasks-text h4{
+  margin-bottom: 0px;
+}
+
+#active-cycles{
+  grid-row: 1/2;
+}
+
+#closed-cycles{
+  grid-row: 2/3;
+}
+
+#to-account{
+  grid-row: 3/4;
+}
+
+
+
+#active-cycles,
+#closed-cycles,
+#to-account{
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  /* justify-content: center; */
+}
+
 
 #doughnut-chart-tasks{
   grid-column: 2/3;
   width:100% !important;
-  height:100% !important;
+  height:95% !important;
 }
 
 .farms-container{
@@ -1871,8 +1901,7 @@ button[type="submit"]
 }
 
 .finances-chart{
-  padding-top: 0px;
-  padding-left: 0px;
+  padding: 0px;
   padding-right: 5px;
   grid-column: 1/2;
 }
