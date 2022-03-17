@@ -15,7 +15,8 @@
     {% specyficRounded totalBalance 3 as totalBalanceRounded %}
         <h2 style="color:rgb(43, 107, 100)">{{totalBalanceRounded}}tys zł</h2>
     {% else %}
-        <h2 style="color:rgb(43, 107, 100)">{{companyFinance.total_balance}}zł</h2>
+    {% specyficRounded companyFinance.total_balance 2 as companyBalanceRounded%}
+        <h2 style="color:rgb(43, 107, 100)">{{companyBalanceRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Saldo</h4>
@@ -32,7 +33,8 @@
     {% specyficRounded totalRevenues 3 as totalRevenuesRounded %}
         <h2 style="color:rgb(81, 154, 186)">{{totalRevenuesRounded}}tys zł</h2>
     {% else %}
-        <h2 style="color:rgb(81, 154, 186)">{{companyFinance.total_revenues}}zł</h2>
+    {% specyficRounded companyFinance.total_revenues 2 as companyRevenuesRounded%}
+        <h2 style="color:rgb(81, 154, 186)">{{companyRevenuesRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Przychody</h4>
@@ -49,7 +51,8 @@
     {% specyficRounded totalExpenses 3 as totalExpensesRounded %}
         <h2 style="color:rgb(255, 99, 132)">{{totalExpensesRounded}}tys zł</h2>
     {% else %}
-        <h2 style="color:rgb(255, 99, 132)">{{companyFinance.total_expenses}}zł</h2>
+    {% specyficRounded companyFinance.total_expenses 2 as companyExpensesRounded%}
+        <h2 style="color:rgb(255, 99, 132)">{{companyExpensesRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Wydatki</h4>
@@ -66,7 +69,8 @@
     {% specyficRounded totalContributions 3 as totalContributionsRounded %}
         <h2>{{totalContributionsRounded}}tys zł</h2>
     {% else %}
-        <h2>{{companyFinance.total_contributions}}zł</h2>
+    {% specyficRounded companyFinance.total_contributions 2 as companyContributionsRounded%}
+        <h2>{{companyContributionsRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Wpłaty</h4>
@@ -82,7 +86,8 @@
     {% specyficRounded totalWithdrawal 3 as totalWithdrawalRounded %}
         <h2>{{totalWithdrawalRounded}}tys zł</h2>
     {% else %}
-        <h2>{{companyFinance.total_withdrawal}}zł</h2>
+    {% specyficRounded companyFinance.total_withdrawal 2 as companyWithdrawalRounded%}
+        <h2>{{companyWithdrawalRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Wypłaty</h4>
@@ -179,7 +184,8 @@
     {% specyficRounded totalBalance 3 as totalBalanceRounded %}
         <h2 style="color:rgb(43, 107, 100)">{{totalBalanceRounded}}tys zł</h2>
     {% else %}
-        <h2 style="color:rgb(43, 107, 100)">{{farm.total_balance}}zł</h2>
+    {% specyficRounded farm.total_balance 2 as farmBalanceRounded%}
+        <h2 style="color:rgb(43, 107, 100)">{{farmBalanceRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Saldo</h4>
@@ -196,7 +202,8 @@
     {% specyficRounded totalRevenues 3 as totalRevenuesRounded %}
         <h2 style="color:rgb(81, 154, 186)">{{totalRevenuesRounded}}tys zł</h2>
     {% else %}
-        <h2 style="color:rgb(81, 154, 186)">{{farm.total_revenues}}zł</h2>
+    {% specyficRounded farm.total_revenues 2 as farmRevenuesRounded%}
+        <h2 style="color:rgb(81, 154, 186)">{{farmRevenuesRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Przychody</h4>
@@ -213,7 +220,8 @@
     {% specyficRounded totalExpenses 3 as totalExpensesRounded %}
         <h2 style="color:rgb(255, 99, 132)">{{totalExpensesRounded}}tys zł</h2>
     {% else %}
-        <h2 style="color:rgb(255, 99, 132)">{{farm.total_expenses}}zł</h2>
+    {% specyficRounded farm.total_expenses 2 as farmExpensesRounded%}
+        <h2 style="color:rgb(255, 99, 132)">{{farmExpensesRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Wydatki</h4>
@@ -230,7 +238,8 @@
     {% specyficRounded totalContributions 3 as totalContributionsRounded %}
         <h2>{{totalContributionsRounded}}tys zł</h2>
     {% else %}
-        <h2>{{farm.total_contributions}}zł</h2>
+        {% specyficRounded farm.total_contributions 2 as farmContributionsRounded%}
+        <h2>{{farmContributionsRounded}}zł</h2>
     {% endif %}
     {% endif %}
         <h4>Wpłaty</h4>
@@ -246,6 +255,7 @@
     {% specyficRounded totalWithdrawal 3 as totalWithdrawalRounded %}
         <h2>{{totalWithdrawalRounded}}tys zł</h2>
     {% else %}
+    {% specyficRounded farm.total_withdrawal 2 as farmWithdrawalRounded%}
         <h2>{{farm.total_withdrawal}}zł</h2>
     {% endif %}
     {% endif %}
