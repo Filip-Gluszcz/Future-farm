@@ -65,12 +65,12 @@ class Day(models.Model):
             daily_mortality_rate = 0
         self.daily_mortality_rate = round(daily_mortality_rate, 4)
         if self.cycle_day > 0:
-            last_day = Day.objects.filter(cycle=cycle).last()
-            if last_day.cycle_day == self.cycle_day:
-                last_day = Day.objects.filter(cycle=cycle).order_by('-cycle_day')[1]
+            previousDay = Day.objects.get(cycle_day=self.cycle_day-1, cycle=cycle)
+            if previousDay.cycle_day == self.cycle_day:
+                previousDay = Day.objects.filter(cycle=cycle).order_by('-cycle_day')[1]
             
             water_meter_value = self.water_meter_value
-            total_water = water_meter_value - last_day.water_meter_value
+            total_water = water_meter_value - previousDay.water_meter_value
             self.total_water = total_water
 
             if herd_size > 0:
@@ -85,10 +85,10 @@ class Day(models.Model):
 
             self.total_feed = (feed_consumption * herd_size) / 1000
 
-            increasing_feed_consumption = last_day.increasing_feed_consumption + feed_consumption
+            increasing_feed_consumption = previousDay.increasing_feed_consumption + feed_consumption
             self.increasing_feed_consumption = increasing_feed_consumption
 
-            total_increasing_feed_consumption = last_day.total_increasing_feed_consumption + self.total_feed
+            total_increasing_feed_consumption = previousDay.total_increasing_feed_consumption + self.total_feed
             self.total_increasing_feed_consumption = total_increasing_feed_consumption
 
             fcr = increasing_feed_consumption / self.average_body_weight
