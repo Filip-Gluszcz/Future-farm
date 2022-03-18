@@ -820,7 +820,7 @@ function scrollDown(){
                                           {
                                               enabled: true,
                                               position: '0%',
-                                              rotation: -45,
+                                              rotation: -90,
                                               content: 
                                               [
                                                   {% for supply in day.medicationsupply_set.all %}
@@ -879,7 +879,7 @@ function scrollDown(){
         if(allDaysMode==false){
           generalChart.options.scales.x.min = 0;
           generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
-          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = -45)
+          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = -90)
           generalChart.update();
           allDaysMode = true;
           $("#all-days-control-icon").toggleClass("fa-rotate-180");
@@ -912,7 +912,7 @@ function scrollDown(){
         {
           generalChart.options.scales.x.min = 0;
           generalChart.options.scales.x.max = {{cycle.day_set.last.cycle_day}};
-          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = -45)
+          generalChart.options.plugins.annotation.annotations.map(annotation => annotation.label.rotation = -90)
           generalChart.update();
           allDaysMode = true;
           $("#all-days-control-icon").toggleClass("fa-rotate-180");
