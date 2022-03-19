@@ -282,6 +282,9 @@
     <form method="post" action="{% url 'createCycleCompleted' cycle.id%}" style="margin-left:20px; margin-top:30px; margin-bottom:30px">
       {% csrf_token %}
       <p>
+        <label for="id_total_days">Łączna liczba dni cyklu:</label> 
+        <input type="number" name="total_days" value="{{lastDay.cycle_day}}" step="any" required id="id_total_days">
+
         <label for="id_total_weight">Łączna waga w kg:</label> 
         <input type="number" name="total_weight" value="{{totalWeight}}" step="any" required id="id_total_weight">
         
@@ -298,9 +301,6 @@
 
         <label for="id_survival_rate">Przeżywalność w %:</label> 
         <input type="number" name="survival_rate" value="{{survivalRate}}" step="any" required id="id_survival_rate">
-
-        <label for="id_total_days">Łączna liczba dni cyklu:</label> 
-        <input type="number" name="total_days" value="{{lastDay.cycle_day}}" step="any" required id="id_total_days">
 
         <input class="button" type="submit" value="Zapisz"></input>
       </p>
