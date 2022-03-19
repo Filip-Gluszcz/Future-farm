@@ -162,7 +162,8 @@ class SiloListView(LoginRequiredMixin, ListView):
         context['silos'] = context['silos'].filter(farm=farm)
         context['storedFeeds'] = StoredFeed.objects.filter(farm=farm)
         cycle = Cycle.objects.filter(farm=farm).last()
-        context['cycle'] = cycle
+        context['cycles'] = Cycle.objects.filter(farm=farm)
+        context['lastCycle'] = cycle
         standards = Standard.objects.filter(cycle_day__gte=cycle.day_set.last().cycle_day)
         try:
             context['activeSilo'] = Silo.objects.get(active=True, farm=farm)

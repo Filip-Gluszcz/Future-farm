@@ -112,8 +112,8 @@
                     <form method="post" action="{% url 'siloAdditionalFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
                         {% csrf_token %}
                         <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
-                        <input type="number" name="cycleDay" value="{{cycle.day_set.last.cycle_day}}" step="any" required id="id_cycleDay" style="display:none;">
-                        <input type="number" name="herdSize" value="{{cycle.current_herd_size}}" step="any" required id="id_herdSize" style="display:none;">
+                        <input type="number" name="cycleDay" value="{{lastCycle.day_set.last.cycle_day}}" step="any" required id="id_cycleDay" style="display:none;">
+                        <input type="number" name="herdSize" value="{{lastCycle.current_herd_size}}" step="any" required id="id_herdSize" style="display:none;">
                         <input id="additional-feed" class="button" type="submit" value="Dodaj" style="width:140px">
                     </form>
                     <form method="post" action="{% url 'siloEmptyFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
@@ -152,7 +152,7 @@
         </div>
     </div>
     <div id="silos-panel-list">
-    {% for silo in silos %}
+    {% for silo in silos reversed %}
         <div class="silo-list-item">
             <div id="silo-icon">
                 <div id="silo-icon-holder">
@@ -238,7 +238,7 @@
             </div>
         </div>
         <div id="add-feed-delivery-{{silo.id}}-form" style="display:none; margin-left:20px">
-            <form  method="post" action="{% url 'createFeedDelivery' cycle.farm.id cycle.id%}">
+            <form  method="post" action="{% url 'createFeedDelivery' lastCycle.farm.id lastCycle.id%}">
             {% csrf_token %}
             <p>
                 <label for="id_choices">Rodzaj paszy:</label> 
@@ -269,12 +269,8 @@
 <div class="lists-container">
     <div id="deliveries-list">
         <h3 style="margin-left:20px;">Dostawy</h3>
-        {% for silo in silos reversed %}
-            {% if silo.feeddelivery_set.last %}
-                {% comment %} <h3 style="margin-left:20px;">Dostawy do silosa {{silo.number}}</h3> {% endcomment %}
-            {% else %}
-            {% endif %}
-            {% for delivery in silo.feeddelivery_set.all %}
+        {% for cycle in cycles reversed %}
+            {% for delivery in cycle.feeddelivery_set.all reversed %}
                 <div class="delivery-li">
                     <div id="delivery-li-cycle">
                         {{delivery.cycle}}
@@ -352,7 +348,7 @@
                 {{roundedQuantity}}kg
             </div>
             <div id="stored-feed-li-restore">
-                <form method="post" action="{% url 'restoreFeed' cycle.farm.id %}" style="margin-top:15px; margin-bottom:0px; float:right">
+                <form method="post" action="{% url 'restoreFeed' lastCycle.farm.id %}" style="margin-top:15px; margin-bottom:0px; float:right">
                     {% csrf_token %}
                     <p>
                         <input type="number" name="storedFeedId" value="{{storedFeed.id}}" required id="id_storedFeedId" style="display:none;">
@@ -373,14 +369,14 @@
             </div>
         </div>
         <div id="delete-stored-feed-{{storedFeed.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
-            <form method="post" action="{% url "deleteStoredFeed" cycle.farm.id storedFeed.id %}">
+            <form method="post" action="{% url "deleteStoredFeed" lastCycle.farm.id storedFeed.id %}">
             {% csrf_token %}
             <a>Czy napewno chcesz usunąć zmagazynowaną paszę ?</a>
             <input class="button" type="submit" value="Tak">
             </form>
         </div>
         <div id="update-stored-feed-{{storedFeed.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
-            <form method="post" action="{% url 'updateStoredFeed' cycle.farm.id storedFeed.id %}">
+            <form method="post" action="{% url 'updateStoredFeed' lastCycle.farm.id storedFeed.id %}">
                 {% csrf_token %}
                 <label for="id_price">Cena tony:</label>
                 <input type="number" name="price" value="{{storedFeed.price}}" step="any" required id="id_price">
