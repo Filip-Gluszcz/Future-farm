@@ -7,6 +7,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.signals import post_delete, post_save, pre_save, pre_delete
+from django.db.models import Sum
 from django.dispatch import Signal, receiver
 from django.urls import reverse, reverse_lazy
 
@@ -58,6 +59,7 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
             
             context['remainingDays'] = 49 - context['lastDay'].cycle_day
             context['totalFeed'] = context['lastDay'].total_increasing_feed_consumption
+            context['totalFeedDelivery'] = FeedDelivery.objects.filter(cycle=context['cycle']).aggregate(Sum('quantity'))
         
         if context['cycle'].herd_size > 0:
             context['sizePercent'] = int((
