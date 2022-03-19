@@ -219,14 +219,15 @@ body {
 #plus-icon{
   font-size: 60px;
   /* color: rgb(253, 115, 59); */
-  color: #FD7157;
-  
+  /* color: #FD7157; */
+  color: #0B5959;
   margin-right: 20px;
 }
 
 #plus-icon-scroll{
   font-size: 60px;
-  color: #FD7157;
+  /* color: #FD7157; */
+  color: #0B5959;
 }
 
 #plus-icon:hover{
@@ -241,8 +242,8 @@ body {
   background: rgba(255, 255, 255, 0.03);
   border-style: solid;
   /* border-color: rgb(253, 115, 59); */
-  border-color: #FD7157;
-  
+  /* border-color: #FD7157; */
+  border-color: #0B5959;
 }
 
 .empty-day-slider {margin-right: 15px;}
@@ -281,7 +282,8 @@ body {
   grid-row: 1/3;
   font-size: 80px;
   /* color: rgb(253, 115, 59); */
-  color: #FD7157;
+  /* color: #FD7157; */
+  color: #0B5959;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,8 +293,12 @@ body {
   grid-column: 2/4;
   grid-row: 1/2;
   display: flex;
-  align-items: center;
+  align-items:flex-end;
   padding-left: 15px;
+}
+
+.account-username h3{
+  margin: 0px;
 }
 
 .account-logout {
@@ -323,16 +329,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 60px;
+  font-size: 70px;
   /* color: rgb(253, 115, 59); */
-  color: #FD7157;
+  /* color: #FD7157; */
+  color: #0B5959;
 }
 
 #farm-list-menu-icon:hover,
 #finances-menu-icon:hover,
 #tasks-menu-icon:hover,
 #account-menu-icon:hover {
-  font-size: 70px;
+  font-size: 80px;
 }
 
 #farm-list-menu-icon {
@@ -1094,7 +1101,8 @@ body {
   top: -70px;
   cursor: pointer;
   /* color: rgb(253, 115, 59); */
-  color: #FD7157;
+  /* color: #FD7157; */
+  color: #0B5959;
   font-size: 50px;
 }
 
@@ -1153,7 +1161,7 @@ body {
   overflow: scroll;
 }
 
-.orange-button {
+.button {
   height: 30px;
   width: 110px;
   font-size: medium;
@@ -1164,17 +1172,13 @@ body {
   margin-right: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   /* background: #C7592A; */
-  background: #FD7157;
+  /* background: #FD7157; */
+  background: #0B5959;
   color: #04283c;
   justify-content: center;
   align-items: center;
   text-decoration: none;
   font-weight: bold;
-}
-
-.orange-button:hover
-{
-  color: #d9d9d9;
 }
 
 .orange-border-button
@@ -1187,8 +1191,8 @@ body {
   color: #FD7157;
 }
 
-.orange-button:hover {
-  background: rgba(253, 113, 87, 0.7);
+.button:hover {
+  background: #0B3B3B;
   color: #d9d9d9;
 }
 
@@ -1230,7 +1234,7 @@ body {
 }
 
 .fa-rotate-180{
-  color: rgb(43, 107, 100);
+  color: rgb(131, 227, 161);
 }
 
 /* .fa-toggle-on{
@@ -1880,7 +1884,7 @@ button[type="submit"]
 }
 
 .info-row{
-  height: 275px;
+  height: 265px;
   margin: 20px;
   margin-top: 0px;
   display: grid;
@@ -1897,6 +1901,7 @@ button[type="submit"]
 }
 
 .farm-form{
+  padding-top: 10px;
   grid-column: 2/3;
 }
 

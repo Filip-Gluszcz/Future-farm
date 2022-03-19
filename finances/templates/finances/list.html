@@ -110,7 +110,7 @@
                 {{toAccount.title}}
             </div>
             <div id="to-account-li-buttons">
-                <button id="settle-to-account-{{toAccount.id}}" class="orange-button">Rozlicz</button>
+                <button id="settle-to-account-{{toAccount.id}}" class="button">Rozlicz</button>
             </div>
         </div>
         <div id="settle-to-account-{{toAccount.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:10px; text-align:left">
@@ -159,7 +159,7 @@
                     <input type="number" name="cycle" required value="{{toAccount.cycle.id}}" id="id_cycle" style="display:none;">
                 </p>
                 <p>
-                    <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                    <input id="create-cycle-input" class="button" type="submit" value="Zapisz"></input>
                 </p>
             </form>
         </div>
@@ -339,13 +339,13 @@
         <div id="transactions-buttons">
             <h2 style="float:left; margin-right:40px; margin-left:20px">Rozliczenia</h2>
             {% if farm.farm.cycle_set.all.count > 0 %}
-            <button id="create-transaction-{{farm.id}}" class="orange-button" style="width:160px">Dodaj rozliczenie</button>
-            <button id="create-contribution-{{farm.id}}" class="orange-button" style="width:160px">Dodaj wpłate</button>
-            <button id="create-withdrawal-{{farm.id}}" class="orange-button" style="width:160px">Dodaj wypłatę</button>
+            <button id="create-transaction-{{farm.id}}" class="button" style="width:160px">Dodaj rozliczenie</button>
+            <button id="create-contribution-{{farm.id}}" class="button" style="width:160px">Dodaj wpłate</button>
+            <button id="create-withdrawal-{{farm.id}}" class="button" style="width:160px">Dodaj wypłatę</button>
             {% else %}
-            <button id="disabled" class="orange-button" style="width:160px; background:#666666">Dodaj rozliczenie</button>
-            <button id="disabled" class="orange-button" style="width:160px; background:#666666">Dodaj wpłate</button>
-            <button id="disabled" class="orange-button" style="width:160px; background:#666666">Dodaj wypłatę</button>
+            <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj rozliczenie</button>
+            <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj wpłate</button>
+            <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj wypłatę</button>
             {% endif %}
         </div>
         <div id="transactions-list">
@@ -395,7 +395,7 @@
                         <input type="number" name="cycle" required value="{{farm.farm.cycle_set.last.id}}" id="id_cycle" style="display:none;">
                     </p>
                     <p>
-                        <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                        <input id="create-cycle-input" class="button" type="submit" value="Zapisz"></input>
                     </p>
                 </form>
             </div>
@@ -416,7 +416,7 @@
                         <input type="number" name="farm" required value="{{farm.farm.id}}" id="id_farm" style="display:none;">
                         <input type="number" name="cycle" required value="{{farm.farm.cycle_set.last.id}}" id="id_cycle" style="display:none;">
 
-                        <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                        <input id="create-cycle-input" class="button" type="submit" value="Zapisz"></input>
                     </p>
                 </form>
             </div>
@@ -437,7 +437,7 @@
                         <input type="number" name="farm" required value="{{farm.farm.id}}" id="id_farm" style="display:none;">
                         <input type="number" name="cycle" required value="{{farm.farm.cycle_set.last.id}}" id="id_cycle" style="display:none;">
 
-                        <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                        <input id="create-cycle-input" class="button" type="submit" value="Zapisz"></input>
                     </p>
                 </form>
             </div>
@@ -481,15 +481,15 @@
                             {{transaction.cycle}}
                         </div>
                         <div id="transaction-li-buttons">
-                            <button id="update-transaction-{{transaction.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
-                            <button id="delete-transaction-{{transaction.id}}" class="orange-button">Usuń</button>
+                            <button id="update-transaction-{{transaction.id}}" class="button" style="margin-bottom:5px;">Edytuj</button>
+                            <button id="delete-transaction-{{transaction.id}}" class="button">Usuń</button>
                         </div>
                     </div>
                     <div id="delete-transaction-{{transaction.id}}-form" style="display:none; padding-top:10px; padding-bottom:30px;">
                         <form method="post" action="{% url 'deleteTransaction' transaction.id %}" style="margin-left:20px;">
                             {% csrf_token %}
                             <a>Czy napewno chcesz usunąć rozliczenie ?</a>
-                            <input class="orange-button" type="submit" value="Tak">
+                            <input class="button" type="submit" value="Tak">
                         </form>
                     </div>
                     <div id="update-transaction-{{transaction.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:10px; text-align:left">
@@ -538,7 +538,7 @@
                                 <input type="number" name="cycle" required value="{{transaction.cycle.id}}" id="id_cycle" style="display:none;">
                             </p>
                             <p>
-                                <input id="create-cycle-input" class="orange-button" type="submit" value="Zapisz"></input>
+                                <input id="create-cycle-input" class="button" type="submit" value="Zapisz"></input>
                             </p>
                         </form>
                     </div>

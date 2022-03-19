@@ -167,10 +167,10 @@ class SiloListView(LoginRequiredMixin, ListView):
         try:
             context['activeSilo'] = Silo.objects.get(active=True, farm=farm)
             context['lastFeedDelivery'] = context['activeSilo'].feeddelivery_set.last()
+            lastDay = cycle.day_set.last()
             standardFeedConsumption = 0
             for standard in standards:
                 if cycle.day_set.all().count() > 1:
-                    lastDay = cycle.day_set.last()
                     lastDayStandard = Standard.objects.get(cycle_day=lastDay.cycle_day)
                     standardFeedConsumption += ((standard.feed_consumption * cycle.current_herd_size) / 1000) * (lastDay.feed_consumption / lastDayStandard.feed_consumption)
                     if standardFeedConsumption > context['activeSilo'].state:

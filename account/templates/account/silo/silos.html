@@ -114,16 +114,16 @@
                         <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
                         <input type="number" name="cycleDay" value="{{cycle.day_set.last.cycle_day}}" step="any" required id="id_cycleDay" style="display:none;">
                         <input type="number" name="herdSize" value="{{cycle.current_herd_size}}" step="any" required id="id_herdSize" style="display:none;">
-                        <input id="additional-feed" class="orange-button" type="submit" value="Dodaj" style="width:140px">
+                        <input id="additional-feed" class="button" type="submit" value="Dodaj" style="width:140px">
                     </form>
                     <form method="post" action="{% url 'siloEmptyFeed' activeSilo.farm.id %}" style="margin-top:10px; margin-bottom:0px;">
                         {% csrf_token %}
                         <input type="number" name="activeSiloId" value="{{activeSilo.id}}" step="any" required id="id_activeSiloId" style="display:none;">
-                        <input id="empty-feed" class="orange-button" type="submit" value="Usuń" style="width:140px">
+                        <input id="empty-feed" class="button" type="submit" value="Usuń" style="width:140px">
                     </form>
                 {% else %}
-                    <button id="disabled" class="orange-button" style="width:140px; margin-left:10px; background:#666666;">Dodaj</button>
-                    <button id="disabled" class="orange-button" style="width:140px; margin-left:10px; margin-top:10px; background:#666666;">Usuń</button>
+                    <button id="disabled" class="button" style="width:140px; margin-left:10px; background:#666666;">Dodaj</button>
+                    <button id="disabled" class="button" style="width:140px; margin-left:10px; margin-top:10px; background:#666666;">Usuń</button>
                 {% endif %}
             </div>
             <div id="active-silo-feed-button">
@@ -134,19 +134,19 @@
                     <input type="number" name="price" value="{{activeSilo.feeddelivery_set.last.price}}" step="any" required id="id_price" style="display:none;">
                     <input type="text" name="type" value="{{activeSilo.feet_type}}" required id="id_type" style="display:none;">
                     <input type="number" name="quantity" value="{{activeSilo.state}}" step="any" required id="id_quantity" style="display:none;">
-                    <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
+                    <input class="button" type="submit" value="Magazynuj" style="width:140px">
                 </form>
             {% else %}
-                <button id="disabled" class="orange-button" style="width:140px; margin-left:10px; background:#666666;">Magazynuj</button>
+                <button id="disabled" class="button" style="width:140px; margin-left:10px; background:#666666;">Magazynuj</button>
             {% endif %}
             {% if activeSilo != None %}
                 <form method="post" action="{% url 'siloDeactivate' activeSilo.farm.id activeSilo.id %}" style="margin-top:10px; margin-bottom:0px;">
                     {% csrf_token %}
                     <input id="checkbox" type="checkbox" name="active" id="id_active" style="display:none;">
-                    <input class="orange-button" type="submit" value="Deaktywuj" style="width:140px">
+                    <input class="button" type="submit" value="Deaktywuj" style="width:140px">
                 </form>
             {% else %}
-                <button id="disabled" class="orange-button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Deaktywuj</button>
+                <button id="disabled" class="button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Deaktywuj</button>
             {% endif %}
             </div>
         </div>
@@ -181,7 +181,7 @@
             </div>
             <div id="silo-controls-wrapper">
                 <div id="silo-buttons">
-                    <button id="add-feed-delivery-{{silo.id}}" class="orange-button" style="margin-top:10px; width:140px">Dostawa</button>
+                    <button id="add-feed-delivery-{{silo.id}}" class="button" style="margin-top:10px; width:140px">Dostawa</button>
                     {% if silo.state > 0 %}
                         <form method="post" action="{% url 'createStoredFeed' silo.farm.id silo.id %}" style="margin-top:10px; margin-bottom:0px;">
                             {% csrf_token %}
@@ -192,20 +192,20 @@
                             {% endif %}
                             <input type="text" name="type" value="{{silo.feet_type}}" required id="id_type" style="display:none;">
                             <input type="number" name="quantity" value="{{silo.state}}" step="any" required id="id_quantity" style="display:none;">
-                            <input class="orange-button" type="submit" value="Magazynuj" style="width:140px">
+                            <input class="button" type="submit" value="Magazynuj" style="width:140px">
                         </form>
                         {% if silo.active != True %}
                             <form method="post" action="{% url 'siloActivate' silo.farm.id silo.id %}" style="margin-top:10px; margin-bottom:0px;">
                                 {% csrf_token %}
                                 <input checked id="checkbox" type="checkbox" name="active" id="id_active" style="display:none;">
-                                <input class="orange-button" type="submit" value="Aktywuj" style="width:140px">
+                                <input class="button" type="submit" value="Aktywuj" style="width:140px">
                             </form>
                         {% else %}
-                            <button id="silo-is-active" class="orange-button" style="margin-top:10px; width:140px; background:#666666;">Aktywuj</button>
+                            <button id="silo-is-active" class="button" style="margin-top:10px; width:140px; background:#666666;">Aktywuj</button>
                         {% endif %}
                     {% else %}
-                        <button id="disabled-store-feed" class="orange-button" style="margin-top:10px; width:140px; background:#666666;">Magazynuj</button>
-                        <button id="disabled-activate-silo" class="orange-button" style="margin-top:10px; width:140px; background:#666666;">Aktywuj</button>
+                        <button id="disabled-store-feed" class="button" style="margin-top:10px; width:140px; background:#666666;">Magazynuj</button>
+                        <button id="disabled-activate-silo" class="button" style="margin-top:10px; width:140px; background:#666666;">Aktywuj</button>
                     {% endif %}
                 </div>
                 <div id="silo-info-1">
@@ -257,7 +257,7 @@
             <p>
                 <label for="id_price">Cena za tone:</label> 
                 <input type="number" name="price" value="1" step="any" required id="id_price">
-                <input class="orange-button" type="submit" value="Zapisz"</input>
+                <input class="button" type="submit" value="Zapisz"</input>
             </p>
             </form>
         </div>
@@ -296,15 +296,15 @@
                         {% specyficRounded cost 2 %}zł
                     </div>
                     <div id="delivery-li-buttons">
-                        <button id="update-feed-delivery-{{delivery.id}}" class="orange-button" style="margin-bottom:5px;">Edytuj</button>
-                        <button id="delete-feed-delivery-{{delivery.id}}" class="orange-button">Usuń</button>
+                        <button id="update-feed-delivery-{{delivery.id}}" class="button" style="margin-bottom:5px;">Edytuj</button>
+                        <button id="delete-feed-delivery-{{delivery.id}}" class="button">Usuń</button>
                     </div>
                 </div>
                 <div id="delete-feed-delivery-{{delivery.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
                     <form method="post" action="{% url "deleteFeedDelivery" delivery.id %}">
                     {% csrf_token %}
                     <a>Czy napewno chcesz usunąć dostawę ?</a>
-                    <input class="orange-button" type="submit" value="Tak">
+                    <input class="button" type="submit" value="Tak">
                     </form>
                 </div>
                 <div id="update-feed-delivery-{{delivery.id}}-form" style="display:none; margin-left:20px">
@@ -330,7 +330,7 @@
                             <input type="number" name="quantity" value="{{delivery.quantity}}" step="any" required id="id_quantity">
                             <label for="id_price">Cena za tone:</label> 
                             <input type="number" name="price" value="{{delivery.price}}" step="any" required id="id_price">
-                            <input class="orange-button" type="submit" value="Zapisz"></input>
+                            <input class="button" type="submit" value="Zapisz"></input>
                         </p>
                     </form>
                 </div>
@@ -363,20 +363,20 @@
                             <option value="{{silo.id}}">Silos {{silo.number}}</option>
                         {% endfor %}
                         </select>
-                        <input class="orange-button" type="submit" value="Przenieś paszę" style="width:140px;">
+                        <input class="button" type="submit" value="Przenieś paszę" style="width:140px;">
                     </p>
                 </form>
             </div>
             <div id="stored-feed-li-buttons">
-                <button id="update-stored-feed-{{storedFeed.id}}" class="orange-button float-right-button" style="margin-bottom:5px;">Edytuj</button>
-                <button id="delete-stored-feed-{{storedFeed.id}}" class="orange-button float-right-button">Usuń</button>
+                <button id="update-stored-feed-{{storedFeed.id}}" class="button float-right-button" style="margin-bottom:5px;">Edytuj</button>
+                <button id="delete-stored-feed-{{storedFeed.id}}" class="button float-right-button">Usuń</button>
             </div>
         </div>
         <div id="delete-stored-feed-{{storedFeed.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
             <form method="post" action="{% url "deleteStoredFeed" cycle.farm.id storedFeed.id %}">
             {% csrf_token %}
             <a>Czy napewno chcesz usunąć zmagazynowaną paszę ?</a>
-            <input class="orange-button" type="submit" value="Tak">
+            <input class="button" type="submit" value="Tak">
             </form>
         </div>
         <div id="update-stored-feed-{{storedFeed.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
@@ -387,7 +387,7 @@
                 <input type="text" name="type" value="{{storedFeed.type}}" required id="id_type" style="display:none;">
                 <label for="id_quantity">Ilość:</label>
                 <input type="number" name="quantity" value="{{storedFeed.quantity}}" step="any" required id="id_quantity">
-                <input class="orange-button" type="submit" value="Zapisz">
+                <input class="button" type="submit" value="Zapisz">
             </form>
         </div>
     {% endfor %}

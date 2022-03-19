@@ -62,7 +62,9 @@
           Pasza: {{ day.feed_consumption }}g
         </h5>
         <div style="display: flex; justify-content: center;margin-top: 40px;">
-          <a id="plus-icon-scroll" class="fas fa-plus-circle" onclick="scrollDown();"></a>
+          <button class="button" style="width: 140px;" onclick="scrollDown();">
+            <i class="fa-solid fa-plus" style="font-weight: bold;"></i>
+          </button>
         </div>      
       </div>
     </div>
@@ -224,13 +226,13 @@
   </div>
 </div>
 <div class="charts-grid">
-  <div class="water-consumption-chart">
+  <div class="water-consumption-chart" style="padding-top: 5px;">
     <canvas id="water-consumption-chart-canvas" height="115"></canvas>
   </div>
-  <div class="feed-consumption-chart">
+  <div class="feed-consumption-chart" style="padding-top: 5px;">
     <canvas id="feed-consumption-chart-canvas" height="115"></canvas>
   </div>
-  <div class="weight-chart">
+  <div class="weight-chart" style="padding-top: 5px;">
     <canvas id="weight-chart-canvas" height="75"></canvas>
   </div>
 </div>
@@ -241,17 +243,17 @@
 <div class="table-container">
   <h3 id="welcome-title">Ubój
   {% if cycle.status == 'ACTIVE' %}
-    <button id="add-slaughter" class="orange-button">Dodaj</button>
+    <button id="add-slaughter" class="button">Dodaj</button>
   {% else %}
   {% endif %}
     
     {% if cycle.status == 'ACTIVE' %}
       {% if cycle.slaughter_set.all.count > 0 %}
         {% if cycle.toaccount_set.all.count > 0 %}
-          <button id="disabled-close-cycle" class="orange-button" style="width:140px; background:#666666">Zakończ cykl</button>
-          <button class="orange-button" onclick="location.href='{% url 'finances' %}'">Finanse</button>
+          <button id="disabled-close-cycle" class="button" style="width:140px; background:#666666">Zakończ cykl</button>
+          <button class="button" onclick="location.href='{% url 'finances' %}'">Finanse</button>
         {% else %}
-          <button id="close-cycle" class="orange-button" style="width:140px;">Zakończ cykl</button>
+          <button id="close-cycle" class="button" style="width:140px;">Zakończ cykl</button>
         {% endif %}
       {% else %}
       {% endif %}
@@ -271,7 +273,7 @@
         <input type="number" name="average_weight" value="0" step="any" required id="id_average_weight">
         <label for="id_slaughterhouse">Ubojnia:</label> 
         <input type="text" name="slaughterhouse" maxlength="50" required id="id_slaughterhouse">
-        <input class="orange-button" type="submit" value="Zapisz"></input>
+        <input class="button" type="submit" value="Zapisz"></input>
       </p>
 
     </form>
@@ -299,7 +301,7 @@
         <label for="id_total_days">Łączna liczba dni cyklu:</label> 
         <input type="number" name="total_days" value="{{lastDay.cycle_day}}" step="any" required id="id_total_days">
 
-        <input class="orange-button" type="submit" value="Zapisz"></input>
+        <input class="button" type="submit" value="Zapisz"></input>
       </p>
 
     </form>
@@ -321,8 +323,8 @@
         <td>{{slaughter.average_weight}}</td>
         <td>{{slaughter.slaughterhouse}}</td>
         <td>
-          <button id="update-slaughter-{{ slaughter.id }}" class="orange-button float-right-button">Edytuj</button>
-          <button id="delete-slaughter-{{ slaughter.id }}" class="orange-button float-right-button">Usuń</button>
+          <button id="update-slaughter-{{ slaughter.id }}" class="button float-right-button">Edytuj</button>
+          <button id="delete-slaughter-{{ slaughter.id }}" class="button float-right-button">Usuń</button>
         </td>
         <div id="update-slaughter-{{ slaughter.id }}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
           <h3 id="welcome-title">Edycja</h3>
@@ -339,7 +341,7 @@
           <input type="number" name="average_weight" value="{{slaughter.average_weight}}" step="any" required id="id_average_weight">
           <label for="id_slaughterhouse">Ubojnia:</label> 
           <input type="text" name="slaughterhouse" maxlength="50" value="{{slaughter.slaughterhouse}}" required id="id_slaughterhouse">
-          <input class="orange-button" type="submit" value="Zapisz"></input>
+          <input class="button" type="submit" value="Zapisz"></input>
           </p>
 
           </form>
@@ -349,7 +351,7 @@
         <form method="post" action="{% url "deleteSlaughter" slaughter.id %}" style="margin-left:20px;">
           {% csrf_token %}
           <a>Czy napewno chcesz usunąć ubój ?</a>
-          <input class="orange-button" type="submit" value="Tak">
+          <input class="button" type="submit" value="Tak">
         </form>
       </div>
       {% endfor %}
@@ -359,8 +361,8 @@
 <div class="table-container">
   <h3 id="welcome-title">Podaż farmaceutyków
   {% if cycle.status == 'ACTIVE' %}
-    <button id="add-medication-supply" class="orange-button">Dodaj</button>
-    <button class="orange-button" onclick="location.href='{% url 'medications' cycle.farm.id %}'" style="width:140px">Farmaceutyki</button>
+    <button id="add-medication-supply" class="button">Dodaj</button>
+    <button class="button" onclick="location.href='{% url 'medications' cycle.farm.id %}'" style="width:140px">Farmaceutyki</button>
   {% else %}
   {% endif %}
   </h3>
@@ -386,7 +388,7 @@
 
         <input type="number" name="cycle" value="{{cycle.id}}" required id="id_cycle" style="display:none">
         
-        <input class="orange-button" type="submit" value="Zapisz"</input>
+        <input class="button" type="submit" value="Zapisz"</input>
       </p>
     </form>
   </div>
@@ -409,8 +411,8 @@
           <td>Dzień {{supply.cycle_day}}</td>
           <td>{{supply.date|date:"M d, Y"}}</td>
           <td>
-            <button id="update-medication-supply-{{supply.id}}" class="orange-button float-right-button">Edytuj</button>
-            <button id="delete-medication-supply-{{supply.id}}" class="orange-button float-right-button">Usuń</button>
+            <button id="update-medication-supply-{{supply.id}}" class="button float-right-button">Edytuj</button>
+            <button id="delete-medication-supply-{{supply.id}}" class="button float-right-button">Usuń</button>
           </td>
           <div id="update-medication-supply-{{supply.id}}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
             <h3 id="welcome-title">Edycja</h3>
@@ -432,7 +434,7 @@
 
                   <input type="number" name="cycle" value="{{cycle.id}}" required id="id_cycle" style="display:none">
                   
-                  <input class="orange-button" type="submit" value="Zapisz"</input>
+                  <input class="button" type="submit" value="Zapisz"</input>
                 </p>
               </form>
           </div>
@@ -440,7 +442,7 @@
             <form method="post" action="{% url "deleteMedicationSupply" supply.id %}">
               {% csrf_token %}
               <a>Czy napewno chcesz usunąć podaż {{supply.medication.name}} ?</a>
-              <input class="orange-button" type="submit" value="Tak">
+              <input class="button" type="submit" value="Tak">
             </form>
           </div>
         </tr>
@@ -455,18 +457,18 @@
       {% if acttiveSilo != None %}
         {% if acttiveSilo.state > 0 %}
           {% if acttiveSilo.state < projectedFeedConsumption %}
-            <button id="disabled-daily-raport-low-feed-state" class="orange-button" style="background:#666666">Dodaj</button>
-            <button class="orange-button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
+            <button id="disabled-daily-raport-low-feed-state" class="button" style="background:#666666">Dodaj</button>
+            <button class="button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
           {% else %}
-            <button id="add-daily-raport" class="orange-button">Dodaj</button>
+            <button id="add-daily-raport" class="button">Dodaj</button>
           {% endif %}  
         {% else %}
-          <button id="disabled-daily-raport" class="orange-button" style="background:#666666">Dodaj</button>
-          <button class="orange-button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
+          <button id="disabled-daily-raport" class="button" style="background:#666666">Dodaj</button>
+          <button class="button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
         {% endif %}  
       {% else %}
-        <button id="disabled-daily-raport" class="orange-button" style="background:#666666">Dodaj</button>
-        <button class="orange-button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
+        <button id="disabled-daily-raport" class="button" style="background:#666666">Dodaj</button>
+        <button class="button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
       {% endif %}
     {% else %}
     {% endif %}
@@ -496,7 +498,7 @@
         <label for="id_humidity">Wilgotność:</label> 
         <input type="number" name="humidity" value="0" step="any" required id="id_humidity">
         
-        <input class="orange-button" type="submit" value="Zapisz"></input>
+        <input class="button" type="submit" value="Zapisz"></input>
       </p>
 
       </form>
@@ -545,8 +547,8 @@
           <td>{{day.daily_wather_consumption}}</td>
           <td>{{day.feed_consumption}}</td>
           <td>
-            <button id="update-daily-raport-{{ day.id }}" class="orange-button float-right-button">Edytuj</button>
-            <button id="delete-daily-raport-{{ day.id }}" class="orange-button float-right-button">Usuń</button>
+            <button id="update-daily-raport-{{ day.id }}" class="button float-right-button">Edytuj</button>
+            <button id="delete-daily-raport-{{ day.id }}" class="button float-right-button">Usuń</button>
           </td>
         </tr>
         <div id="update-daily-raport-{{ day.id }}-form" style="display:none; padding-top:30px; padding-bottom:30px;">
@@ -573,7 +575,7 @@
             <input type="number" name="temperature" value="{{ day.temperature }}" step="any" required id="id_temperature">
             <label for="id_humidity">Wilgotność:</label> 
             <input type="number" name="humidity" value="{{ day.humidity }}" step="any" required id="id_humidity">
-            <input class="orange-button" type="submit" value="Zapisz"</input>
+            <input class="button" type="submit" value="Zapisz"</input>
           </p>
 
           </form>
@@ -582,7 +584,7 @@
           <form method="post" action="{% url "deleteDay" day.id %}">
             {% csrf_token %}
             <a>Czy napewno chcesz usunąć dzień ?</a>
-            <input class="orange-button" type="submit" value="Tak"></input>
+            <input class="button" type="submit" value="Tak"></input>
           </form>
         </div>
         {% endfor %}
