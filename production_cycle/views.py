@@ -290,6 +290,7 @@ class SlaughterCreateView(LoginRequiredMixin, CreateView):
     model = Slaughter
     form_class = SlaughterForm
     success_url = '/cycle-detail/{cycle_id}'
+    template_name = 'production_cycle/medication/create.html'
 
     def form_valid(self, form):
         form.instance.cycle = Cycle.objects.get(id=self.kwargs.get('cycleId'))

@@ -56,7 +56,7 @@ class Transaction(models.Model):
 
 
 class ToAccount(models.Model):
-    title = models.CharField(max_length=25)
+    title = models.CharField(max_length=50)
     worth = models.FloatField(default=0)
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
