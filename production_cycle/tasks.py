@@ -18,12 +18,13 @@ def get_ministerial_price():
     print('cena minrol')
 
     options = webdriver.ChromeOptions()
+    options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
     prefs = {'download.default_directory' : os.path.abspath('files')}
     options.add_experimental_option('prefs', prefs)
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-sh-usage")
-    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), chrome_options=options)
+    driver = webdriver.Chrome(executable_path=os.environ.get('CHROMEDRIVER_PATH'), chrome_options=options)
     
     driver.get('https://www.gov.pl/web/rolnictwo/rynek-drobiu')
     yearElement = driver.find_element_by_xpath('//*[@id="body"]/main/div[2]/article/div/ul/li[1]/a')
