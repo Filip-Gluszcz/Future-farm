@@ -89,7 +89,7 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
                 context['totalWeight'] += slaughter.weight
                 context['totalSoldUnits'] += slaughter.quantity
             
-            context['averageWeight'] = round(context['totalWeight'] / context['totalSoldUnits'], 2)
+            context['averageWeight'] = round(context['totalWeight'] / context['totalSoldUnits'], 3)
 
         try:
             context['cycleCompleted'] = CycleCompleted.objects.get(cycle=context['cycle'])
