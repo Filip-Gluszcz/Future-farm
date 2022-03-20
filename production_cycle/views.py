@@ -281,6 +281,7 @@ class CycleCompletedCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.cycle = Cycle.objects.get(id=self.kwargs.get('cycleId'))
+        form.instance.user = self.request.user
         cycle = form.instance.cycle
         cycle.status = 'CLOSED'
         cycle.save()
