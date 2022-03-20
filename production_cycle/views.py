@@ -89,7 +89,7 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
                 context['totalWeight'] += slaughter.weight
                 context['totalSoldUnits'] += slaughter.quantity
             
-            context['averageWeight'] = context['totalWeight'] / context['totalSoldUnits']
+            context['averageWeight'] = round(context['totalWeight'] / context['totalSoldUnits'], 2)
 
         try:
             context['cycleCompleted'] = CycleCompleted.objects.get(cycle=context['cycle'])
@@ -100,7 +100,7 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
         for day in context['cycle'].day_set.all():
             total_deads += day.deads + day.selection
 
-        context['survivalRate'] = ((context['cycle'].herd_size - total_deads) / context['cycle'].herd_size) * 100
+        context['survivalRate'] = round(((context['cycle'].herd_size - total_deads) / context['cycle'].herd_size) * 100, 2)
         
         return context
 
