@@ -70,7 +70,7 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
         context['tasksCount'] = newTasksCount + duringTasksCount
         context['minrol'] = MinRolPrices.objects.last()
         if MinRolPrices.objects.all().count() >= 2:
-            context['minrolsDifference'] = round((context['minrol'].price - MinRolPrices.objects.all().order_by('-id')[1].price)/10, 3)
+            context['minrolsDifference'] = round((context['minrol'].price - MinRolPrices.objects.all().order_by('-id')[1].price)/10)
         context['minrolRounded'] = round((context['minrol'].price)/1000, 2)
         context['userFullName'] = self.request.user.get_full_name()
 

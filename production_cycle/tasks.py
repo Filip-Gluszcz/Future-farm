@@ -50,7 +50,7 @@ def get_ministerial_price():
 
     book = openpyxl.load_workbook(path)
     sheet = book['ceny skupu']
-    price = sheet['B6'].value
+    price = sheet['B5'].value
 
     minRolPrice = MinRolPrices(price=price)
     minRolPrice.save()
@@ -60,7 +60,7 @@ def get_ministerial_price():
 app.conf.beat_schedule = {
     'get_ministerial_price': {
         'task': 'get_ministerial_price',
-        'schedule': crontab(hour=18, minute=53),
+        'schedule': crontab(hour=11, minute=15, day_of_week=4),
     },
 }
 
