@@ -59,7 +59,7 @@ def get_ministerial_price():
 app.conf.beat_schedule = {
     'get_ministerial_price': {
         'task': 'get_ministerial_price',
-        'schedule': crontab(hour=20, minute=32),
+        'schedule': crontab(hour=17, minute=27),
     },
 }
 
