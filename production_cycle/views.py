@@ -59,7 +59,7 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
             
             context['remainingDays'] = 49 - context['lastDay'].cycle_day
             context['totalFeed'] = context['lastDay'].total_increasing_feed_consumption
-            if context['cycle'].feddelivery_set.all().count() > 0:
+            if context['cycle'].feeddelivery_set.all().count() > 0:
                 context['totalFeedDelivery'] = FeedDelivery.objects.filter(cycle=context['cycle']).aggregate(Sum('quantity'))['quantity__sum'] * 1000
             else:
                 context['totalFeedDelivery'] = 0
