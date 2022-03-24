@@ -303,7 +303,7 @@
 
         <label for="id_total_days">Łączna liczba dni cyklu:</label> 
         <input type="number" name="total_days" value="{{lastDay.cycle_day}}" step="any" required id="id_total_days">
-        
+
         <input class="button" type="submit" value="Zapisz"></input>
       </p>
 
@@ -620,8 +620,8 @@ function scrollDown(){
 
       function toggleCycleList(e) {
         if (e.target != e.currentTarget){
-          let clickedAddButton = e.target.id
-          $(`#${clickedAddButton}-form`).slideToggle(50)
+          let clickedAddButton = e.target.id;
+          $(`#${clickedAddButton}-form`).slideToggle(50);
         }
       }
 

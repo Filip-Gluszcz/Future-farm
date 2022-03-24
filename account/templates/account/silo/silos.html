@@ -424,8 +424,9 @@
       function toggleForm(e) {
         if (e.target != e.currentTarget){
           let clickedButton = e.target.id;
-          $(`#${clickedButton}-form`).slideToggle(50);
-          console.log(`${clickedButton}`)
+          $(`#${clickedButton}-form`).slideToggle('fast');
+          console.log(e)
+          console.log(`${clickedButton}`);
         }
       }
 </script> 
