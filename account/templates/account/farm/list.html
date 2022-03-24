@@ -96,15 +96,34 @@
     </div>
     <div class="compare-block-chart">
         <div id="doughnut-chart-tasks-text">
-            <div id="active-cycles">
-                <h4>Aktywne cykle: {{ activeCycles }}</h4>
+        {% for task in  newTasks%}
+            <div id="doughnut-chart-task">
+                <div id="doughnut-chart-task-icon">
+                {% if task.important %}
+                    <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                {% else %}
+                    <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                {% endif %}
+                </div>
+                <div id="doughnut-chart-task-text">
+                    {{ task.text }}
+                </div>
             </div>
-            <div id="closed-cycles">
-                <h4>Zakończone cykle: {{ closedCycles }}</h4>
+        {% endfor %}
+        {% for task in  duringTasks%}
+            <div id="doughnut-chart-task">
+                <div id="doughnut-chart-task-icon">
+                {% if task.important %}
+                    <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                {% else %}
+                    <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                {% endif %}
+                </div>
+                <div id="doughnut-chart-task-text">
+                    {{ task.text }}
+                </div>
             </div>
-            <div id="to-account">
-                <h4>Do rozliczenia: {{ closedCycles }}</h4>
-            </div>
+        {% endfor %}
         </div>
         <canvas id="doughnut-chart-tasks"></canvas>
     </div>
