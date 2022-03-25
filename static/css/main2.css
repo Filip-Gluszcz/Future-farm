@@ -641,6 +641,8 @@ body {
 
 #doughnut-chart-task-text{
   grid-column: 2/4;
+  display: flex;
+  align-items: center
 }
 
 #doughnut-chart-tasks{
