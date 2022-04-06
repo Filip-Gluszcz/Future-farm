@@ -42,6 +42,14 @@ class CycleDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'cycle'
     template_name = 'production_cycle/cycle/cycles.html'
 
+    def get(self, request, *args, **kwargs):
+        cycle = Cycle.objects.get(id=self.kwargs['pk'])
+        farm = cycle.farm
+        if farm.user != request.user:
+            return redirect(reverse_lazy('farmList'))
+        else:
+            return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['standards'] = Standard.objects.all()

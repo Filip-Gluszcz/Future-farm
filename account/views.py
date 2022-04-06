@@ -118,6 +118,7 @@ class FarmListView(LoginRequiredMixin, ListView):
         context['tasksCount'] = Task.objects.filter(user=self.request.user).count()
         context['newTasks'] = Task.objects.filter(status='NEW', user=self.request.user)
         context['duringTasks'] = Task.objects.filter(status='DURING',  user=self.request.user)
+        context['ndTasksCount'] = context['newTasks'].count() + context['duringTasks'].count()
         context['doneTasks'] = Task.objects.filter(status='DONE',  user=self.request.user)
         context['companyFinance'] = CompanyFinance.objects.get(user=self.request.user)
 

@@ -96,34 +96,43 @@
     </div>
     <div class="compare-block-chart">
         <div id="doughnut-chart-tasks-text">
-        {% for task in  newTasks%}
-            <div id="doughnut-chart-task">
-                <div id="doughnut-chart-task-icon">
-                {% if task.important %}
-                    <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
-                {% else %}
-                    <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
-                {% endif %}
+        {% if ndTasksCount > 0 %}
+            {% for task in  newTasks%}
+                <div id="doughnut-chart-task">
+                    <div id="doughnut-chart-task-icon">
+                    {% if task.important %}
+                        <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                    {% else %}
+                        <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                    {% endif %}
+                    </div>
+                    <div id="doughnut-chart-task-text">
+                        {{ task.text }}
+                    </div>
                 </div>
-                <div id="doughnut-chart-task-text">
-                    {{ task.text }}
+            {% endfor %}
+            {% for task in  duringTasks%}
+                <div id="doughnut-chart-task">
+                    <div id="doughnut-chart-task-icon">
+                    {% if task.important %}
+                        <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
+                    {% else %}
+                        <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
+                    {% endif %}
+                    </div>
+                    <div id="doughnut-chart-task-text">
+                        {{ task.text }}
+                    </div>
                 </div>
+            {% endfor %}
+        {% else %}
+            <div id="add-task">
+                <div>
+                    <h4>Brak zadań</h4>
+                </div>
+                <button class="button" onclick="location.href='{% url 'tasks' %}'" style="width:140px; margin-top:10px">Zadania</button>
             </div>
-        {% endfor %}
-        {% for task in  duringTasks%}
-            <div id="doughnut-chart-task">
-                <div id="doughnut-chart-task-icon">
-                {% if task.important %}
-                    <i class="fas fa-exclamation-circle" style="color: rgb(240, 101, 96);"></i>
-                {% else %}
-                    <i class="fas fa-exclamation-circle" style="color: rgb(131, 227, 161);"></i>
-                {% endif %}
-                </div>
-                <div id="doughnut-chart-task-text">
-                    {{ task.text }}
-                </div>
-            </div>
-        {% endfor %}
+        {% endif %}
         </div>
         <canvas id="doughnut-chart-tasks"></canvas>
     </div>
@@ -421,9 +430,13 @@
                             <button id="create-{{farm.id}}-cycle" class="button" style="width:140px">Dodaj cykl</button>
                             <button id="create-{{farm.id}}-silo" class="button" style="width:140px">Dodaj silos</button>
                             {% if farm.cycle_set.all.count > 0 %}
-                            <a href="{% url 'silos' farm.id %}">
-                                <button class="button" style="width:140px">Silosy</button>
-                            </a>
+                                {% if farm.cycle_set.last.day_set.count > 0 %}
+                                    <a href="{% url 'silos' farm.id %}">
+                                        <button class="button" style="width:140px">Silosy</button>
+                                    </a>                                    
+                                {% else %}
+                                    <button id="disabled-no-cycle-day" class="button" style="width:140px; background:#666666">Silosy</button>
+                                {% endif %}
                             {% else %}
                             <button id="disabled-no-cycle" class="button" style="width:140px; background:#666666">Silosy</button>
                             {% endif %}
@@ -708,6 +721,9 @@
     });
     tippy('#disabled-no-cycle', {
         content: "Najpierw dodaj cykl",
+    });
+    tippy('#disabled-no-cycle-day', {
+        content: "Najpierw zapisz zerowy dzień cyklu",
     });
 </script>
 <script>
