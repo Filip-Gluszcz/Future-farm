@@ -15,7 +15,7 @@ urlpatterns = [
     path('create-feed-delivery/<int:farmId>/<int:cycleId>/', views.FeedDeliveryCreateView.as_view(), name='createFeedDelivery'),
     path('update-feed-delivery/<int:farmId>/<str:pk>', views.FeedDeliveryUpdateView.as_view(), name='updateFeedDelivery'),
     path('detail-feed-delivery/<str:pk>', views.FeedDeliveryDetailView.as_view(), name='detailFeedDelivery'),
-    path('delete-feed-delivery/<str:pk>', views.FeedDeliveryDeleteView.as_view(), name='deleteFeedDelivery'),
+    path('delete-feed-delivery/<str:pk>/<int:farmId>', views.FeedDeliveryDeleteView.as_view(), name='deleteFeedDelivery'),
     
     path('create-stored-feed/<int:farmId>/<int:siloId>/', views.StoredFeedCreateView.as_view(), name='createStoredFeed'),
     path('restore-feed/<int:farmId>/', views.RestoreFeedView.as_view(), name='restoreFeed'),

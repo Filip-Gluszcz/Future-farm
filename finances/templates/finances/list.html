@@ -100,7 +100,7 @@
         <canvas id="closed-cycles-chart-canvas" style="height:100%; width:100%;"></canvas>
     </div>
     <div id="to-account-list">
-    <h2 style="margin-bottom:20px; margin-left:20px; text-align: left">Lista operacji do rozliczenia</h2>
+    <h2 style="margin-bottom:20px; margin-left:20px; text-align: left">Lista transakcji do rozliczenia</h2>
     {% for toAccount in toAccountList %}
         <div class="to-account-li">
             <div id="to-account-li-farm">
@@ -110,8 +110,16 @@
                 {{toAccount.title}}
             </div>
             <div id="to-account-li-buttons">
+                <button id="delete-to-account-{{toAccount.id}}" class="button" style="margin-right:0px;">Usuń</button>
                 <button id="settle-to-account-{{toAccount.id}}" class="button">Rozlicz</button>
             </div>
+        </div>
+        <div id="delete-to-account-{{toAccount.id}}-form" style="display:none; padding-top:10px; padding-bottom:30px;">
+            <form method="post" action="{% url 'deleteToAccountTransaction' toAccount.id %}" style="margin-left:20px;">
+                {% csrf_token %}
+                <a>Czy napewno chcesz usunąć transakcję?</a>
+                <input class="button" type="submit" value="Tak">
+            </form>
         </div>
         <div id="settle-to-account-{{toAccount.id}}-form" style="display:none; padding-bottom:30px; margin-bottom:20px; margin-left:10px; text-align:left">
             <form method='post' action="{% url 'createTransaction' toAccount.id %}" style="margin-top:20px;">
@@ -340,11 +348,11 @@
             <h2 style="float:left; margin-right:40px; margin-left:20px">Rozliczenia</h2>
             {% if farm.farm.cycle_set.all.count > 0 %}
             <button id="create-transaction-{{farm.id}}" class="button" style="width:160px">Dodaj rozliczenie</button>
-            <button id="create-contribution-{{farm.id}}" class="button" style="width:160px">Dodaj wpłate</button>
+            <button id="create-contribution-{{farm.id}}" class="button" style="width:160px">Dodaj wpłatę</button>
             <button id="create-withdrawal-{{farm.id}}" class="button" style="width:160px">Dodaj wypłatę</button>
             {% else %}
             <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj rozliczenie</button>
-            <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj wpłate</button>
+            <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj wpłatę</button>
             <button id="disabled" class="button" style="width:160px; background:#666666">Dodaj wypłatę</button>
             {% endif %}
         </div>
@@ -488,7 +496,7 @@
                     <div id="delete-transaction-{{transaction.id}}-form" style="display:none; padding-top:10px; padding-bottom:30px;">
                         <form method="post" action="{% url 'deleteTransaction' transaction.id %}" style="margin-left:20px;">
                             {% csrf_token %}
-                            <a>Czy napewno chcesz usunąć rozliczenie ?</a>
+                            <a>Czy napewno chcesz usunąć rozliczenie?</a>
                             <input class="button" type="submit" value="Tak">
                         </form>
                     </div>

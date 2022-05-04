@@ -155,6 +155,10 @@ class Slaughter(models.Model):
     slaughterhouse = models.CharField(max_length=50)
     price = models.FloatField(default=1)
 
+    def save(self, *args, **kwargs):
+        self.average_weight = (self.weight / self.quantity) * 1000
+        return super().save()
+
 
 class FeedDelivery(models.Model):
     STARTER = 'Starter'

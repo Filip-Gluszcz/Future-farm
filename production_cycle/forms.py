@@ -25,8 +25,7 @@ class CycleForm(ModelForm):
 class SlaughterForm(ModelForm):
     class Meta:
         model = Slaughter
-        fields = ['day_id', 'quantity', 'weight',
-                  'average_weight', 'slaughterhouse']
+        fields = ['day_id', 'quantity', 'weight', 'slaughterhouse']
 
 
 class FeedDeliveryForm(ModelForm):

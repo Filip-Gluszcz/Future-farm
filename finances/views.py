@@ -28,6 +28,9 @@ class ToAccountTransactionCreateView(LoginRequiredMixin, CreateView):
         toAccount.delete()
         return super().form_valid(form)
 
+class ToAccountTransactionDeleteView(LoginRequiredMixin, DeleteView):
+    model = ToAccount
+    success_url = reverse_lazy('finances')
 
 class TransactionUpdateView(LoginRequiredMixin, UpdateView):
     model = Transaction

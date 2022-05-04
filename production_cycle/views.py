@@ -120,7 +120,7 @@ class CycleDeleteView(LoginRequiredMixin, DeleteView):
     model = Cycle
     success_url = reverse_lazy('farmList')
     template_name = 'production_cycle/cycle/delete.html'
-    context_object_name = 'cycle'
+    # context_object_name = 'cycle'
 
 
 class CycleUpdateView(LoginRequiredMixin, UpdateView):
@@ -142,6 +142,7 @@ class FeedDeliveryCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.cycle = Cycle.objects.get(id=self.kwargs.get('cycleId'))
+        form.instance.price *= 1.08
         return super().form_valid(form)
 
 
@@ -167,7 +168,9 @@ class FeedDeliveryUpdateView(LoginRequiredMixin, UpdateView):
 class FeedDeliveryDeleteView(LoginRequiredMixin, DeleteView):
     model = FeedDelivery
     template_name = 'production_cycle/feed_delivery/delete.html'
-    success_url = '/cycle-detail/{cycle_id}'
+    
+    def get_success_url(self):
+        return reverse('silos', kwargs={'farmId': self.kwargs['farmId']})
 
 
 #STORED FEED VIEWS

@@ -267,10 +267,8 @@
         <input type="text" name="day_id" maxlength="50" value="{{ lastDay.id }}" required id="id_day_id" style="display:none;">
         <label for="id_quantity">Ilość sztuk:</label> 
         <input type="number" name="quantity" value="0" required id="id_quantity">
-        <label for="id_weight">Waga w kg:</label> 
+        <label for="id_weight">Waga całkowita w kg:</label> 
         <input type="number" name="weight" value="0" step="any" required id="id_weight">
-        <label for="id_average_weight">Średnia waga w g:</label> 
-        <input type="number" name="average_weight" value="0" step="any" required id="id_average_weight">
         <label for="id_slaughterhouse">Ubojnia:</label> 
         <input type="text" name="slaughterhouse" maxlength="50" required id="id_slaughterhouse">
         <input class="button" type="submit" value="Zapisz"></input>
@@ -321,9 +319,9 @@
       {% for slaughter in cycle.slaughter_set.all reversed %}
       <tr>
         <td>{{slaughter.date|date:"M d, Y"}}</td>
-        <td>{{slaughter.quantity}}</td>
-        <td>{{slaughter.weight}}</td>
-        <td>{{slaughter.average_weight}}</td>
+        <td>{{slaughter.quantity}}szt.</td>
+        <td>{{slaughter.weight}}kg</td>
+        <td>{{slaughter.average_weight}}g</td>
         <td>{{slaughter.slaughterhouse}}</td>
         <td>
           <button id="update-slaughter-{{ slaughter.id }}" class="button float-right-button">Edytuj</button>
@@ -338,10 +336,8 @@
           <input type="text" name="day_id" maxlength="50" value="{{ lastDay.id }}" required id="id_day_id" style="display:none;">
           <label for="id_quantity">Ilość sztuk:</label> 
           <input type="number" name="quantity" value="{{slaughter.quantity}}" required id="id_quantity">
-          <label for="id_weight">Waga:</label> 
+          <label for="id_weight">Waga całkowita:</label> 
           <input type="number" name="weight" value="{{slaughter.weight}}" step="any" required id="id_weight">
-          <label for="id_average_weight">Średnia waga:</label> 
-          <input type="number" name="average_weight" value="{{slaughter.average_weight}}" step="any" required id="id_average_weight">
           <label for="id_slaughterhouse">Ubojnia:</label> 
           <input type="text" name="slaughterhouse" maxlength="50" value="{{slaughter.slaughterhouse}}" required id="id_slaughterhouse">
           <input class="button" type="submit" value="Zapisz"></input>
@@ -422,15 +418,15 @@
             <form  method="post" action="{% url 'updateMedicationSupply' supply.id %}">
                 {% csrf_token %}
                 <p>
-                  <label for="id_medication">FARMACEUTYK:</label> 
-                  <select name="medication" id="id_medication">
+                  <label for="id_medication">Farmaceutyk: {{supply.medication.name}}</label> 
+                  <select name="medication" id="id_medication" style="display:none;">
                     <option value="{{supply.medication.id}}" selected>{{supply.medication.name}}</option>
                     {% for medication in medications %}
                     <option value="{{medication.id}}">{{medication.name}}</option>
                     {% endfor %}
                   </select>
 
-                  <label for="id_quantity">Ilość w ml lub g:</label> 
+                  <label for="id_quantity" style="margin-left:20px;">Ilość w ml lub g:</label> 
                   <input type="number" name="quantity" value="{{supply.quantity}}" step="any" required id="id_quantity">
                 
                   <input type="number" name="cycle_day" value="{{nextDayNumber}}" required id="id_cycle_day" style="display:none">

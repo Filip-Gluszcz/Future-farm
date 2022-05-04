@@ -143,10 +143,10 @@
                 <form method="post" action="{% url 'siloDeactivate' activeSilo.farm.id activeSilo.id %}" style="margin-top:10px; margin-bottom:0px;">
                     {% csrf_token %}
                     <input id="checkbox" type="checkbox" name="active" id="id_active" style="display:none;">
-                    <input class="button" type="submit" value="Deaktywuj" style="width:140px">
+                    <input class="button" type="submit" value="Dezaktywuj" style="width:140px">
                 </form>
             {% else %}
-                <button id="disabled" class="button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Deaktywuj</button>
+                <button id="disabled" class="button" style="width:140px; margin-top:10px; margin-left:10px; background:#666666;">Dezaktywuj</button>
             {% endif %}
             </div>
         </div>
@@ -247,7 +247,6 @@
                 <option value="Grower">Grower</option>
                 <option value="Finisher">Finisher</option>
                 </select>
-                <label for="id_silo">Silos:</label> 
                 <select name="silo" id="id_silo" style="display:none">
                     <option value="{{silo.id}}" selected style="display:none">--------</option>
                 </select>
@@ -255,7 +254,7 @@
                 <input type="number" name="quantity" value="0" step="any" required id="id_quantity">
             </p>
             <p>
-                <label for="id_price">Cena za tone:</label> 
+                <label for="id_price">Cena netto za tone:</label> 
                 <input type="number" name="price" value="1" step="any" required id="id_price">
                 <input class="button" type="submit" value="Zapisz"</input>
             </p>
@@ -297,7 +296,7 @@
                     </div>
                 </div>
                 <div id="delete-feed-delivery-{{delivery.id}}-form" style="display:none; margin-left:20px; margin-bottom:15px;">
-                    <form method="post" action="{% url "deleteFeedDelivery" delivery.id %}">
+                    <form method="post" action="{% url "deleteFeedDelivery" delivery.id delivery.cycle.farm.id %}">
                     {% csrf_token %}
                     <a>Czy napewno chcesz usunąć dostawę ?</a>
                     <input class="button" type="submit" value="Tak">
@@ -309,22 +308,23 @@
                         <p>
                             <label for="id_choices">Rodzaj paszy:</label> 
                             <select name="choices" selected="{{delivery.choices}}" id="id_choices">
-                            <option value="Starter">Starter</option>
-                            <option value="Grower">Grower</option>
-                            <option value="Finisher">Finisher</option>
+                                <option value="Starter">Starter</option>
+                                <option value="Grower">Grower</option>
+                                <option value="Finisher">Finisher</option>
                             </select>
-                            <label for="id_silo">Silos:</label> 
-                            <select name="silo" id="id_silo">
-                            <option value="{{delivery.silo.id}}" selected >Silos {{delivery.silo.number}}</option>
-                            {% for silo in cycle.farm.silo_set.all %}
-                                <option value="{{silo.id}}">Silos {{silo.number}}</option>
-                            {% endfor %}
-                            </select>
-                        <p>
-                        </p>
                             <label for="id_quantity">Ilość w tonach:</label> 
                             <input type="number" name="quantity" value="{{delivery.quantity}}" step="any" required id="id_quantity">
-                            <label for="id_price">Cena za tone:</label> 
+                            
+                        <p>
+                        </p>
+                            <label for="id_silo">Silos:</label> 
+                            <select name="silo" id="id_silo">
+                                <option value="{{delivery.silo.id}}" selected >Silos {{delivery.silo.number}}</option>
+                                {% for silo in cycle.farm.silo_set.all %}
+                                    <option value="{{silo.id}}">Silos {{silo.number}}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="id_price">Cena brutto za tone:</label> 
                             <input type="number" name="price" value="{{delivery.price}}" step="any" required id="id_price">
                             <input class="button" type="submit" value="Zapisz"></input>
                         </p>

@@ -157,6 +157,13 @@ class SiloListView(LoginRequiredMixin, ListView):
     context_object_name = 'silos'
     template_name = 'account/silo/silos.html'
 
+    def get(self, request, *args, **kwargs):
+        farm = Farm.objects.get(id=self.kwargs['farmId'])
+        if farm.user != request.user:
+            return redirect(reverse_lazy('silos'))
+        else:
+            return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
         farm = Farm.objects.get(id=self.kwargs.get('farmId'))
