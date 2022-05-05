@@ -160,7 +160,7 @@ class SiloListView(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
         farm = Farm.objects.get(id=self.kwargs['farmId'])
         if farm.user != request.user:
-            return redirect(reverse_lazy('silos'))
+            return redirect(reverse_lazy('farmList'))
         else:
             return super().get(request, *args, **kwargs)
 
