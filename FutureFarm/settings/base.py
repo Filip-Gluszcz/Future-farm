@@ -145,7 +145,9 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 GRAPH_MODELS = {
   'all_applications': False,
-  'group_models': True,
+  'group_models': False,
+  'rankdir': 'TB',
+  'pygraphviz': True,
 }
 
 
