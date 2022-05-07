@@ -21,9 +21,6 @@
     <body>
        <div class="login-container" >
             <h2>Logowanie</h2>
-            {% if form.errors %}
-                <p>Nazwa użytkownika lub hasło są nieprawidłowe, spróbuj ponownie</p>
-            {% endif %}
             <div class="login-box table-container" >
                 <form method='POST' action=''>
                     {% csrf_token %}
@@ -43,6 +40,13 @@
                 </a>
                 <a href="{% url 'reset_password' %}" style="float:right; margin-top:10px">Zapomniałeś/aś hasła?</a>
             </div>
+            {% if form.errors %}
+                <h2>
+                <p>Nazwa użytkownika lub hasło </p>
+                <p>są nieprawidłowe,</p>
+                <p>spróbuj ponownie</p>
+                </h2>
+            {% endif %}            
        </div>
     </body>
 </html>

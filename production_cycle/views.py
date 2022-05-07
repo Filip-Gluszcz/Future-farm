@@ -482,53 +482,8 @@ def update_by_creating_day(sender, instance, created, **kwargs):
         silo = None
     if created:
         cycle.current_herd_size -= (instance.deads + instance.selection)
-
-        # deads = instance.deads
-        # selection = instance.selection
-        # herd_size = cycle.current_herd_size - (deads + selection)
-        # if herd_size > 0:
-        #     daily_mortality_rate = ((deads + selection) / herd_size) * 100
-        # else:
-        #     daily_mortality_rate = 0
-        # instance.daily_mortality_rate = round(daily_mortality_rate, 4)
-
-        # if instance.cycle_day > 0:
-        #     last_day = Day.objects.get(cycle=cycle, cycle_day=instance.cycle_day-1)
-            
-        #     water_meter_value = instance.water_meter_value
-        #     total_water = water_meter_value - last_day.water_meter_value
-        #     instance.total_water = total_water
-
-        #     if herd_size > 0:
-        #         daily_wather_consumption = (total_water / herd_size) * 1000
-        #     else:
-        #         daily_wather_consumption = 0
-        #     instance.daily_wather_consumption = round(daily_wather_consumption, 1)
-
-        #     day_standard = Standard.objects.get(cycle_day=instance.cycle_day)
-        #     feed_consumption = (day_standard.feed_consumption / day_standard.water_consumption) * daily_wather_consumption
-        #     instance.feed_consumption = round(feed_consumption, 1)
-
-        #     instance.total_feed = (feed_consumption * herd_size) / 1000
-
-        #     increasing_feed_consumption = last_day.increasing_feed_consumption + feed_consumption
-        #     instance.increasing_feed_consumption = increasing_feed_consumption
-
-        #     total_increasing_feed_consumption = (increasing_feed_consumption * herd_size) / 1000
-        #     instance.total_increasing_feed_consumption = total_increasing_feed_consumption
-
-        #     fcr = increasing_feed_consumption / instance.average_body_weight
-        #     instance.fcr = round(fcr, 4)
-
-        #     if (instance.cycle_day * fcr) > 0:
-        #         eww = ((((herd_size / instance.cycle.herd_size) * 100) * (instance.average_body_weight / 1000)) / (instance.cycle_day * fcr)) * 100
-        #         instance.eww = round(eww)
-
         if silo != None:
             silo.state -= instance.total_feed
-
-        
-
     else:
         pre_save_instance = instance._pre_save_instance
         cycle.current_herd_size += (pre_save_instance.deads + pre_save_instance.selection)
