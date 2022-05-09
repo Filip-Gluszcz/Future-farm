@@ -240,39 +240,3 @@ class MinRolPrices(models.Model):
 
     def __str__(self):
         return str(self.date)
-
-
-
-# FUNCTION TO LOAD A FILE WITH STANDARDS
-import csv
-def makeFile():
-    if not os.path.exists('static/standards.csv'):
-        with open('static/standards.csv', 'w') as file:
-            writer = csv.writer(file)
-            for standard in Standard.objects.all():
-                row = [standard.cycle_day, 
-                                standard.average_body_weight, 
-                                standard.daily_weight_gain, 
-                                standard.average_daily_weight_gain,
-                                standard.feed_consumption,
-                                standard.cumulative_feed_consumption,
-                                standard.water_consumption,
-                                standard.cumulative_wather_consumption,
-                                standard.feed_conversion]
-                writer.writerow(row)
-                print(row)
-
-def loadFile():
-     with open('static/standards.csv', newline='') as file:
-         reader = csv.reader(file)
-         for row in reader:
-             standard = Standard(cycle_day=row[0], 
-                                    average_body_weight=row[1], 
-                                    daily_weight_gain=row[2], 
-                                    average_daily_weight_gain=row[3],
-                                    feed_consumption=row[4],
-                                    cumulative_feed_consumption=row[5],
-                                    water_consumption=row[6],
-                                    cumulative_wather_consumption=row[7],
-                                    feed_conversion=row[8])
-             standard.save()
