@@ -19,34 +19,37 @@
         />
     </head>
     <body>
-       <div class="login-container" >
-            <h2>Logowanie</h2>
-            <div class="login-box table-container" >
-                <form method='POST' action=''>
-                    {% csrf_token %}
-                    <p>
-                        <label for="id_username" style="padding-top:10px">Login:</label> 
-                        <input id="username-input" type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" style="float:right; margin-right:0px">
-                    </p>
-                    <p style="margin-top:30px; margin-bottom:30px;">
-                        <label for="id_password" style="padding-top:10px">Hasło:</label> 
-                        <input id="password-input" type="password" name="password" autocomplete="current-password" required id="id_password" style="float:right; margin-right:0px">
-                    </p>
-                    <input type="hidden" name="next" value="">
-                    <input class="button float-right-button" type="submit" value="Zaloguj" style="margin-right:0px">
-                </form>
-                <a href="{% url 'register' %}">
-                    <button class="button float-right-button" style="margin-left:0px;margin-right:20px">Zarejestruj</button>
-                </a>
-                <a href="{% url 'reset_password' %}" style="float:right; margin-top:10px">Zapomniałeś/aś hasła?</a>
-            </div>
-            {% if form.errors %}
-                <h2>
-                <p>Nazwa użytkownika lub hasło </p>
-                <p>są nieprawidłowe,</p>
-                <p>spróbuj ponownie</p>
-                </h2>
-            {% endif %}            
-       </div>
+        <div class="logo">
+            FUTURE FARM
+        </div>
+        <div class="login-container" >
+                <div class="login-box table-container" >
+                    <h2>Logowanie</h2>
+                    <form method='POST' action='' style="margin-top:15px">
+                        {% csrf_token %}
+                        <p>
+                            <label for="id_username" style="padding-top:10px">Login:</label> 
+                            <input id="username-input" type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" style="float:right; margin-right:0px">
+                        </p>
+                        <p style="margin-top:30px; margin-bottom:30px;">
+                            <label for="id_password" style="padding-top:10px">Hasło:</label> 
+                            <input id="password-input" type="password" name="password" autocomplete="current-password" required id="id_password" style="float:right; margin-right:0px">
+                        </p>
+                        <input type="hidden" name="next" value="">
+                        <input class="button float-right-button" type="submit" value="Zaloguj" style="margin-right:0px">
+                    </form>
+                    <a href="{% url 'register' %}">
+                        <button class="button float-right-button" style="margin-left:0px;margin-right:20px">Zarejestruj</button>
+                    </a>
+                    <a href="{% url 'reset_password' %}" style="float:right; margin-top:10px">Zapomniałeś/aś hasła?</a>
+                </div>
+                {% if form.errors %}
+                    <h2>
+                    <p>Nazwa użytkownika lub hasło </p>
+                    <p>są nieprawidłowe,</p>
+                    <p>spróbuj ponownie</p>
+                    </h2>
+                {% endif %}            
+        </div>
     </body>
 </html>

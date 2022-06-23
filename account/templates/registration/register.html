@@ -20,51 +20,54 @@
         />
     </head>
     <body>
-       <div class="login-container" >
-            <h3>Rejestracja</h3>
-            <div class="login-box table-container" >
-                <form method="POST" action="">
-                    {% csrf_token %}
-                    <p>
-                        <label for="id_first_name">Imię:</label> 
-                        <input type="text" name="first_name" maxlength="150" id="id_first_name">
-                    </p>
-                    <p>
-                        <label for="id_last_name">Nazwisko:</label> 
-                        <input type="text" name="last_name" maxlength="150" id="id_last_name">
-                    </p>
-                    <p><label for="id_username">Login:</label> 
-                        <input type="text" name="username" maxlength="150" autofocus="" required="" id="id_username"> 
-                        <span class="helptext">Wymagane. Nie więcej niż 150 znaków. Dozwolone są litery, cyfry i @/./+/-/_ .</span>
-                    </p>
-                    <p>
-                        <label for="id_email">Email:</label> 
-                        <input type="email" name="email" maxlength="254" id="id_email">
-                    </p>
-                    <p>
-                    <label for="id_password1">Hasło:</label> 
-                    <input type="password" name="password1" autocomplete="new-password" required="" id="id_password1">
-                     <span class="helptext"></span>
-                     </p>
-                     <ul>
-                        <li>Twoje hasło nie może być zbyt podobne do innych danych osobowych..</li>
-                        <li>Twoje hasło musi zawierać co najmniej 8 znaków.</li>
-                        <li>Twoje hasło nie może być hasłem powszechnie używanym.</li>
-                        <li>Twoje hasło nie może być w całości numeryczne.</li>
-                    </ul>
-                    <p>
-                    </p>
-                    <p>
-                        <label for="id_password2">Potwierdzenie hasła:</label> 
-                        <input type="password" name="password2" autocomplete="new-password" required="" id="id_password2"> 
-                        <span class="helptext">Wprowadź to samo hasło, co poprzednio, w celu weryfikacji.</span>
-                    </p>
-                    {% if form.errors %}
-                        <p>Podane hasła nie są identyczne</p>
-                    {% endif %}
-                    <input class="button float-right-button" type="submit" value="Zarejestruj">
-                </form>
-            </div>
-       </div>
+        <div class="logo">
+            FUTURE FARM
+        </div>
+        <div class="login-container" >
+                <div class="login-box table-container" >
+                    <h2>Rejestracja</h2>
+                    <form method="POST" action="" style="margin-top:15px">
+                        {% csrf_token %}
+                        <p>
+                            <label for="id_first_name">Imię:</label> 
+                            <input type="text" name="first_name" maxlength="150" id="id_first_name">
+                        </p>
+                        <p>
+                            <label for="id_last_name">Nazwisko:</label> 
+                            <input type="text" name="last_name" maxlength="150" id="id_last_name">
+                        </p>
+                        <p><label for="id_username">Login:</label> 
+                            <input type="text" name="username" maxlength="150" autofocus="" required="" id="id_username"> 
+                            <span class="helptext">Wymagane. Nie więcej niż 150 znaków. Dozwolone są litery, cyfry i @/./+/-/_ .</span>
+                        </p>
+                        <p>
+                            <label for="id_email">Email:</label> 
+                            <input type="email" name="email" maxlength="254" id="id_email">
+                        </p>
+                        <p>
+                        <label for="id_password1">Hasło:</label> 
+                        <input type="password" name="password1" autocomplete="new-password" required="" id="id_password1">
+                        <span class="helptext"></span>
+                        </p>
+                        <ul>
+                            <li>Twoje hasło nie może być zbyt podobne do innych danych osobowych..</li>
+                            <li>Twoje hasło musi zawierać co najmniej 8 znaków.</li>
+                            <li>Twoje hasło nie może być hasłem powszechnie używanym.</li>
+                            <li>Twoje hasło nie może być w całości numeryczne.</li>
+                        </ul>
+                        <p>
+                        </p>
+                        <p>
+                            <label for="id_password2">Potwierdzenie hasła:</label> 
+                            <input type="password" name="password2" autocomplete="new-password" required="" id="id_password2"> 
+                            <span class="helptext">Wprowadź to samo hasło, co poprzednio, w celu weryfikacji.</span>
+                        </p>
+                        {% if form.errors %}
+                            <p>Podane hasła nie są identyczne</p>
+                        {% endif %}
+                        <input class="button float-right-button" type="submit" value="Zarejestruj">
+                    </form>
+                </div>
+        </div>
     </body>
 </html>

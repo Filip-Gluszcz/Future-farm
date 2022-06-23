@@ -8,6 +8,24 @@ body {
       C7592A średnio blady pomarańczowy */
 }
 
+.logo{
+  font-size: 150px;
+  width: 100%;
+  padding-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title{
+  font-size: 50px;
+  width: 100%;
+  /* padding-top: 20px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .smaller-text
 {
   color: #507A7E;
@@ -19,7 +37,7 @@ body {
 
 .login-container
 {
-  height: 100%;
+  padding-top: 20px;
   display: flex;
   justify-content: center;
   align-items: center;

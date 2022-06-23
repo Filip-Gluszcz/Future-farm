@@ -19,17 +19,20 @@
         />
     </head>
     <body>
-       <div class="login-container" >
-            <h2>Dodaj profil</h2>
-            <div class="login-box table-container" >
-                <form method="post" action="">
-                    {% csrf_token %}
-                    {{form.as_p}}
+        <div class="logo">
+            FUTURE FARM
+        </div>
+        <div class="login-container" >
+                <div class="login-box table-container" >
+                    <h2>Dodaj profil</h2>
+                    <form method="post" action="" style="margin-top:15px">
+                        {% csrf_token %}
+                        {{form.as_p}}
 
-                    <input class="button float-right-button" type="submit" value="Zapisz">
+                        <input class="button float-right-button" type="submit" value="Zapisz">
 
-                </form>
-            </div>
-       </div>
+                    </form>
+                </div>
+        </div>
     </body>
 </html>

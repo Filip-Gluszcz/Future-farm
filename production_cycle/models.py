@@ -54,7 +54,7 @@ class Day(models.Model):
     total_increasing_feed_consumption = models.FloatField(default=0)
 
     
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):        
         cycle = self.cycle
         deads = self.deads
         selection = self.selection

@@ -1,14 +1,9 @@
-from ast import operator
 import time
 from celery.schedules import crontab
 import openpyxl
 import os
-from celery import shared_task
 from FutureFarm.celery import app
-from django_celery_beat.models import CrontabSchedule, PeriodicTask
-import pytz
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from glob import glob
 from .models import MinRolPrices
 
@@ -45,7 +40,6 @@ def get_ministerial_price():
     driver.close()
 
     filePath = glob(os.path.abspath('files/drob*.xlsx'))
-    # filePath = glob('/Users/FilipGluszcz/Desktop/Django/Projects/static/drob*.xlsx')
     path = filePath[0]
 
     book = openpyxl.load_workbook(path)
@@ -64,13 +58,6 @@ app.conf.beat_schedule = {
     },
 }
 
-
-# crontab(hour=20, minute=56, day_of_week=4),
-
-
 #  celery -A FutureFarm worker --loglevel=info
 
 #  celery -A FutureFarm beat --loglevel=info
-
-
-#  day_of_week=5
