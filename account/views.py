@@ -118,7 +118,6 @@ class FarmListView(LoginRequiredMixin, ListView):
                         pass
                 except Cycle.DoesNotExist:
                     pass
-        print(medSup)
         
         statsRange = []        
         context['activeCycles'] = 0

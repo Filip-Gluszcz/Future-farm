@@ -459,7 +459,11 @@
             <button id="disabled-daily-raport-low-feed-state" class="button" style="background:#666666">Dodaj</button>
             <button class="button" onclick="location.href='{% url 'silos' cycle.farm.id %}'">Silosy</button>
           {% else %}
-            <button id="add-daily-raport" class="button">Dodaj</button>
+            {% if lastDay.cycle_day < 49 %}
+              <button id="add-daily-raport" class="button">Dodaj</button>
+            {% else %}
+              <button id="disabled-daily-raport-day-limit" class="button" style="background:#666666">Dodaj</button>
+            {% endif %}
           {% endif %}  
         {% else %}
           <button id="disabled-daily-raport" class="button" style="background:#666666">Dodaj</button>
@@ -594,6 +598,9 @@
 <script>
     tippy('#disabled-daily-raport', {
         content: "Najpierw aktywuj silos",
+    });
+    tippy('#disabled-daily-raport-day-limit', {
+        content: "Nie można dodać więcej dni",
     });
     tippy('#disabled-daily-raport-low-feed-state', {
         content: "Za niski stan paszy - zrób dostawę",
