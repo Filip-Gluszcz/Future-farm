@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from finances.models import CompanyFinance
 
-from production_cycle.models import Cycle, Standard, StoredFeed
+from production_cycle.models import Cycle, Standard, StoredFeed, Day
 from .forms import ActivateSiloForm, AdditionalFeedForm, EmptyFeedForm, FarmForm, ProfileForm, RegisterForm, SiloForm, UserUpdateForm
 from .models import Farm, Profile, Silo
 from tasks.models import Task
@@ -99,6 +99,26 @@ class FarmListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['farms'] = context['farms'].filter(user=self.request.user)
+
+        medSup = {}
+
+        for i in range(49):
+            medSup[i] = []
+            for farm in context['farms']:
+                try:
+                    activeCycle = farm.cycle_set.get(status='ACTIVE')
+                    try:
+                        day = activeCycle.day_set.get(cycle_day=i)
+                        if day.medicationsupply_set.all().count() > 0:
+                            tmp = []
+                            for med in day.medicationsupply_set.all():
+                                tmp.append([med.medication.name, med.quantity])
+                            medSup[i].append({farm.name : tmp})
+                    except Day.DoesNotExist:
+                        pass
+                except Cycle.DoesNotExist:
+                    pass
+        print(medSup)
         
         statsRange = []        
         context['activeCycles'] = 0
@@ -121,6 +141,7 @@ class FarmListView(LoginRequiredMixin, ListView):
         context['ndTasksCount'] = context['newTasks'].count() + context['duringTasks'].count()
         context['doneTasks'] = Task.objects.filter(status='DONE',  user=self.request.user)
         context['companyFinance'] = CompanyFinance.objects.get(user=self.request.user)
+        context['medSupply'] = medSup
 
         return context
 
