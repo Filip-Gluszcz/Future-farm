@@ -1,4 +1,5 @@
 
+from collections import defaultdict
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -100,10 +101,9 @@ class FarmListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['farms'] = context['farms'].filter(user=self.request.user)
 
-        medSup = {}
+        medSup = defaultdict(list)
 
         for i in range(49):
-            medSup[i] = []
             for farm in context['farms']:
                 try:
                     activeCycle = farm.cycle_set.get(status='ACTIVE')
@@ -118,7 +118,6 @@ class FarmListView(LoginRequiredMixin, ListView):
                         pass
                 except Cycle.DoesNotExist:
                     pass
-        
         statsRange = []        
         context['activeCycles'] = 0
         context['closedCycles'] = 0
@@ -140,7 +139,7 @@ class FarmListView(LoginRequiredMixin, ListView):
         context['ndTasksCount'] = context['newTasks'].count() + context['duringTasks'].count()
         context['doneTasks'] = Task.objects.filter(status='DONE',  user=self.request.user)
         context['companyFinance'] = CompanyFinance.objects.get(user=self.request.user)
-        context['medSupply'] = medSup
+        context['medSupply'] = dict(medSup)
 
         return context
 

@@ -871,35 +871,33 @@
                 annotations: 
                 [
                     {% for medDay, medFarms in medSupply.items %}
-                       {% if medFarms|length > 0 %}
+                        {
+                            id: 'a-line-{{supply.id}}',
+                            type: 'line',
+                            mode: 'vertical',
+                            scaleID: 'x',
+                            value:{{medDay}},
+                            borderColor: 'rgb(251, 115, 68)',
+                            borderWidth: 1,
+                            label:
                             {
-                                id: 'a-line-{{supply.id}}',
-                                type: 'line',
-                                mode: 'vertical',
-                                scaleID: 'x',
-                                value:{{medDay}},
-                                borderColor: 'rgb(251, 115, 68)',
-                                borderWidth: 1,
-                                label:
-                                {
-                                    enabled: true,
-                                    position: '0%',
-                                    content: 
-                                    [
-                                        {% for farm in medFarms %}
-                                            {% for farmName, meds in farm.items %}
-                                                '{{farmName}}',
-                                                {% for med in meds %}
-                                                    '{{med.0}} {{med.1}}',
-                                                {% endfor %}
+                                enabled: true,
+                                position: '0%',
+                                content: 
+                                [
+                                    {% for farm in medFarms %}
+                                        {% for farmName, meds in farm.items %}
+                                            '{{farmName}}',
+                                            {% for med in meds %}
+                                                '{{med.0}} {{med.1}}',
                                             {% endfor %}
                                         {% endfor %}
-                                    ],
-                                    backgroundColor: 'rgba(0,0,0,0.3)',
-                                },        
-                            },
-                       {% else %}
-                       {% endif %}
+                                    {% endfor %}
+                                ],
+                                backgroundColor: 'rgba(0,0,0,0.3)',
+                            },        
+                        },
+
                     {% endfor %}
                 ],
                 
