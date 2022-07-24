@@ -115,9 +115,9 @@ class FarmListView(LoginRequiredMixin, ListView):
                                 tmp.append([med.medication.name, med.quantity])
                             medSup[i].append({farm.name : tmp})
                     except Day.DoesNotExist:
-                        pass
+                        continue
                 except Cycle.DoesNotExist:
-                    pass
+                    continue
         statsRange = []        
         context['activeCycles'] = 0
         context['closedCycles'] = 0

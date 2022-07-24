@@ -1,10 +1,10 @@
-System można uruchomić na dwa sposoby. Pierwszy i najłatwiejszym jest wejście na https://future-farm.herokuapp.com i uwierzytelnienie się za pomocą konta demo.
+System można uruchomić na dwa sposoby. Pierwszym i najłatwiejszym jest wejście na https://future-farm.herokuapp.com oraz uwierzytelnienie się za pomocą konta demo.
 
 Login: demo
 Hasło: KontoDemo123
 
-Drugi podejście wymaga zainstalowania:
--Python https://www.python.org/downloads/
+Drugie podejście wymaga zainstalowania:
+-Python (version >= 3.9) https://www.python.org/downloads/
 -Virtualenv https://virtualenv.pypa.io/en/latest/installation.html
 
 Po zainstalowaniu ww należy otworzyć wiersz poleceń w folderze projektu i wpisać komendę:
@@ -37,4 +37,4 @@ Deaktywacja wirtualnego środowiska:
 
 deactivate
 
-PROSZE MIEĆ NA UWADZE ŻE KOMENDY python I pip KORZYSTAJĄC Z PYTHONA 3 MAJĄ POSTAĆ python3 I pip3
+
