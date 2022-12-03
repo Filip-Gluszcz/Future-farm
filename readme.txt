@@ -15,13 +15,29 @@ Następnie stworzone wirtualne środowisko należy aktywować wpisując komendę
 
 source <nazwa>/bin/activate
 
-W aktywowanym środowisku instalujemy wszystkie niezbędne biblioteki i narzędzia wpisując komendę:
+W aktywowanym środowisku zainstaluj wszystkie niezbędne biblioteki i narzędzia wpisując komendę:
 
 pip install -r requirements.txt
 
-Po pomyślnym zainstalowaniu należy przeprowadzić stworzyć bazę danych poprzez przeprowadzenie migracji:
+Po pomyślnym zainstalowaniu należy stworzyć bazę danych poprzez przeprowadzenie migracji:
 
 python manage.py migrate
+
+Kolejnym krokiem jest wprowadzenie danych z pliku standarów chowu do bazy danych poprzez powłokę pythona, w terminalu wpisz komendę:
+
+python manage.py shell
+
+Następnię zaimportuj funkcję ładowania pliku:
+
+from production_cycle.views import loadFile
+
+Wywałaj metodę:
+
+loadFile()
+
+Zamknij powłokę:
+
+exit()
 
 Ostatnim krokiem jest uruchomienie serwera developerskiego:
 
