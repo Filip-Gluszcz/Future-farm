@@ -7,12 +7,10 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
-#ALLOWED_HOSTS = [
-#    'future-farm.herokuapp.com',
-#    'https://web-production-dafa.up.railway.app',
-#    ]
+ALLOWED_HOSTS = [
+    'future-farm.herokuapp.com',
+    'https://web-production-dafa.up.railway.app',
+    ]
 
 #CELERY_BROKER_URL = os.environ['REDIS_URL']
 
