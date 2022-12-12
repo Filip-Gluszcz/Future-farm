@@ -1,3 +1,7 @@
+AKTUALNIE ZE WZGLĘDU NA ZMIANĘ POLITYKI HEROKU, SYSTEM MOŻNA URUCHOMIĆ UŻYWAJĄC OPISANEGO PONIŻEJ DRUGIEGO PODEJŚCIA. ZAINTERESOWANYM MOGĘ UDOSTĘPNIĆ PLIK .DUMP ORAZ INSTRUKCJĘ POZWALAJĄCĄ ODTWORZYĆ BAZĘ DANYCH UŻYWANĄ W HEROKU. 
+
+KONTAKT @: filip.gluszcz.dev@gmail.com
+
 System można uruchomić na dwa sposoby. Pierwszym i najłatwiejszym jest wejście na https://future-farm.herokuapp.com oraz uwierzytelnienie się za pomocą konta demo.
 
 Login: demo
