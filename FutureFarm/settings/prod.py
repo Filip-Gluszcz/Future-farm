@@ -9,9 +9,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'future-farm.herokuapp.com',
+    'https://web-production-dafa.up.railway.app',
     ]
 
-CELERY_BROKER_URL = os.environ['REDIS_URL']
+#CELERY_BROKER_URL = os.environ['REDIS_URL']
 
 DEBUG_PROPAGATE_EXCEPTIONS=True
 
@@ -41,5 +42,5 @@ LOGGING = {
     }
 }
 
-django_on_heroku.settings(locals(), staticfiles=False)
-del DATABASES['default']['OPTIONS']['sslmode']
+#django_on_heroku.settings(locals(), staticfiles=False)
+#del DATABASES['default']['OPTIONS']['sslmode']
