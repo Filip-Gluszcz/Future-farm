@@ -74,7 +74,16 @@ WSGI_APPLICATION = 'FutureFarm.wsgi.application'
 
 load_dotenv(find_dotenv())
 
-DATABASES = {'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600, ssl_require=False)}
+# DATABASES = {'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600, ssl_require=False)}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'farm_database',
+        'USER': 'postgres',
+        'PASSWORD': 'pg-Admin',
+    }
+}
 
 
 # Password validation
