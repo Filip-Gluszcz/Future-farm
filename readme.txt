@@ -1,6 +1,4 @@
-AKTUALNIE ZE WZGLĘDU NA ZMIANĘ POLITYKI HEROKU, APLIKACJA JEST DOSTĘPNA POD ADRESEM http://44.210.116.161, PO PROPAGACJI DOMENY BĘDZIE DOSTĘPNY RÓWNIEŻ POD ADRESEM futurefarm.dev
-
-System można uruchomić na dwa sposoby. Pierwszym i najłatwiejszym jest wejście na https://future-farm.herokuapp.com oraz uwierzytelnienie się za pomocą konta demo.
+System można uruchomić na dwa sposoby. Pierwszym i najłatwiejszym jest wejście na https://www.futurefarm.dev oraz uwierzytelnienie się za pomocą konta demo.
 
 Login: demo
 Hasło: KontoDemo123
